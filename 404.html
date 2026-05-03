@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found - Gabochie Marketing</title>
+  <meta name="description" content="The page you're looking for doesn't exist. Return to Gabochie Marketing's homepage." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1A7B3A',
+            accent: '#7ED354',
+            'dark-green': '#0F5C28',
+            'body-text': '#2D2D2D',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-white text-body-text antialiased min-h-screen flex items-center justify-center">
+  <div class="text-center px-4">
+    <div class="mb-6">
+      <svg class="w-16 h-16 text-primary mx-auto" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+    </div>
+    <h1 class="text-7xl sm:text-8xl font-black text-primary mb-4">404</h1>
+    <h2 class="text-2xl sm:text-3xl font-bold text-body-text mb-4">Page Not Found</h2>
+    <p class="text-lg text-gray-600 max-w-md mx-auto mb-8">
+      The page you're looking for doesn't exist or has been moved. Let's get you back on track.
+    </p>
+    <a href="/" class="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-dark-green transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Back to Home
+    </a>
+  </div>
+</body>
+</html>

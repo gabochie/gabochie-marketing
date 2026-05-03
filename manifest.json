@@ -1,0 +1,16 @@
+{
+  "name": "Gabochie Marketing",
+  "short_name": "Gabochie",
+  "description": "Turn Google Maps into a predictable customer acquisition channel for Ghanaian businesses.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1A7B3A",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

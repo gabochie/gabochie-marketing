@@ -1,0 +1,3 @@
+# Bypass Jekyll processing on GitHub Pages
+include:
+  - ".nojekyll"
