@@ -1105,16 +1105,57 @@
       };
 
       try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        // Submit lead capture
+        const leadResponse = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify(formData),
           headers: { 'Content-Type': 'application/json' }
         });
 
-        if (response.ok) {
+        // Register client for portal access
+        const clientRegistration = {
+          action: 'registerClient',
+          email: document.getElementById('packageEmail').value,
+          name: document.getElementById('packageFullName').value,
+          businessName: document.getElementById('packageBusinessName').value,
+          package: packageName
+        };
+
+        const clientResponse = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(clientRegistration),
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const clientResult = await clientResponse.json();
+        
+        // Store client credentials locally
+        if (clientResult.success) {
+          localStorage.setItem('pendingClientAccess', JSON.stringify({
+            email: clientRegistration.email,
+            tempPassword: clientResult.tempPassword,
+            portalUrl: 'client/login.html'
+          }));
+        }
+
+        if (leadResponse.ok) {
           document.getElementById('successPackageName').textContent = packageName;
           document.getElementById('packageForm').classList.add('hidden');
           document.getElementById('packageSuccess').classList.remove('hidden');
+          
+          // Show portal access message
+          const successDiv = document.getElementById('packageSuccess');
+          successDiv.innerHTML += `
+            <div class="mt-6 p-4 bg-accent/20 rounded-lg text-left">
+              <p class="font-semibold text-primary mb-2">🔐 Client Portal Access Created!</p>
+              <p class="text-sm text-gray-600 mb-3">Track your optimization progress anytime.</p>
+              <a href="client/login.html" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-green transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Access Your Portal
+              </a>
+            </div>
+          `;
+          
           if (typeof gtag !== 'undefined') {
             gtag('event', 'package_form_submit', {
               event_category: 'conversion',

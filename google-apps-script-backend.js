@@ -203,3 +203,229 @@ function setupSheet() {
   const sheet = getOrCreateSheet();
   console.log('Sheet ready:', sheet.getParent().getUrl());
 }
+
+/**
+ * Client Portal Functions
+ * Handles authentication and dashboard data for client portal
+ */
+
+const CLIENT_SHEET_NAME = 'Clients';
+const CLIENT_HEADERS = [
+  'Email', 'Password', 'Name', 'BusinessName', 'Package', 'Status', 'StartDate', 
+  'Phase1_Status', 'Phase2_Status', 'Phase3_Status',
+  'Stats_Views', 'Stats_Directions', 'Stats_Calls', 'Stats_Reviews',
+  'Token', 'CreatedAt'
+];
+
+/**
+ * Enhanced doPost with client portal actions
+ */
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    
+    // Route based on action type
+    if (data.action === 'clientLogin') {
+      return handleClientLogin(data);
+    } else if (data.action === 'getClientDashboard') {
+      return getClientDashboard(data);
+    } else if (data.action === 'registerClient') {
+      return registerClient(data);
+    } else {
+      // Original lead capture logic
+      return handleLeadCapture(data);
+    }
+    
+  } catch (error) {
+    console.error('Error in doPost:', error);
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Handle client login
+ */
+function handleClientLogin(data) {
+  const clientSheet = getOrCreateClientSheet();
+  const data_range = clientSheet.getDataRange();
+  const values = data_range.getValues();
+  
+  // Find client by email
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][0] === data.email && values[i][1] === data.password) {
+      // Generate token
+      const token = Utilities.getUuid();
+      clientSheet.getRange(i + 1, 15).setValue(token); // Store token
+      
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        token: token,
+        name: values[i][2],
+        businessName: values[i][3],
+        package: values[i][4]
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: false,
+    message: 'Invalid email or password'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Get client dashboard data
+ */
+function getClientDashboard(data) {
+  const clientSheet = getOrCreateClientSheet();
+  const data_range = clientSheet.getDataRange();
+  const values = data_range.getValues();
+  
+  // Find client by email and validate token
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][0] === data.email && values[i][14] === data.token) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: true,
+        name: values[i][2],
+        businessName: values[i][3],
+        package: values[i][4],
+        status: values[i][5],
+        startDate: values[i][6],
+        phases: {
+          foundation: values[i][7] || 'pending',
+          activation: values[i][8] || 'pending',
+          domination: values[i][9] || 'pending'
+        },
+        stats: {
+          views: values[i][10] || '0',
+          directions: values[i][11] || '0',
+          calls: values[i][12] || '0',
+          reviews: values[i][13] || '0'
+        },
+        activity: [
+          { date: '2026-05-10', description: 'Profile optimization completed' },
+          { date: '2026-05-08', description: 'Started Phase 1: Foundation' },
+          { date: '2026-05-06', description: 'Package purchased - Growth System' }
+        ]
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: false,
+    message: 'Session expired. Please login again.'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Register new client from package purchase
+ */
+function registerClient(data) {
+  const clientSheet = getOrCreateClientSheet();
+  
+  // Check if email already exists
+  const data_range = clientSheet.getDataRange();
+  const values = data_range.getValues();
+  
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][0] === data.email) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        message: 'Client already exists'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  // Generate temporary password
+  const tempPassword = Math.random().toString(36).slice(-8);
+  const token = Utilities.getUuid();
+  
+  // Add new client
+  const rowData = [
+    data.email,
+    tempPassword,
+    data.name,
+    data.businessName,
+    data.package,
+    'Onboarding',
+    new Date().toISOString().split('T')[0],
+    'pending', // Phase 1
+    'pending', // Phase 2
+    'pending', // Phase 3
+    '0', '0', '0', '0', // Stats
+    token,
+    new Date().toISOString()
+  ];
+  
+  clientSheet.appendRow(rowData);
+  
+  // Send welcome email with credentials (in production)
+  console.log('New client registered:', data.email);
+  console.log('Temporary password:', tempPassword);
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: 'Client registered successfully',
+    tempPassword: tempPassword
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Get or create client sheet
+ */
+function getOrCreateClientSheet() {
+  const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = spreadsheet.getSheetByName(CLIENT_SHEET_NAME);
+  
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(CLIENT_SHEET_NAME);
+    sheet.appendRow(CLIENT_HEADERS);
+    
+    // Format header
+    const headerRange = sheet.getRange(1, 1, 1, CLIENT_HEADERS.length);
+    headerRange.setFontWeight('bold');
+    headerRange.setBackground('#1A7B3A');
+    headerRange.setFontColor('#FFFFFF');
+  }
+  
+  return sheet;
+}
+
+/**
+ * Original lead capture handler
+ */
+function handleLeadCapture(data) {
+  const sheet = getOrCreateSheet();
+  
+  const rowData = [
+    data.prospectName || '',
+    data.businessName || '',
+    data.phone || '',
+    generateWhatsAppLink(data.phone),
+    data.address || '',
+    data.businessType || '',
+    data.outreachCategory || 'Website Lead',
+    data.status || 'new',
+    '',
+    data.notes || '',
+    new Date().toISOString(),
+    data.website || '',
+    data.email || '',
+    '',
+    '',
+    data.offerType || '',
+    data.productOffer || '',
+    data.source || 'website',
+    data.timestamp || new Date().toISOString()
+  ];
+  
+  sheet.appendRow(rowData);
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'success',
+    message: 'Lead captured successfully'
+  })).setMimeType(ContentService.MimeType.JSON);
+}

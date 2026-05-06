@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Login | Gabochie Marketing</title>
+  <meta name="description" content="Client portal login for Gabochie Marketing. Track your Google Maps optimization progress.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1A7B3A',
+            accent: '#7ED354',
+            'dark-green': '#0F5C28',
+            'body-text': '#2D2D2D',
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', system-ui, sans-serif; }</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-md w-full">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <a href="../index.html" class="inline-flex items-center gap-2">
+        <svg class="w-10 h-10 text-primary" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        </svg>
+        <span class="text-2xl font-bold text-body-text">Gabochie Marketing</span>
+      </a>
+      <p class="text-gray-500 mt-2">Client Portal</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <h1 class="text-2xl font-bold text-body-text mb-2">Welcome Back</h1>
+      <p class="text-gray-500 mb-6">Sign in to track your Google Maps optimization progress</p>
+
+      <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="space-y-4">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              required 
+              class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              placeholder="you@business.com"
+            >
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              required 
+              class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+              placeholder="••••••••"
+            >
+          </div>
+        </div>
+
+        <div id="errorMessage" class="hidden mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm"></div>
+
+        <button 
+          type="submit" 
+          id="loginBtn"
+          class="w-full mt-6 bg-primary text-white py-3 rounded-xl font-semibold hover:bg-dark-green transition flex items-center justify-center gap-2"
+        >
+          <span>Sign In</span>
+          <svg id="loginSpinner" class="hidden animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-6 border-t border-gray-100">
+        <p class="text-sm text-gray-500 text-center mb-4">Don't have an account yet?</p>
+        <a href="../index.html#pricing" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-xl font-semibold hover:bg-gray-200 transition">
+          Purchase a Package
+        </a>
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="#" onclick="showForgotPassword()" class="text-sm text-primary hover:underline">Forgot password?</a>
+      </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="mt-8 text-center">
+      <p class="text-sm text-gray-400">Need help accessing your account?</p>
+      <a href="mailto:gabochiemarketing@gmail.com" class="text-sm text-primary hover:underline">Contact support</a>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgotModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-900/75" onclick="hideForgotPassword()"></div>
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative bg-white rounded-2xl p-6 max-w-sm w-full">
+          <h3 class="text-lg font-bold text-body-text mb-2">Reset Password</h3>
+          <p class="text-gray-500 text-sm mb-4">Enter your email and we'll send you a password reset link.</p>
+          <input type="email" id="resetEmail" class="w-full px-4 py-3 rounded-xl border border-gray-300 mb-4" placeholder="you@business.com">
+          <div class="flex gap-3">
+            <button onclick="hideForgotPassword()" class="flex-1 py-2 rounded-xl border border-gray-300 font-medium hover:bg-gray-50">Cancel</button>
+            <button onclick="sendResetLink()" class="flex-1 py-2 rounded-xl bg-primary text-white font-medium hover:bg-dark-green">Send Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('loginBtn');
+      const spinner = document.getElementById('loginSpinner');
+      const errorDiv = document.getElementById('errorMessage');
+      
+      // Show loading state
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+      errorDiv.classList.add('hidden');
+      
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'clientLogin',
+            email: email,
+            password: password
+          }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Store session
+          localStorage.setItem('gabochieClient', JSON.stringify({
+            email: email,
+            token: result.token,
+            name: result.name,
+            businessName: result.businessName
+          }));
+          
+          // Redirect to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          errorDiv.textContent = result.message || 'Invalid email or password';
+          errorDiv.classList.remove('hidden');
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    }
+
+    function showForgotPassword() {
+      document.getElementById('forgotModal').classList.remove('hidden');
+    }
+
+    function hideForgotPassword() {
+      document.getElementById('forgotModal').classList.add('hidden');
+    }
+
+    function sendResetLink() {
+      const email = document.getElementById('resetEmail').value;
+      if (!email) {
+        alert('Please enter your email');
+        return;
+      }
+      alert('Password reset link sent to ' + email);
+      hideForgotPassword();
+    }
+
+    // Check if already logged in
+    const client = localStorage.getItem('gabochieClient');
+    if (client) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>
