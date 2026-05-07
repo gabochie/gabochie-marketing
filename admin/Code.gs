@@ -23,14 +23,34 @@ const HEADERS = [
 const TEMPLATE_NAMES = ['day1', 'day3', 'day7', 'network'];
 const PROP_TEMPLATES = 'MESSAGE_TEMPLATES';
 const PROP_SHEET_NAME = 'TARGET_SHEET_NAME';
-const PROP_GEMINI_MODEL = 'GEMINI_MODEL';
+
+// API Provider Configuration
+const PROP_API_PROVIDER = 'API_PROVIDER';        // 'gemini' | 'groq' | 'ollama'
 const PROP_GEMINI_KEY = 'GEMINI_API_KEY';
+const PROP_GEMINI_MODEL = 'GEMINI_MODEL';
+const PROP_GROQ_KEY = 'GROQ_API_KEY';
+const PROP_GROQ_MODEL = 'GROQ_MODEL';
+const PROP_OLLAMA_URL = 'OLLAMA_BASE_URL';
+const PROP_OLLAMA_MODEL = 'OLLAMA_MODEL';
+
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+const DEFAULT_GROQ_MODEL = 'llama3-70b-8192';
+const DEFAULT_OLLAMA_URL = 'http://localhost:11434';
+const DEFAULT_OLLAMA_MODEL = 'llama3';
 
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('Gabochie Marketing Admin')
-    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  try {
+    return HtmlService.createHtmlOutputFromFile('Index')
+      .setTitle('Gabochie Marketing Admin')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'error',
+      message: 'Failed to load Index.html: ' + e.toString(),
+      hint: 'Create an HTML file named "Index" (not "Index.html") in the Apps Script editor and paste the frontend code into it.'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 // ── Sheet Access ──
@@ -227,6 +247,55 @@ function bulkUpdateOutreachMessage(updates) {
   }
 }
 
+// ── Update Contact (all fields) ──
+function updateContact(data) {
+  try {
+    const sheet = getSheet_();
+    const rows = getAllRows_(sheet);
+    const match = rows.find(r => parseInt(r.ID, 10) === data.id);
+    if (!match) return { success: false, error: 'Contact not found' };
+
+    const fields = {
+      'Prospect Name': data.name,
+      'Business Name': data.businessName,
+      'Phone': data.phone,
+      'Email': data.email,
+      'Business Type': data.bizType,
+      'Funnel Stage': data.funnelStage,
+      'Pipeline Status': data.status,
+      'Lead Type': data.leadType,
+      'Lead Source': data.leadSource,
+      'Notes': data.notes
+    };
+
+    Object.keys(fields).forEach(key => {
+      if (fields[key] !== undefined) {
+        const idx = HEADERS.indexOf(key);
+        if (idx >= 0) sheet.getRange(match._row, idx + 1).setValue(fields[key]);
+      }
+    });
+
+    return { success: true, message: 'Contact updated' };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+// ── Delete Contact (soft delete) ──
+function deleteContact(id) {
+  try {
+    const sheet = getSheet_();
+    const rows = getAllRows_(sheet);
+    const match = rows.find(r => parseInt(r.ID, 10) === id);
+    if (!match) return { success: false, error: 'Contact not found' };
+    const colIdx = HEADERS.indexOf('Deleted') + 1;
+    sheet.getRange(match._row, colIdx).setValue('yes');
+    return { success: true, message: 'Contact deleted' };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
 // ── Mark Message Sent ──
 function markMessageSent(data) {
   try {
@@ -332,8 +401,14 @@ function getAppSettings() {
   const props = PropertiesService.getScriptProperties();
   return {
     targetSheetName: props.getProperty(PROP_SHEET_NAME) || SHEET_NAME,
-    geminiModel: props.getProperty(PROP_GEMINI_MODEL) || 'gemini-2.5-flash',
-    hasGeminiApiKey: !!props.getProperty(PROP_GEMINI_KEY)
+    // API Provider
+    apiProvider: props.getProperty(PROP_API_PROVIDER) || 'gemini',
+    hasGeminiKey: !!props.getProperty(PROP_GEMINI_KEY),
+    geminiModel: props.getProperty(PROP_GEMINI_MODEL) || DEFAULT_GEMINI_MODEL,
+    hasGroqKey: !!props.getProperty(PROP_GROQ_KEY),
+    groqModel: props.getProperty(PROP_GROQ_MODEL) || DEFAULT_GROQ_MODEL,
+    ollamaUrl: props.getProperty(PROP_OLLAMA_URL) || DEFAULT_OLLAMA_URL,
+    ollamaModel: props.getProperty(PROP_OLLAMA_MODEL) || DEFAULT_OLLAMA_MODEL
   };
 }
 
@@ -341,34 +416,30 @@ function saveAppSettings(settings) {
   try {
     const props = PropertiesService.getScriptProperties();
     if (settings.targetSheetName) props.setProperty(PROP_SHEET_NAME, settings.targetSheetName);
+    if (settings.apiProvider) props.setProperty(PROP_API_PROVIDER, settings.apiProvider);
+    if (settings.geminiApiKey !== undefined) props.setProperty(PROP_GEMINI_KEY, settings.geminiApiKey);
     if (settings.geminiModel) props.setProperty(PROP_GEMINI_MODEL, settings.geminiModel);
-    if (settings.geminiApiKey) props.setProperty(PROP_GEMINI_KEY, settings.geminiApiKey);
-    return { success: true, hasGeminiApiKey: !!props.getProperty(PROP_GEMINI_KEY) };
+    if (settings.groqApiKey !== undefined) props.setProperty(PROP_GROQ_KEY, settings.groqApiKey);
+    if (settings.groqModel) props.setProperty(PROP_GROQ_MODEL, settings.groqModel);
+    if (settings.ollamaUrl) props.setProperty(PROP_OLLAMA_URL, settings.ollamaUrl);
+    if (settings.ollamaModel) props.setProperty(PROP_OLLAMA_MODEL, settings.ollamaModel);
+    const hasAnyKey = !!(props.getProperty(PROP_GEMINI_KEY) || props.getProperty(PROP_GROQ_KEY));
+    return { success: true, hasAnyKey };
   } catch (e) {
     return { success: false, error: e.toString() };
   }
 }
 
-// ── Gemini Message Generation ──
-function generateGeminiMessage(payload) {
-  try {
-    const props = PropertiesService.getScriptProperties();
-    const apiKey = props.getProperty(PROP_GEMINI_KEY);
-    if (!apiKey) {
-      return { success: false, error: 'No Gemini API key configured' };
-    }
-    const model = props.getProperty(PROP_GEMINI_MODEL) || 'gemini-2.5-flash';
-
-    const gbpObs = {
-      none: 'your business is not showing up properly on Google Maps yet.',
-      unclaimed: 'your Google listing appears to be unclaimed.',
-      poor: 'your Google listing exists but needs stronger photos, details, and WhatsApp visibility.',
-      claimed: 'your listing exists but can be improved to convert more searchers into enquiries.'
-    }[payload.gbpStatus || 'none'];
-
-    const stageLabel = { tofu: 'cold first contact', mofu: 'follow-up after reply', bofu: 'closing/final push', network: 'personal network warm outreach' }[payload.funnelStage || 'tofu'];
-
-    const prompt = `You are a sales outreach assistant for Gabochie Marketing, a Ghana-based agency that helps local businesses get found on Google Maps.
+// ── Multi-Provider Message Generation ──
+function buildPrompt_(payload) {
+  const gbpObs = {
+    none: 'your business is not showing up properly on Google Maps yet.',
+    unclaimed: 'your Google listing appears to be unclaimed.',
+    poor: 'your Google listing exists but needs stronger photos, details, and WhatsApp visibility.',
+    claimed: 'your listing exists but can be improved to convert more searchers into enquiries.'
+  }[payload.gbpStatus || 'none'];
+  const stageLabel = { tofu: 'cold first contact', mofu: 'follow-up after reply', bofu: 'closing/final push', network: 'personal network warm outreach' }[payload.funnelStage || 'tofu'];
+  return `You are a sales outreach assistant for Gabochie Marketing, a Ghana-based agency that helps local businesses get found on Google Maps.
 
 Generate a short, warm WhatsApp outreach message (max 250 words) for a ${stageLabel} prospect.
 
@@ -391,26 +462,108 @@ Rules:
 - DO NOT use placeholders like {name} or {biz} - be specific
 - Keep it conversational, not salesy
 - Write in first person (I/we)`;
+}
 
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey;
-    const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 512 } };
-
-    const response = UrlFetchApp.fetch(url, {
-      method: 'POST',
-      contentType: 'application/json',
-      payload: JSON.stringify(body),
-      muteHttpExceptions: true
-    });
-
+function callGemini_(payload) {
+  const props = PropertiesService.getScriptProperties();
+  const apiKey = props.getProperty(PROP_GEMINI_KEY);
+  if (!apiKey) return { success: false, error: 'No Gemini API key configured' };
+  const model = props.getProperty(PROP_GEMINI_MODEL) || DEFAULT_GEMINI_MODEL;
+  const prompt = buildPrompt_(payload);
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey;
+  const body = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 512 } };
+  try {
+    const response = UrlFetchApp.fetch(url, { method: 'POST', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
     const result = JSON.parse(response.getContentText());
     if (result.candidates && result.candidates[0] && result.candidates[0].content) {
       const message = result.candidates[0].content.parts.map(p => p.text).join('\n').trim();
-      return { success: true, message, model };
+      return { success: true, message, provider: 'gemini', model };
+    }
+    // Check for blocked content
+    if (result.promptFeedback && result.promptFeedback.blockReason) {
+      return { success: false, error: 'Blocked: ' + result.promptFeedback.blockReason };
     }
     return { success: false, error: 'Gemini returned no content' };
   } catch (e) {
-    return { success: false, error: e.toString() };
+    return { success: false, error: e.toString(), provider: 'gemini' };
   }
+}
+
+function callGroq_(payload) {
+  const props = PropertiesService.getScriptProperties();
+  const apiKey = props.getProperty(PROP_GROQ_KEY);
+  if (!apiKey) return { success: false, error: 'No Groq API key configured' };
+  const model = props.getProperty(PROP_GROQ_MODEL) || DEFAULT_GROQ_MODEL;
+  const prompt = buildPrompt_(payload);
+
+  const systemMsg = 'You are a sales outreach assistant for Gabochie Marketing, a Ghana-based marketing agency. Write warm, professional WhatsApp messages in Ghanaian-friendly English. Keep messages under 250 words, conversational, and end with a clear CTA.';
+  const url = 'https://api.groq.com/openai/v1/chat/completions';
+  const body = { model, messages: [{ role: 'system', content: systemMsg }, { role: 'user', content: prompt }], temperature: 0.7, max_tokens: 512 };
+
+  try {
+    const response = UrlFetchApp.fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + apiKey }, contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
+    const result = JSON.parse(response.getContentText());
+    if (result.choices && result.choices[0] && result.choices[0].message) {
+      return { success: true, message: result.choices[0].message.content.trim(), provider: 'groq', model };
+    }
+    return { success: false, error: 'Groq returned no content' };
+  } catch (e) {
+    return { success: false, error: e.toString(), provider: 'groq' };
+  }
+}
+
+function callOllama_(payload) {
+  const props = PropertiesService.getScriptProperties();
+  const baseUrl = props.getProperty(PROP_OLLAMA_URL) || DEFAULT_OLLAMA_URL;
+  const model = props.getProperty(PROP_OLLAMA_MODEL) || DEFAULT_OLLAMA_MODEL;
+  const prompt = buildPrompt_(payload);
+
+  const url = baseUrl.replace(/\/$/, '') + '/api/generate';
+  const body = { model, prompt: 'You are a sales outreach assistant for Gabochie Marketing. ' + prompt, stream: false, options: { temperature: 0.7 } };
+
+  try {
+    const response = UrlFetchApp.fetch(url, { method: 'POST', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
+    const result = JSON.parse(response.getContentText());
+    if (result.response) {
+      return { success: true, message: result.response.trim(), provider: 'ollama', model };
+    }
+    return { success: false, error: 'Ollama returned no response' };
+  } catch (e) {
+    return { success: false, error: e.toString(), provider: 'ollama' };
+  }
+}
+
+/**
+ * Generate message using configured provider with fallback chain.
+ * Attempts primary provider first, then falls back through the chain.
+ */
+function generateMessage(payload) {
+  const props = PropertiesService.getScriptProperties();
+  const primary = props.getProperty(PROP_API_PROVIDER) || 'gemini';
+  // Define fallback order based on primary
+  const order = [];
+  if (primary === 'gemini') { order.push('gemini', 'groq', 'ollama'); }
+  else if (primary === 'groq') { order.push('groq', 'gemini', 'ollama'); }
+  else { order.push('ollama', 'groq', 'gemini'); }
+
+  const errors = [];
+  for (let i = 0; i < order.length; i++) {
+    const provider = order[i];
+    let result;
+    if (provider === 'gemini') result = callGemini_(payload);
+    else if (provider === 'groq') result = callGroq_(payload);
+    else result = callOllama_(payload);
+
+    if (result && result.success) {
+      // Include fallback info
+      result.fallbackUsed = i > 0;
+      result.attemptedProviders = order.slice(0, i + 1);
+      return result;
+    }
+    errors.push(provider + ': ' + (result.error || 'unknown error'));
+  }
+
+  return { success: false, error: 'All providers failed: ' + errors.join(' | '), errors };
 }
 
 // ── CSV Processing ──

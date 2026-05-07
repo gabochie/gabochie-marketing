@@ -926,6 +926,21 @@
     // Google Apps Script Web App URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
 
+    // Fetch with timeout (prevents stuck loading when backend is unavailable)
+    async function fetchWithTimeout(url, options, timeoutMs) {
+      timeoutMs = timeoutMs || 10000;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(function() { controller.abort(); }, timeoutMs);
+      try {
+        const response = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+        clearTimeout(timeoutId);
+        return response;
+      } catch (e) {
+        clearTimeout(timeoutId);
+        throw e;
+      }
+    }
+
     // Track form submissions for analytics
     document.getElementById('leadForm').addEventListener('submit', function() {
       if (typeof gtag !== 'undefined') {
@@ -996,7 +1011,7 @@
 
       try {
         // Send to Google Sheets via Apps Script
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        const response = await fetchWithTimeout(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify(formData),
           headers: { 'Content-Type': 'application/json' }
@@ -1015,15 +1030,13 @@
           throw new Error('Submission failed');
         }
       } catch (error) {
-        // Fallback: Store locally and alert user
+        // Fallback: Store locally and show success
         let audits = JSON.parse(localStorage.getItem('gabochieAudits') || '[]');
         audits.push(formData);
         localStorage.setItem('gabochieAudits', JSON.stringify(audits));
         
         document.getElementById('auditForm').classList.add('hidden');
         document.getElementById('auditSuccess').classList.remove('hidden');
-        
-        // Still show success but note it was saved locally
         console.log('Audit request saved locally:', formData);
       }
     }
@@ -1109,11 +1122,11 @@
 
       try {
         // Submit lead capture
-        const leadResponse = await fetch(GOOGLE_SCRIPT_URL, {
+        const leadResponse = await fetchWithTimeout(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify(formData),
           headers: { 'Content-Type': 'application/json' }
-        });
+        }, 10000);
 
         // Register client for portal access
         const clientRegistration = {
@@ -1127,11 +1140,11 @@
         let tempPw = 'client2024';
         
         try {
-          const clientResponse = await fetch(GOOGLE_SCRIPT_URL, {
+          const clientResponse = await fetchWithTimeout(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify(clientRegistration),
             headers: { 'Content-Type': 'application/json' }
-          });
+          }, 8000);
 
           const clientResult = await clientResponse.json();
           

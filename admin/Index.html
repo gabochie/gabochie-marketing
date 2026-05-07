@@ -495,6 +495,7 @@ input[type="checkbox"].row-check { width: 16px; height: 16px; cursor: pointer; }
         <div style="background:var(--card-bg);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);">
           <label style="font-weight:600;font-size:13px;color:var(--text-light);display:block;margin-bottom:6px;">Message Preview</label>
           <div class="broadcast-preview" id="aiPreview">Select a template to preview...</div>
+          <div id="aiModelInfo" style="font-size:11px;color:var(--text-light);margin-top:6px;min-height:16px;"></div>
           <div style="display:flex;gap:8px;margin-top:12px;">
             <button class="panel-btn primary" onclick="sendAIMessage()">Send Message</button>
             <button class="panel-btn secondary" onclick="editAIMessage()">Edit & Send</button>
@@ -762,6 +763,69 @@ input[type="checkbox"].row-check { width: 16px; height: 16px; cursor: pointer; }
           </div>
         </div>
         <div class="settings-group">
+          <h4>AI Provider Configuration</h4>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Primary Provider</div>
+              <div class="sr-desc">Select the primary AI provider for message generation</div>
+            </div>
+            <select id="settingApiProvider" style="padding:8px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;" onchange="updateApiSettingsUI()">
+              <option value="gemini">Gemini</option>
+              <option value="groq">Groq</option>
+              <option value="ollama">Ollama (Local)</option>
+            </select>
+          </div>
+          <div class="settings-row" id="row-gemini-key">
+            <div>
+              <div class="sr-label">Gemini API Key</div>
+              <div class="sr-desc">Required for Gemini provider</div>
+            </div>
+            <input type="password" id="settingGeminiKey" placeholder="Enter Gemini API key" style="width:220px;padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+          </div>
+          <div class="settings-row" id="row-gemini-model">
+            <div>
+              <div class="sr-label">Gemini Model</div>
+              <div class="sr-desc">e.g. gemini-2.5-flash, gemini-1.5-pro</div>
+            </div>
+            <input type="text" id="settingGeminiModel" value="gemini-2.5-flash" style="width:220px;padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+          </div>
+          <div class="settings-row" id="row-groq-key">
+            <div>
+              <div class="sr-label">Groq API Key</div>
+              <div class="sr-desc">Fallback provider, requires API key</div>
+            </div>
+            <input type="password" id="settingGroqKey" placeholder="Enter Groq API key" style="width:220px;padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+          </div>
+          <div class="settings-row" id="row-groq-model">
+            <div>
+              <div class="sr-label">Groq Model</div>
+              <div class="sr-desc">e.g. llama3-70b-8192, mixtral-8x7b-32768</div>
+            </div>
+            <input type="text" id="settingGroqModel" value="llama3-70b-8192" style="width:220px;padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+          </div>
+          <div class="settings-row" id="row-ollama-url">
+            <div>
+              <div class="sr-label">Ollama Server URL</div>
+              <div class="sr-desc">Local Ollama instance URL (e.g. http://localhost:11434)</div>
+            </div>
+            <input type="text" id="settingOllamaUrl" value="http://localhost:11434" style="width:220px;padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+          </div>
+          <div class="settings-row" id="row-ollama-model">
+            <div>
+              <div class="sr-label">Ollama Model</div>
+              <div class="sr-desc">e.g. llama3, mistral, mixtral</div>
+            </div>
+            <input type="text" id="settingOllamaModel" value="llama3" style="width:220px;padding:8px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Fallback Chain</div>
+              <div class="sr-desc">If primary fails: primary → next available → last resort</div>
+            </div>
+            <button class="panel-btn primary" onclick="saveApiSettings()">Save API Settings</button>
+          </div>
+        </div>
+        <div class="settings-group">
           <h4>Account</h4>
           <div class="settings-row">
             <div>
@@ -962,6 +1026,176 @@ let contacts = [];
 let clients = [];
 let selectedContacts = new Set();
 let currentTab = 'contacts';
+let backendAuthToken = null;
+
+// ==================== BACKEND SERVICE ====================
+function hasBackend() {
+  return typeof google !== 'undefined' && google.script && google.script.run;
+}
+
+function gsRun(fn, ...args) {
+  return new Promise(function(resolve, reject) {
+    if (!hasBackend()) { reject(new Error('Backend not available')); return; }
+    try {
+      var runner = google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject);
+      // Direct call by function name (bracket notation may fail on google.script.run proxy)
+      if (fn === 'syncGoogleSheets') runner.syncGoogleSheets.apply(runner, args);
+      else if (fn === 'addContact') runner.addContact.apply(runner, args);
+      else if (fn === 'updateContact') runner.updateContact.apply(runner, args);
+      else if (fn === 'deleteContact') runner.deleteContact.apply(runner, args);
+      else if (fn === 'updateStatus') runner.updateStatus.apply(runner, args);
+      else if (fn === 'getFollowUpsDue') runner.getFollowUpsDue.apply(runner, args);
+      else if (fn === 'getClients') runner.getClients.apply(runner, args);
+      else if (fn === 'createClient') runner.createClient.apply(runner, args);
+      else if (fn === 'getTemplates') runner.getTemplates.apply(runner, args);
+      else if (fn === 'saveTemplates') runner.saveTemplates.apply(runner, args);
+      else if (fn === 'getAppSettings') runner.getAppSettings.apply(runner, args);
+      else if (fn === 'saveAppSettings') runner.saveAppSettings.apply(runner, args);
+      else if (fn === 'generateMessage') runner.generateMessage.apply(runner, args);
+      else if (fn === 'processCSVContent') runner.processCSVContent.apply(runner, args);
+      else if (fn === 'login') runner.login.apply(runner, args);
+      else reject(new Error('Unknown function: ' + fn));
+    } catch (e) { reject(e); }
+  });
+}
+
+// Model mapping: Backend → Frontend
+function beToFe(r) {
+  const stage = (r.funnelStage || r['Funnel Stage'] || 'TOFU').toUpperCase();
+  const st = (r.status || r['Pipeline Status'] || 'New');
+  const status = st.charAt(0).toUpperCase() + st.slice(1).toLowerCase();
+  return {
+    id: String(r.id || r.ID || 'c' + Date.now()),
+    name: r.name || r['Prospect Name'] || '',
+    email: r.email || r['Email'] || '',
+    phone: r.phone || r['Phone'] || '',
+    business: r.biz || r['Business Name'] || '',
+    bizType: r.type || r['Business Type'] || '',
+    stage: ['TOFU','MOFU','BOFU','NETWORK'].includes(stage) ? stage.replace('NETWORK','Network') : 'TOFU',
+    status: ['New','Contacted','Replied','Interested','Closed','Cold'].includes(status) ? status : 'New',
+    leadType: r.leadType || r['Lead Type'] || 'Inbound',
+    source: r.leadSource || r['Lead Source'] || 'Import',
+    notes: r.notes || r['Notes'] || '',
+    date: (r.createdAt || r['Created At'] || '').split('T')[0],
+    score: 0
+  };
+}
+
+// Model mapping: Frontend → Backend (for addContact)
+function feToBe(fe) {
+  return {
+    name: fe.name || '',
+    businessName: fe.business || '',
+    phone: fe.phone || '',
+    email: fe.email || '',
+    subcategory: fe.bizType || '',
+    funnelStage: (fe.stage || 'TOFU').toLowerCase(),
+    status: (fe.status || 'New').toLowerCase(),
+    leadType: fe.leadType || '',
+    leadSource: fe.source || 'Manual',
+    note: fe.notes || ''
+  };
+}
+
+const Backend = {
+  ready: false,
+  async init() {
+    if (!hasBackend()) { this.ready = false; return false; }
+    try {
+      this.ready = true;
+      return true;
+    } catch (e) { this.ready = false; return false; }
+  },
+  async login(user, pass) {
+    if (!this.ready) return { success: false };
+    try {
+      const result = await gsRun('login', user, pass);
+      if (result && result.success && result.token) backendAuthToken = result.token;
+      return result;
+    } catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async getContacts() {
+    if (!this.ready) return { success: false };
+    try {
+      const raw = await gsRun('syncGoogleSheets');
+      if (Array.isArray(raw)) return { success: true, data: raw.map(beToFe) };
+      if (raw && raw.success && Array.isArray(raw.data)) return { success: true, data: raw.data.map(beToFe) };
+      return { success: false, error: 'Invalid response' };
+    } catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async addContact(fe) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('addContact', feToBe(fe)); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async updateStatus(id, status) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('updateStatus', { id: parseInt(id), status: status.toLowerCase() }); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async getFollowUps() {
+    if (!this.ready) return { success: false, dueLeads: [] };
+    try { return await gsRun('getFollowUpsDue'); }
+    catch (e) { return { success: false, dueLeads: [], error: e.toString() }; }
+  },
+  async getClients() {
+    if (!this.ready) return { success: false, clients: [] };
+    try { return await gsRun('getClients'); }
+    catch (e) { return { success: false, clients: [], error: e.toString() }; }
+  },
+  async createClient(data) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('createClient', data); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async getTemplates() {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('getTemplates'); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async saveTemplates(tpls) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('saveTemplates', tpls); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async getSettings() {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('getAppSettings'); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async saveSettings(s) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('saveAppSettings', s); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async generateMessage(payload) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('generateGeminiMessage', payload); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async processCSV(csvContent, fileName) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('processCSVContent', csvContent, fileName); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async updateContact(data) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('updateContact', data); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async deleteContact(id) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('deleteContact', parseInt(id)); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  },
+  async generateMessage(payload) {
+    if (!this.ready) return { success: false };
+    try { return await gsRun('generateMessage', payload); }
+    catch (e) { return { success: false, error: e.toString() }; }
+  }
+};
 
 // ==================== DEMO DATA ====================
 const DEMO_CONTACTS = [
@@ -1016,14 +1250,64 @@ const PRICING_PACKAGES = [
 ];
 
 // ==================== INITIALIZATION ====================
-function init() {
-  if (DEMO_MODE) {
+async function init() {
+  Backend.init().then(function(ok) {
+    if (ok) {
+      loadFromBackend();
+    } else {
+      loadDemoData();
+    }
+  }).catch(function() {
+    loadDemoData();
+  });
+}
+
+function loadDemoData() {
+  contacts = JSON.parse(JSON.stringify(DEMO_CONTACTS));
+  clients = JSON.parse(JSON.stringify(DEMO_CLIENTS));
+  checkFollowUps();
+  updateStats();
+  renderAll();
+  loadApiSettings();
+}
+
+async function loadFromBackend() {
+  try {
+    var result = await Backend.getContacts();
+    if (result && result.success && Array.isArray(result.data)) {
+      contacts = result.data;
+    } else {
+      contacts = JSON.parse(JSON.stringify(DEMO_CONTACTS));
+    }
+  } catch (e) {
     contacts = JSON.parse(JSON.stringify(DEMO_CONTACTS));
-    clients = JSON.parse(JSON.stringify(DEMO_CLIENTS));
-    checkFollowUps();
-    updateStats();
-    renderAll();
   }
+  try {
+    var clResult = await Backend.getClients();
+    if (clResult && clResult.success && Array.isArray(clResult.clients)) {
+      clients = clResult.clients.map(function(c) {
+        return {
+          id: String(c._row || Math.random()),
+          company: c['Business Name'] || c['Name'] || '',
+          contact: c['Name'] || '',
+          email: c['Email'] || '',
+          phone: '',
+          pkg: c['Package'] || 'Starter',
+          status: c['Status'] || 'Active',
+          startDate: c['Start Date'] || '',
+          notes: ''
+        };
+      });
+    } else {
+      clients = JSON.parse(JSON.stringify(DEMO_CLIENTS));
+    }
+  } catch (e) {
+    clients = JSON.parse(JSON.stringify(DEMO_CLIENTS));
+  }
+  checkFollowUps();
+  updateStats();
+  renderAll();
+  loadApiSettings();
 }
 
 function renderAll() {
@@ -1037,10 +1321,25 @@ function renderAll() {
 }
 
 // ==================== AUTH ====================
-function handleLogin() {
+async function handleLogin() {
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
   const error = document.getElementById('loginError');
+
+  // Try backend first if available
+  var backendOk = hasBackend();
+  if (backendOk) {
+    Backend.init();
+    var authResult = await Backend.login(user, pass);
+    if (authResult && authResult.success) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appMain').style.display = 'block';
+      init();
+      return;
+    }
+  }
+
+  // Fallback: local credentials or demo mode
   if (user === ADMIN_USER && pass === ADMIN_PASS) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appMain').style.display = 'block';
@@ -1190,7 +1489,7 @@ function updateBulkBar() {
   else bar.classList.remove('show');
 }
 
-function saveContact() {
+async function saveContact() {
   const name = document.getElementById('addName').value.trim();
   const email = document.getElementById('addEmail').value.trim();
   const phone = document.getElementById('addPhone').value.trim();
@@ -1200,12 +1499,24 @@ function saveContact() {
   const leadType = document.getElementById('addLeadType').value;
   const notes = document.getElementById('addNotes').value.trim();
   if (!name) { alert('Name is required'); return; }
+
   const contact = {
     id:'c' + Date.now(),
     name, email, phone, business, bizType, stage, status:'New',
     leadType, notes, source:'Manual', score:scoreContact({name,email,phone,business,bizType,stage,leadType,status:'New'}),
     date:new Date().toISOString().split('T')[0]
   };
+
+  // Save to backend if available
+  if (Backend.ready) {
+    try {
+      const result = await Backend.addContact(contact);
+      if (result && result.success) {
+        contact.id = String(result.id || contact.id);
+      }
+    } catch (e) { /* fall through to local */ }
+  }
+
   contacts.unshift(contact);
   document.getElementById('addName').value=''; document.getElementById('addEmail').value=''; document.getElementById('addPhone').value='';
   document.getElementById('addBusiness').value=''; document.getElementById('addNotes').value='';
@@ -1229,7 +1540,7 @@ function editContact(id) {
   openModal('modal-editContact');
 }
 
-function updateContact() {
+async function updateContact() {
   const id = document.getElementById('editId').value;
   const c = contacts.find(x => x.id === id);
   if (!c) return;
@@ -1243,12 +1554,32 @@ function updateContact() {
   c.leadType = document.getElementById('editLeadType').value;
   c.notes = document.getElementById('editNotes').value.trim();
   c.score = scoreContact(c);
+  if (Backend.ready) {
+    try {
+      await Backend.updateContact({
+        id: parseInt(id),
+        name: c.name,
+        businessName: c.business,
+        phone: c.phone,
+        email: c.email,
+        bizType: c.bizType,
+        funnelStage: c.stage.toLowerCase(),
+        status: c.status.toLowerCase(),
+        leadType: c.leadType,
+        leadSource: c.source,
+        notes: c.notes
+      });
+    } catch (e) { /* local only */ }
+  }
   closeModal('modal-editContact');
   updateStats(); renderAll(); showAlert('success','Contact updated successfully!');
 }
 
-function deleteContact(id) {
+async function deleteContact(id) {
   if (!confirm('Delete this contact?')) return;
+  if (Backend.ready) {
+    try { await Backend.deleteContact(id); } catch (e) { /* fall through */ }
+  }
   contacts = contacts.filter(c => c.id !== id);
   selectedContacts.delete(id);
   updateStats(); renderAll(); showAlert('info','Contact deleted.');
@@ -1303,7 +1634,7 @@ function renderClients() {
   });
 }
 
-function saveClient() {
+async function saveClient() {
   const company = document.getElementById('addClientCompany').value.trim();
   const contact = document.getElementById('addClientName').value.trim();
   const email = document.getElementById('addClientEmail').value.trim();
@@ -1312,6 +1643,21 @@ function saveClient() {
   const status = document.getElementById('addClientStatus').value;
   const notes = document.getElementById('addClientNotes').value.trim();
   if (!company || !contact) { alert('Company and contact name are required'); return; }
+
+  if (Backend.ready) {
+    try {
+      const result = await Backend.createClient({
+        email: email,
+        name: contact,
+        businessName: company,
+        package: pkg
+      });
+      if (result && result.success) {
+        showAlert('success', 'Client created! Temp password: ' + (result.tempPassword || 'check email'));
+      }
+    } catch (e) { /* fall through */ }
+  }
+
   clients.push({id:'cl' + Date.now(),company,contact,email,phone,pkg,status,startDate:new Date().toISOString().split('T')[0],notes});
   document.getElementById('addClientCompany').value=''; document.getElementById('addClientName').value='';
   document.getElementById('addClientEmail').value=''; document.getElementById('addClientPhone').value='';
@@ -1363,12 +1709,17 @@ function advancePipeline(id) {
   const order = ['New','Contacted','Replied','Interested','Closed'];
   const idx = order.indexOf(c.status);
   if (idx >= 0 && idx < order.length - 1) {
-    c.status = order[idx + 1];
+    const newStatus = order[idx + 1];
+    c.status = newStatus;
     c.score = scoreContact(c);
+    // Sync to backend
+    if (Backend.ready) {
+      Backend.updateStatus(id, newStatus);
+    }
     renderPipeline();
     updateStats();
     renderContacts();
-    showAlert('success', c.name + ' moved to ' + c.status);
+    showAlert('success', c.name + ' moved to ' + newStatus);
   }
 }
 
@@ -1444,19 +1795,47 @@ function updateAIPreview() {
   }
 }
 
-function generateAIMessage() {
+async function generateAIMessage() {
   const stage = document.getElementById('aiFunnelStage').value;
+  const name = document.getElementById('aiLeadName').value || 'Lead';
+
+  if (Backend.ready) {
+    try {
+      const payload = {
+        name: name,
+        businessName: '[Business Name]',
+        businessType: 'local business',
+        area: 'Accra, Ghana',
+        funnelStage: stage.toLowerCase(),
+        gbpStatus: 'none',
+        offer: 'Google Maps visibility services',
+        leadSource: 'Manual'
+      };
+      const result = await Backend.generateMessage(payload);
+      if (result && result.success) {
+        document.getElementById('aiPreview').textContent = result.message;
+        document.getElementById('aiModelInfo').textContent = 'Generated by ' + (result.provider || 'AI') + ' (' + (result.model || '') + ')' + (result.fallbackUsed ? ' - fallback' : '');
+        showAlert('success', 'Message generated by ' + (result.provider || 'AI'));
+        return;
+      }
+      // Fall through to local template
+    } catch (e) { /* fall through */ }
+  }
+
+  // Local fallback: random template
   const tpls = MESSAGE_TEMPLATES[stage];
   const keys = Object.keys(tpls);
   const rand = keys[Math.floor(Math.random() * keys.length)];
   document.getElementById('aiTemplate').value = rand;
   updateAIPreview();
-  showAlert('info','AI-generated message based on ' + stage + ' stage.');
+  showAlert('info','Local template selected (backend unavailable).');
 }
 
 function sendAIMessage() {
   const stage = document.getElementById('aiFunnelStage').value;
   const name = document.getElementById('aiLeadName').value || 'Lead';
+  const msg = document.getElementById('aiPreview').textContent;
+  if (!msg || msg === 'Select a template to preview...') { alert('Generate a message first'); return; }
   const recipients = contacts.filter(c => c.stage === stage);
   if (recipients.length === 0) { alert('No contacts in ' + stage + ' stage.'); return; }
   showAlert('success', 'AI message sent to ' + recipients.length + ' ' + stage + ' contacts! (Demo)');
@@ -1621,7 +2000,7 @@ function analyzePricingPsych() {
     {name:'Social Proof Pricing',desc:'"Join 50+ businesses using Gabochie Marketing" - social proof reduces perceived risk and justifies price.',apply:'Add to landing pages'},
     {name:'Price Bracketing',desc:'Offer 3 tiers (Good/Better/Best). Most customers choose the middle option (Professional).',apply:'Standard package structure'},
     {name:'Value Stacking',desc:'Itemize all included services to show the total value vs. price paid. Increases perceived value.',apply:'In proposals and sales calls'},
-    {name:'Loss Aversion',desc:'Frame as "Don't miss out on GHS 50K in potential revenue" rather than "Spend GHS 4.5K/mo".',apply:'In sales conversations'},
+    {name:'Loss Aversion',desc:'Frame as "Don\'t miss out on GHS 50K in potential revenue" rather than "Spend GHS 4.5K/mo".',apply:'In sales conversations'},
   ];
   strategies.forEach(s => {
     const card = document.createElement('div');
@@ -1743,7 +2122,7 @@ function renderCSVMapping() {
   });
 }
 
-function processImport() {
+async function processImport() {
   const mapping = {};
   fields = ['name','email','phone','business','bizType','stage','leadType','source','notes'];
   fields.forEach(f => {
@@ -1778,6 +2157,14 @@ function processImport() {
     contacts.push(contact);
     imported++;
   });
+  // Send to backend in bulk
+  if (imported > 0 && Backend.ready) {
+    try {
+      for (var i = contacts.length - imported; i < contacts.length; i++) {
+        await Backend.addContact(contacts[i]);
+      }
+    } catch (e) { /* local only */ }
+  }
   if (imported > 0) {
     updateStats(); renderAll();
     showAlert('success', imported + ' contacts imported successfully!');
@@ -1819,19 +2206,35 @@ function bulkDelete() {
 
 // ==================== AUTO-SYNC ====================
 let autoSyncInterval = null;
+async function doSync() {
+  if (!Backend.ready) return;
+  const dot = document.getElementById('syncDot');
+  const text = document.getElementById('syncText');
+  dot.style.background = 'var(--warning)';
+  text.textContent = 'Syncing...';
+  try {
+    const result = await Backend.getContacts();
+    if (result && result.success && Array.isArray(result.data)) {
+      contacts = result.data;
+      updateStats();
+      renderAll();
+      dot.style.background = 'var(--accent)';
+      text.textContent = 'Synced';
+    } else {
+      dot.style.background = 'var(--danger)';
+      text.textContent = 'Sync failed';
+    }
+  } catch (e) {
+    dot.style.background = 'var(--danger)';
+    text.textContent = 'Sync error';
+  }
+  setTimeout(function() {
+    if (dot) { dot.style.background = 'var(--accent)'; text.textContent = 'Auto-sync'; }
+  }, 3000);
+}
 function startAutoSync() {
   if (autoSyncInterval) clearInterval(autoSyncInterval);
-  autoSyncInterval = setInterval(function() {
-    if (DEMO_MODE) return;
-    const dot = document.getElementById('syncDot');
-    const text = document.getElementById('syncText');
-    dot.style.background = 'var(--warning)';
-    text.textContent = 'Syncing...';
-    setTimeout(function() {
-      dot.style.background = 'var(--accent)';
-      text.textContent = 'Auto-sync';
-    }, 2000);
-  }, AUTO_SYNC_INTERVAL);
+  autoSyncInterval = setInterval(doSync, AUTO_SYNC_INTERVAL);
 }
 
 // ==================== NOTIFICATIONS ====================
@@ -1845,7 +2248,62 @@ function showAlert(type, message) {
 }
 
 // ==================== SETTINGS EVENTS ====================
+function updateApiSettingsUI() {
+  const provider = document.getElementById('settingApiProvider').value;
+  document.getElementById('row-gemini-key').style.display = provider === 'gemini' || provider === 'groq' ? '' : 'none';
+  document.getElementById('row-gemini-model').style.display = provider === 'gemini' ? '' : 'none';
+  document.getElementById('row-groq-key').style.display = provider === 'groq' ? '' : 'none';
+  document.getElementById('row-groq-model').style.display = provider === 'groq' ? '' : 'none';
+  document.getElementById('row-ollama-url').style.display = provider === 'ollama' ? '' : 'none';
+  document.getElementById('row-ollama-model').style.display = provider === 'ollama' ? '' : 'none';
+}
+
+async function saveApiSettings() {
+  const settings = {
+    apiProvider: document.getElementById('settingApiProvider').value,
+    geminiModel: document.getElementById('settingGeminiModel').value,
+    groqModel: document.getElementById('settingGroqModel').value,
+    ollamaUrl: document.getElementById('settingOllamaUrl').value,
+    ollamaModel: document.getElementById('settingOllamaModel').value
+  };
+  const geminiKey = document.getElementById('settingGeminiKey').value.trim();
+  const groqKey = document.getElementById('settingGroqKey').value.trim();
+  if (geminiKey) settings.geminiApiKey = geminiKey;
+  if (groqKey) settings.groqApiKey = groqKey;
+
+  if (Backend.ready) {
+    try {
+      const result = await Backend.saveSettings(settings);
+      if (result && result.success) {
+        showAlert('success', 'API settings saved!');
+        document.getElementById('settingGeminiKey').value = '';
+        document.getElementById('settingGroqKey').value = '';
+        return;
+      }
+    } catch (e) { /* fall through */ }
+  }
+  showAlert('info', 'Settings saved locally (backend not available).');
+}
+
+async function loadApiSettings() {
+  if (!Backend.ready) return;
+  try {
+    const result = await Backend.getSettings();
+    if (result && result.success) {
+      if (result.apiProvider) document.getElementById('settingApiProvider').value = result.apiProvider;
+      if (result.geminiModel) document.getElementById('settingGeminiModel').value = result.geminiModel;
+      if (result.groqModel) document.getElementById('settingGroqModel').value = result.groqModel;
+      if (result.ollamaUrl) document.getElementById('settingOllamaUrl').value = result.ollamaUrl;
+      if (result.ollamaModel) document.getElementById('settingOllamaModel').value = result.ollamaModel;
+      document.getElementById('settingGeminiKey').placeholder = result.hasGeminiKey ? 'Key saved (enter to change)' : 'Enter Gemini API key';
+      document.getElementById('settingGroqKey').placeholder = result.hasGroqKey ? 'Key saved (enter to change)' : 'Enter Groq API key';
+      updateApiSettingsUI();
+    }
+  } catch (e) { /* ignore */ }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  loadApiSettings();
   document.getElementById('toggleAutoSync').addEventListener('change', function() {
     if (this.checked) startAutoSync();
     else if (autoSyncInterval) { clearInterval(autoSyncInterval); autoSyncInterval = null; }
