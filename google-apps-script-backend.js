@@ -4,7 +4,7 @@
  * Single source of truth: Google Sheet ID below
  */
 
-const SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdsxSkD4M5I1tl4';
+const SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdSxSkD4M5I1tl4';
 const LEADS_SHEET = 'Leads';
 const CLIENTS_SHEET = 'Clients';
 

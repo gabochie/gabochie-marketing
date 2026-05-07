@@ -3,7 +3,7 @@
  * Single source of truth: one Google Sheet for all data
  */
 
-const SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdsxSkD4M5I1tl4';
+const SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdSxSkD4M5I1tl4';
 const SHEET_NAME = 'Leads';
 const CLIENT_SHEET_NAME = 'Clients';
 const ADMIN_USERNAME = 'admin';
