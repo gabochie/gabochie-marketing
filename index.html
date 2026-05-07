@@ -166,6 +166,7 @@
           <a href="#proof" class="text-sm font-medium text-gray-600 hover:text-primary transition">Results</a>
           <a href="#blog" class="text-sm font-medium text-gray-600 hover:text-primary transition">Blog</a>
           <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-primary transition">Pricing</a>
+          <a href="client/login.html" class="text-sm font-medium text-gray-600 hover:text-primary transition">Client Portal</a>
           <button onclick="openAuditModal()" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-dark-green transition pulse-glow cursor-pointer">
             Get Free Audit
           </button>
@@ -180,6 +181,7 @@
       <a href="#proof" class="block text-sm font-medium text-gray-600 py-2">Results</a>
       <a href="#blog" class="block text-sm font-medium text-gray-600 py-2">Blog</a>
       <a href="#pricing" class="block text-sm font-medium text-gray-600 py-2">Pricing</a>
+      <a href="client/login.html" class="block text-sm font-medium text-gray-600 py-2">Client Portal</a>
       <button onclick="openAuditModal()" class="block w-full bg-primary text-white px-5 py-3 rounded-full text-sm font-semibold text-center cursor-pointer">
         Get Free Audit
       </button>
@@ -711,6 +713,7 @@
             <li><a href="#system" class="hover:text-accent transition">How It Works</a></li>
             <li><a href="#proof" class="hover:text-accent transition">Results</a></li>
             <li><a href="#pricing" class="hover:text-accent transition">Pricing</a></li>
+            <li><a href="client/login.html" class="hover:text-accent transition">Client Portal</a></li>
             <li><button onclick="openAuditModal()" class="hover:text-accent transition cursor-pointer bg-transparent border-none text-left">Free Audit</button></li>
           </ul>
         </div>
@@ -1121,22 +1124,32 @@
           package: packageName
         };
 
-        const clientResponse = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(clientRegistration),
-          headers: { 'Content-Type': 'application/json' }
-        });
+        let tempPw = 'client2024';
+        
+        try {
+          const clientResponse = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(clientRegistration),
+            headers: { 'Content-Type': 'application/json' }
+          });
 
-        const clientResult = await clientResponse.json();
+          const clientResult = await clientResponse.json();
+          
+          if (clientResult.success) {
+            tempPw = clientResult.tempPassword;
+          }
+        } catch (e) {
+          // Backend not available, use default temp password
+        }
         
         // Store client credentials locally
-        if (clientResult.success) {
-          localStorage.setItem('pendingClientAccess', JSON.stringify({
-            email: clientRegistration.email,
-            tempPassword: clientResult.tempPassword,
-            portalUrl: 'client/login.html'
-          }));
-        }
+        localStorage.setItem('pendingClientAccess', JSON.stringify({
+          email: clientRegistration.email,
+          tempPassword: tempPw,
+          name: clientRegistration.name,
+          businessName: clientRegistration.businessName,
+          portalUrl: 'client/login.html'
+        }));
 
         if (leadResponse.ok) {
           document.getElementById('successPackageName').textContent = packageName;
@@ -1147,11 +1160,15 @@
           const successDiv = document.getElementById('packageSuccess');
           successDiv.innerHTML += `
             <div class="mt-6 p-4 bg-accent/20 rounded-lg text-left">
-              <p class="font-semibold text-primary mb-2">🔐 Client Portal Access Created!</p>
+              <p class="font-semibold text-primary mb-2">🔐 Client Portal Ready!</p>
               <p class="text-sm text-gray-600 mb-3">Track your optimization progress anytime.</p>
-              <a href="client/login.html" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-green transition">
+              <div class="bg-white rounded-lg p-3 mb-3 text-sm space-y-1">
+                <p><span class="text-gray-500">Email:</span> <span class="font-medium text-gray-800">${clientRegistration.email}</span></p>
+                <p><span class="text-gray-500">Temp Password:</span> <span class="font-medium text-gray-800">${tempPw}</span></p>
+              </div>
+              <a href="client/login.html" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-green transition w-full justify-center">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                Access Your Portal
+                Go to Client Portal
               </a>
             </div>
           `;
@@ -1171,9 +1188,33 @@
         leads.push(formData);
         localStorage.setItem('gabochieLeads', JSON.stringify(leads));
         
+        localStorage.setItem('pendingClientAccess', JSON.stringify({
+          email: clientRegistration.email,
+          tempPassword: tempPw,
+          name: clientRegistration.name,
+          businessName: clientRegistration.businessName,
+          portalUrl: 'client/login.html'
+        }));
+        
         document.getElementById('successPackageName').textContent = packageName;
         document.getElementById('packageForm').classList.add('hidden');
         document.getElementById('packageSuccess').classList.remove('hidden');
+        
+        const fallbackDiv = document.getElementById('packageSuccess');
+        fallbackDiv.innerHTML += `
+          <div class="mt-6 p-4 bg-accent/20 rounded-lg text-left">
+            <p class="font-semibold text-primary mb-2">🔐 Client Portal Ready!</p>
+            <p class="text-sm text-gray-600 mb-3">Track your optimization progress anytime.</p>
+            <div class="bg-white rounded-lg p-3 mb-3 text-sm space-y-1">
+              <p><span class="text-gray-500">Email:</span> <span class="font-medium text-gray-800">${clientRegistration.email}</span></p>
+              <p><span class="text-gray-500">Temp Password:</span> <span class="font-medium text-gray-800">${tempPw}</span></p>
+            </div>
+            <a href="client/login.html" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-green transition w-full justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+              Go to Client Portal
+            </a>
+          </div>
+        `;
         console.log('Package request saved locally:', formData);
       }
     }

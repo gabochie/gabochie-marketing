@@ -159,10 +159,34 @@
           // Redirect to dashboard
           window.location.href = 'dashboard.html';
         } else {
+          // Fallback: check localStorage for offline testing
+          const pending = JSON.parse(localStorage.getItem('pendingClientAccess') || '{}');
+          if (pending.email === email && pending.tempPassword === password) {
+            localStorage.setItem('gabochieClient', JSON.stringify({
+              email: email,
+              token: 'demo-token',
+              name: pending.name || 'Client',
+              businessName: pending.businessName || 'Your Business'
+            }));
+            window.location.href = 'dashboard.html';
+            return;
+          }
           errorDiv.textContent = result.message || 'Invalid email or password';
           errorDiv.classList.remove('hidden');
         }
       } catch (error) {
+        // Check localStorage fallback
+        const pending = JSON.parse(localStorage.getItem('pendingClientAccess') || '{}');
+        if (pending.email === email && pending.tempPassword === password) {
+          localStorage.setItem('gabochieClient', JSON.stringify({
+            email: email,
+            token: 'demo-token',
+            name: pending.name || 'Client',
+            businessName: pending.businessName || 'Your Business'
+          }));
+          window.location.href = 'dashboard.html';
+          return;
+        }
         errorDiv.textContent = 'Network error. Please try again.';
         errorDiv.classList.remove('hidden');
       } finally {

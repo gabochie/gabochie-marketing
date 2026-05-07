@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabochie Marketing - Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --primary: #0F5C28;
+  --primary-light: #1A7B3A;
+  --primary-dark: #0A441D;
+  --accent: #7ED354;
+  --accent-light: #A8E07A;
+  --danger: #E53935;
+  --warning: #FB8C00;
+  --info: #039BE5;
+  --bg: #f0f2f5;
+  --card-bg: #ffffff;
+  --text: #1a1a2e;
+  --text-light: #6b7280;
+  --border: #e5e7eb;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --sidebar-width: 250px;
+  --header-height: 64px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c1c7cd; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a8adb3; }
+
+/* LOGIN SCREEN */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #0A441D 0%, #1A7B3A 50%, #0F5C28 100%);
+}
+#loginScreen .login-card {
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+  padding: 48px 40px; border-radius: 20px; width: 420px; max-width: 90vw;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.3); text-align: center;
+}
+#loginScreen .login-logo { font-size: 42px; font-weight: 900; color: var(--primary); letter-spacing: -1px; margin-bottom: 4px; }
+#loginScreen .login-logo span { color: var(--accent); }
+#loginScreen .login-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 32px; }
+#loginScreen .login-input { width: 100%; padding: 14px 18px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; margin-bottom: 16px; transition: var(--transition); font-family: inherit; }
+#loginScreen .login-input:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(26,123,58,0.1); }
+#loginScreen .login-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 16px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: inherit; }
+#loginScreen .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(15,92,40,0.3); }
+#loginScreen .login-error { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 20px; }
+#loginScreen .demo-badge { display: inline-block; background: var(--accent); color: var(--primary-dark); padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+/* LAYOUT */
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+  color: #fff; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  display: flex; flex-direction: column; overflow-y: auto; transition: var(--transition);
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
+.sidebar .logo {
+  padding: 20px 20px 16px; font-size: 22px; font-weight: 900; letter-spacing: -0.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar .logo span { color: var(--accent); }
+.sidebar .logo small { display: block; font-size: 10px; font-weight: 400; opacity: 0.6; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+.sidebar .nav-section { padding: 12px 16px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.4; }
+.sidebar .nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 11px 20px; cursor: pointer;
+  transition: var(--transition); font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75);
+  border-left: 3px solid transparent; text-decoration: none;
+}
+.sidebar .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.sidebar .nav-item.active { background: rgba(255,255,255,0.12); color: #fff; border-left-color: var(--accent); font-weight: 600; }
+.sidebar .nav-item .nav-icon { width: 20px; text-align: center; font-size: 16px; opacity: 0.9; }
+.sidebar .nav-item .nav-badge {
+  margin-left: auto; background: var(--accent); color: var(--primary-dark); font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; min-width: 20px; text-align: center;
+}
+.sidebar .nav-item .nav-badge.danger { background: var(--danger); color: #fff; }
+.sidebar .nav-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; opacity: 0.5; }
+.main { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; }
+.header {
+  height: var(--header-height); background: var(--card-bg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+  position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow);
+}
+.header h1 { font-size: 18px; font-weight: 700; }
+.header .header-right { display: flex; align-items: center; gap: 16px; }
+.header .header-btn {
+  padding: 8px 16px; border: none; border-radius: var(--radius-sm); cursor: pointer;
+  font-size: 13px; font-weight: 500; transition: var(--transition); font-family: inherit;
+}
+.header .header-btn.primary { background: var(--primary-light); color: #fff; }
+.header .header-btn.primary:hover { background: var(--primary-dark); }
+.header .header-btn.danger { background: var(--danger); color: #fff; }
+.header .header-btn.danger:hover { opacity: 0.9; }
+.header .sync-status { font-size: 12px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+.header .sync-status .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+.header .sync-status .sync-dot.off { background: var(--danger); }
+
+/* CONTENT */
+.content { padding: 24px 32px; }
+
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow); }
+.stat-card .stat-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; }
+.stat-card .stat-value { font-size: 28px; font-weight: 800; color: var(--primary); }
+.stat-card .stat-value.danger { color: var(--danger); }
+.stat-card .stat-sub { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+/* FOLLOW-UP ALERT */
+.followup-alert {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 24px; border-left: 4px solid var(--warning);
+  display: none; align-items: center; justify-content: space-between;
+}
+.followup-alert .alert-text { font-size: 14px; font-weight: 500; }
+.followup-alert .alert-btn { padding: 8px 20px; background: var(--warning); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; }
+
+/* PANELS */
+.panel { display: none; }
+.panel.active { display: block; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.panel-header h2 { font-size: 20px; font-weight: 700; }
+.panel-header .panel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.panel-btn { padding: 9px 18px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; font-weight: 600; transition: var(--transition); font-family: inherit; }
+.panel-btn.primary { background: var(--primary-light); color: #fff; }
+.panel-btn.primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.panel-btn.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.panel-btn.secondary:hover { background: var(--border); }
+.panel-btn.danger { background: var(--danger); color: #fff; }
+.panel-btn.danger:hover { opacity: 0.9; }
+.panel-btn.accent { background: var(--accent); color: var(--primary-dark); }
+.panel-btn.accent:hover { background: var(--accent-light); }
+.panel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--bg); }
+th { padding: 12px 14px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); white-space: nowrap; }
+td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:hover { background: rgba(15,92,40,0.02); }
+tr:last-child td { border-bottom: none; }
+.status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.status-new { background: #e3f2fd; color: #1565c0; }
+.status-contacted { background: #fff3e0; color: #e65100; }
+.status-replied { background: #e8f5e9; color: #2e7d32; }
+.status-interested { background: #f3e5f5; color: #7b1fa2; }
+.status-closed { background: #e8f5e9; color: #1b5e20; }
+.status-cold { background: #eceff1; color: #455a64; }
+.status-hot { background: #fce4ec; color: #c62828; }
+.status-warm { background: #fff8e1; color: #f57f17; }
+
+/* TAGS */
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; margin: 1px; }
+.tag-tofu { background: #e3f2fd; color: #1565c0; }
+.tag-mofu { background: #fff3e0; color: #e65100; }
+.tag-bofu { background: #e8f5e9; color: #2e7d32; }
+.tag-network { background: #f3e5f5; color: #7b1fa2; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200;
+  display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card-bg); border-radius: var(--radius); width: 100%; max-width: 560px; max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow-lg); padding: 28px 32px; }
+.modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+.modal label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--text-light); }
+.modal input, .modal select, .modal textarea { width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; margin-bottom: 14px; transition: var(--transition); font-family: inherit; resize: vertical; }
+.modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(26,123,58,0.1); }
+.modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+.modal .modal-body { max-height: 55vh; overflow-y: auto; padding-right: 4px; }
+
+/* KANBAN */
+.kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 12px; }
+.kanban-col { min-width: 240px; flex: 1; background: var(--bg); border-radius: var(--radius); padding: 12px; }
+.kanban-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.kanban-col h4 .count { background: var(--border); color: var(--text); padding: 0 8px; border-radius: 8px; font-size: 11px; }
+.kanban-card {
+  background: var(--card-bg); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; transition: var(--transition); border-left: 3px solid var(--primary-light);
+}
+.kanban-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.kanban-card .card-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+.kanban-card .card-detail { font-size: 11px; color: var(--text-light); }
+.kanban-card .card-tags { margin-top: 6px; }
+
+/* BROADCAST */
+.broadcast-preview {
+  background: var(--bg); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px;
+  font-size: 14px; line-height: 1.7; white-space: pre-wrap;
+}
+.broadcast-preview .ph { color: var(--primary-light); font-weight: 600; background: rgba(26,123,58,0.08); padding: 0 4px; border-radius: 3px; }
+
+/* CSV */
+.csv-dropzone {
+  border: 3px dashed var(--border); border-radius: var(--radius); padding: 40px; text-align: center;
+  cursor: pointer; transition: var(--transition); margin-bottom: 16px;
+}
+.csv-dropzone:hover { border-color: var(--primary-light); background: rgba(26,123,58,0.03); }
+.csv-dropzone.dragover { border-color: var(--primary-light); background: rgba(26,123,58,0.06); }
+.csv-dropzone .dz-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+.csv-dropzone .dz-text { font-size: 16px; font-weight: 600; color: var(--text-light); }
+.csv-dropzone .dz-sub { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+
+/* SETTINGS */
+.settings-group { background: var(--card-bg); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.settings-group h4 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.settings-row:last-child { border-bottom: none; }
+.settings-row .sr-label { font-size: 14px; }
+.settings-row .sr-desc { font-size: 12px; color: var(--text-light); }
+.toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+.toggle input { display: none; }
+.toggle .slider { position: absolute; inset: 0; background: var(--border); border-radius: 12px; transition: 0.3s; }
+.toggle .slider:before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
+.toggle input:checked + .slider { background: var(--primary-light); }
+.toggle input:checked + .slider:before { transform: translateX(20px); }
+
+/* OPPORTUNITY SCORE */
+.score-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.score-hot { background: #fce4ec; color: #c62828; }
+.score-warm { background: #fff8e1; color: #f57f17; }
+.score-cold { background: #eceff1; color: #455a64; }
+
+/* PRICING PSYCH */
+.psych-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.psych-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.psych-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.psych-card .psych-strategy { margin-top: 8px; padding: 8px; background: var(--bg); border-radius: var(--radius-sm); font-size: 13px; }
+
+/* REVENUE */
+.rev-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.rev-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); text-align: center; }
+.rev-card .rev-value { font-size: 32px; font-weight: 800; color: var(--primary); }
+.rev-card .rev-label { font-size: 12px; color: var(--text-light); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* FILTERS */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-bar select { padding: 8px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; background: var(--card-bg); cursor: pointer; }
+.filter-bar select:focus { outline: none; border-color: var(--primary-light); }
+.filter-bar input { padding: 8px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; }
+
+/* ALERTS */
+.alert { padding: 12px 18px; border-radius: var(--radius-sm); margin-bottom: 12px; font-size: 14px; display: none; }
+.alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; display: block; }
+.alert-error { background: #fce4ec; color: #c62828; border-left: 4px solid #e53935; display: block; }
+.alert-info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #42a5f5; display: block; }
+
+/* BULK SELECTION */
+.bulk-bar { display: none; padding: 10px 14px; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 12px; align-items: center; gap: 12px; }
+.bulk-bar.show { display: flex; }
+.bulk-bar .bulk-count { font-size: 13px; font-weight: 600; }
+.bulk-bar .bulk-actions { display: flex; gap: 8px; }
+input[type="checkbox"].row-check { width: 16px; height: 16px; cursor: pointer; }
+
+/* AUTO-SYNC */
+.auto-sync-bar { display: none; }
+
+/* DAILY SUMMARY */
+.summary-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+.summary-stat { text-align: center; padding: 12px; background: var(--bg); border-radius: var(--radius-sm); }
+.summary-stat .ss-value { font-size: 24px; font-weight: 800; color: var(--primary); }
+.summary-stat .ss-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* MISC */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+.d-flex { display: flex; }
+.gap-2 { gap: 8px; }
+.align-center { align-items: center; }
+.mt-2 { margin-top: 8px; }
+.mb-2 { margin-bottom: 8px; }
+.text-center { text-align: center; }
+.w-100 { width: 100%; }
+.modal-body { max-height: 55vh; overflow-y: auto; padding-right: 4px; }
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="demo-badge">DEMO MODE</div>
+    <div class="login-logo">Gabochie<span>.</span></div>
+    <div class="login-subtitle">Admin Dashboard</div>
+    <input class="login-input" id="loginUser" type="text" placeholder="Username" autocomplete="off">
+    <input class="login-input" id="loginPass" type="password" placeholder="Password">
+    <button class="login-btn" id="loginBtn" onclick="handleLogin()">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- APP MAIN -->
+<div id="appMain" style="display:none;">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">
+      Gabochie<span>.</span>
+      <small>Admin Dashboard</small>
+    </div>
+
+    <div class="nav-section">Main</div>
+
+    <div class="nav-item active" onclick="switchTab('contacts')" id="nav-contacts">
+      <span class="nav-icon">&#128231;</span> Contacts
+      <span class="nav-badge" id="badge-contacts">0</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('ai')" id="nav-ai">
+      <span class="nav-icon">&#129302;</span> AI Messages
+    </div>
+
+    <div class="nav-item" onclick="switchTab('pipeline')" id="nav-pipeline">
+      <span class="nav-icon">&#128200;</span> Pipeline
+      <span class="nav-badge" id="badge-pipeline">0</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('today')" id="nav-today">
+      <span class="nav-icon">&#128197;</span> Today
+      <span class="nav-badge danger" id="badge-today">0</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('broadcast')" id="nav-broadcast">
+      <span class="nav-icon">&#128227;</span> Broadcast
+    </div>
+
+    <div class="nav-item" onclick="switchTab('csv-processor')" id="nav-csv-processor">
+      <span class="nav-icon">&#128196;</span> CSV/Excel
+    </div>
+
+    <div class="nav-section">Sales</div>
+
+    <div class="nav-item" onclick="switchTab('opportunity')" id="nav-opportunity">
+      <span class="nav-icon">&#127919;</span> Opportunity
+      <span class="nav-badge" id="badge-opportunity">0</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('revenue')" id="nav-revenue">
+      <span class="nav-icon">&#128176;</span> Revenue
+    </div>
+
+    <div class="nav-item" onclick="switchTab('pricing')" id="nav-pricing">
+      <span class="nav-icon">&#128202;</span> Pricing
+    </div>
+
+    <div class="nav-section">Management</div>
+
+    <div class="nav-item" onclick="switchTab('clients')" id="nav-clients">
+      <span class="nav-icon">&#128101;</span> Clients
+      <span class="nav-badge" id="badge-clients">0</span>
+    </div>
+
+    <div class="nav-item" onclick="switchTab('settings')" id="nav-settings">
+      <span class="nav-icon">&#9881;</span> Settings
+    </div>
+
+    <div class="nav-footer">Gabochie Marketing v1.0</div>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <h1 id="pageTitle">Contacts</h1>
+      <div class="header-right">
+        <div class="sync-status">
+          <span class="sync-dot" id="syncDot"></span>
+          <span id="syncText">Auto-sync</span>
+        </div>
+        <button class="header-btn danger" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+    <div class="content">
+
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-label">Total Contacts</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Leads</div>
+          <div class="stat-value" id="stat-leads">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Converted</div>
+          <div class="stat-value" id="stat-converted">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value" id="stat-week">0</div>
+        </div>
+      </div>
+
+      <!-- FOLLOW-UP ALERT -->
+      <div class="followup-alert" id="followupAlert">
+        <div class="alert-text" id="followupText">You have follow-ups due today.</div>
+        <button class="alert-btn" onclick="switchTab('today')">View</button>
+      </div>
+
+      <!-- ==================== PANEL: CONTACTS ==================== -->
+      <div class="panel active" id="panel-contacts">
+        <div class="panel-header">
+          <h2>Contacts</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="openModal('modal-addContact')">+ Add Contact</button>
+            <button class="panel-btn secondary" onclick="openModal('modal-editContact')">Import Contact</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="contactSearch" placeholder="Search contacts..." oninput="renderContacts()">
+          <select id="contactStageFilter" onchange="renderContacts()">
+            <option value="">All Stages</option>
+            <option value="TOFU">TOFU</option>
+            <option value="MOFU">MOFU</option>
+            <option value="BOFU">BOFU</option>
+            <option value="Network">Network</option>
+          </select>
+          <select id="contactStatusFilter" onchange="renderContacts()">
+            <option value="">All Status</option>
+            <option value="New">New</option>
+            <option value="Contacted">Contacted</option>
+            <option value="Replied">Replied</option>
+            <option value="Interested">Interested</option>
+            <option value="Closed">Closed</option>
+            <option value="Cold">Cold</option>
+          </select>
+        </div>
+        <div class="bulk-bar" id="bulkBarContacts">
+          <span class="bulk-count" id="bulkCountContacts">0 selected</span>
+          <div class="bulk-actions">
+            <button class="panel-btn primary" onclick="bulkUpdateStage()">Set Stage</button>
+            <button class="panel-btn danger" onclick="bulkDelete()">Delete</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30px"><input type="checkbox" id="checkAll" onchange="toggleAllChecks()"></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Business</th>
+                <th>Stage</th>
+                <th>Status</th>
+                <th>Score</th>
+                <th>Source</th>
+                <th>Date</th>
+                <th style="width:140px">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="contactsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: AI MESSAGES ==================== -->
+      <div class="panel" id="panel-ai">
+        <div class="panel-header">
+          <h2>AI Message Generator</h2>
+          <div class="panel-actions">
+            <button class="panel-btn accent" onclick="generateAIMessage()">Generate with AI</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <select id="aiFunnelStage" onchange="updateAIPreview()">
+            <option value="TOFU">TOFU - Awareness</option>
+            <option value="MOFU">MOFU - Consideration</option>
+            <option value="BOFU">BOFU - Decision</option>
+            <option value="Network">Network - Follow-up</option>
+          </select>
+          <select id="aiTemplate" onchange="updateAIPreview()">
+            <option value="cold-outreach">Cold Outreach</option>
+            <option value="follow-up">Follow-up</option>
+            <option value="re-engagement">Re-engagement</option>
+            <option value="offer">Special Offer</option>
+          </select>
+          <input type="text" id="aiLeadName" placeholder="Lead Name" oninput="updateAIPreview()" value="[Lead Name]">
+        </div>
+        <div style="background:var(--card-bg);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);">
+          <label style="font-weight:600;font-size:13px;color:var(--text-light);display:block;margin-bottom:6px;">Message Preview</label>
+          <div class="broadcast-preview" id="aiPreview">Select a template to preview...</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="panel-btn primary" onclick="sendAIMessage()">Send Message</button>
+            <button class="panel-btn secondary" onclick="editAIMessage()">Edit & Send</button>
+            <button class="panel-btn secondary" onclick="copyAIMessage()">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: PIPELINE ==================== -->
+      <div class="panel" id="panel-pipeline">
+        <div class="panel-header">
+          <h2>Sales Pipeline</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="refreshPipeline()">Refresh</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <select id="pipelineFunnelFilter" onchange="renderPipeline()">
+            <option value="">All Funnels</option>
+            <option value="TOFU">TOFU</option>
+            <option value="MOFU">MOFU</option>
+            <option value="BOFU">BOFU</option>
+            <option value="Network">Network</option>
+          </select>
+        </div>
+        <div class="kanban" id="kanban"></div>
+      </div>
+
+      <!-- ==================== PANEL: TODAY ==================== -->
+      <div class="panel" id="panel-today">
+        <div class="panel-header">
+          <h2>Today's Queue</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="refreshToday()">Refresh</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Contact</th>
+                <th>Action</th>
+                <th>Stage</th>
+                <th>Priority</th>
+                <th>Due</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="todayBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: BROADCAST ==================== -->
+      <div class="panel" id="panel-broadcast">
+        <div class="panel-header">
+          <h2>Broadcast Messaging</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="sendBroadcast()">Send Broadcast</button>
+            <button class="panel-btn secondary" onclick="openModal('modal-broadcastPreview')">Preview</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <select id="broadcastChannel">
+            <option value="email">Email</option>
+            <option value="sms">SMS</option>
+            <option value="whatsapp">WhatsApp</option>
+          </select>
+          <select id="broadcastTarget">
+            <option value="all">All Contacts</option>
+            <option value="TOFU">TOFU Only</option>
+            <option value="MOFU">MOFU Only</option>
+            <option value="BOFU">BOFU Only</option>
+            <option value="Network">Network Only</option>
+          </select>
+          <select id="broadcastTemplate" onchange="loadBroadcastTemplate()">
+            <option value="">Custom Message</option>
+            <option value="promo">Promotion</option>
+            <option value="event">Event Invite</option>
+            <option value="follow-up">Follow-up</option>
+            <option value="newsletter">Newsletter</option>
+          </select>
+        </div>
+        <div style="background:var(--card-bg);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);">
+          <label style="font-weight:600;font-size:13px;color:var(--text-light);display:block;margin-bottom:6px;">Message</label>
+          <textarea id="broadcastMessage" rows="6" style="width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;resize:vertical;margin-bottom:12px;" placeholder="Type your broadcast message..."></textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="panel-btn secondary" onclick="insertPlaceholder('{name}')">+ Name</button>
+            <button class="panel-btn secondary" onclick="insertPlaceholder('{business}')">+ Business</button>
+            <button class="panel-btn secondary" onclick="insertPlaceholder('{stage}')">+ Stage</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: CSV/EXCEL ==================== -->
+      <div class="panel" id="panel-csv-processor">
+        <div class="panel-header">
+          <h2>CSV & Excel Importer</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" id="importBtn" onclick="processImport()" disabled>Import to Sheet</button>
+          </div>
+        </div>
+        <div class="csv-dropzone" id="csvDropzone" onclick="document.getElementById('csvFile').click()">
+          <div class="dz-icon">&#128196;</div>
+          <div class="dz-text">Drop CSV or Excel file here or click to browse</div>
+          <div class="dz-sub">Supports .csv, .xlsx, .xls files</div>
+        </div>
+        <input type="file" id="csvFile" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleCSVFile(event)">
+        <div id="csvPreview" style="display:none;">
+          <div class="panel-header" style="margin-top:12px;">
+            <h2>Preview & Mapping</h2>
+            <div class="panel-actions">
+              <span style="font-size:13px;color:var(--text-light);" id="csvRowCount">0 rows</span>
+            </div>
+          </div>
+          <div class="table-wrap" id="csvPreviewTable"></div>
+          <div style="margin-top:12px;">
+            <label style="font-weight:600;font-size:13px;color:var(--text-light);display:block;margin-bottom:6px;">Column Mapping</label>
+            <div id="csvMapping" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;"></div>
+          </div>
+        </div>
+        <div id="csvResult" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- ==================== PANEL: CLIENTS ==================== -->
+      <div class="panel" id="panel-clients">
+        <div class="panel-header">
+          <h2>Client Management</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="openModal('modal-addClient')">+ Add Client</button>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <input type="text" id="clientSearch" placeholder="Search clients..." oninput="renderClients()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Package</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th style="width:100px">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="clientsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: OPPORTUNITY IDENTIFIER ==================== -->
+      <div class="panel" id="panel-opportunity">
+        <div class="panel-header">
+          <h2>Opportunity Identifier</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="scoreAllOpportunities()">Score All</button>
+            <button class="panel-btn secondary" onclick="setOppFilter('all')" id="oppFilterAll">All</button>
+            <button class="panel-btn secondary" onclick="setOppFilter('hot')" id="oppFilterHot">Hot</button>
+            <button class="panel-btn secondary" onclick="setOppFilter('warm')" id="oppFilterWarm">Warm</button>
+            <button class="panel-btn secondary" onclick="setOppFilter('cold')" id="oppFilterCold">Cold</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Contact</th>
+                <th>Business</th>
+                <th>Stage</th>
+                <th>Score</th>
+                <th>Priority</th>
+                <th>Lead Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="opportunityBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: REVENUE POTENTIAL ==================== -->
+      <div class="panel" id="panel-revenue">
+        <div class="panel-header">
+          <h2>Revenue Potential Analysis</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="analyzeRevenue()">Analyze Revenue</button>
+            <select id="revContactSelect" style="padding:8px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;">
+              <option value="">All Contacts</option>
+            </select>
+          </div>
+        </div>
+        <div class="rev-summary" id="revSummary">
+          <div class="rev-card"><div class="rev-value" id="revTotal">GHS 0</div><div class="rev-label">Total Potential</div></div>
+          <div class="rev-card"><div class="rev-value" id="revMonthly">GHS 0</div><div class="rev-label">Monthly Avg</div></div>
+          <div class="rev-card"><div class="rev-value" id="revHigh">GHS 0</div><div class="rev-label">Highest Value</div></div>
+          <div class="rev-card"><div class="rev-value" id="revCount">0</div><div class="rev-label">Qualified Leads</div></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Contact</th>
+                <th>Business</th>
+                <th>Package</th>
+                <th>Annual Value</th>
+                <th>Confidence</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody id="revenueBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PANEL: PRICING & PSYCHOLOGY ==================== -->
+      <div class="panel" id="panel-pricing">
+        <div class="panel-header">
+          <h2>Pricing &amp; Psychology Analysis</h2>
+          <div class="panel-actions">
+            <button class="panel-btn primary" onclick="analyzePricingPsych()">Analyze All</button>
+          </div>
+        </div>
+        <div class="psych-grid" id="psychGrid"></div>
+      </div>
+
+      <!-- ==================== PANEL: SETTINGS ==================== -->
+      <div class="panel" id="panel-settings">
+        <div class="panel-header">
+          <h2>Settings</h2>
+        </div>
+        <div class="settings-group">
+          <h4>Automation</h4>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Auto-Sync</div>
+              <div class="sr-desc">Automatically sync with Google Sheets every 60 seconds</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="toggleAutoSync"><span class="slider"></span></label>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Auto Follow-ups</div>
+              <div class="sr-desc">Automatically schedule follow-ups for new contacts</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="toggleAutoFollowup"><span class="slider"></span></label>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Smart Notifications</div>
+              <div class="sr-desc">Browser notifications for important updates</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="toggleNotifications"><span class="slider"></span></label>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Dead Lead Recovery</div>
+              <div class="sr-desc">Auto-detect and revive cold leads after 30 days</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="toggleDeadRecovery"><span class="slider"></span></label>
+          </div>
+        </div>
+        <div class="settings-group">
+          <h4>Account</h4>
+          <div class="settings-row">
+            <div>
+              <div class="sr-label">Session</div>
+              <div class="sr-desc">Currently logged in as admin</div>
+            </div>
+            <button class="panel-btn danger" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end layout -->
+</div><!-- end appMain -->
+
+<!-- ==================== MODALS ==================== -->
+<div class="modal-overlay" id="modal-addContact">
+  <div class="modal">
+    <h3>Add New Contact</h3>
+    <div class="modal-body">
+      <label>Full Name</label>
+      <input type="text" id="addName" placeholder="Enter full name">
+      <label>Email</label>
+      <input type="email" id="addEmail" placeholder="Enter email address">
+      <label>Phone</label>
+      <input type="text" id="addPhone" placeholder="+233 XX XXX XXXX">
+      <label>Business Name</label>
+      <input type="text" id="addBusiness" placeholder="Enter business name">
+      <label>Business Type</label>
+      <select id="addBizType">
+        <option value="">Select type...</option>
+        <option value="Retail">Retail</option>
+        <option value="Wholesale">Wholesale</option>
+        <option value="Service">Service</option>
+        <option value="Manufacturing">Manufacturing</option>
+        <option value="Technology">Technology</option>
+        <option value="Hospitality">Hospitality</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Education">Education</option>
+        <option value="Agriculture">Agriculture</option>
+        <option value="Other">Other</option>
+      </select>
+      <label>Funnel Stage</label>
+      <select id="addStage">
+        <option value="TOFU">TOFU - Awareness</option>
+        <option value="MOFU">MOFU - Consideration</option>
+        <option value="BOFU">BOFU - Decision</option>
+        <option value="Network">Network</option>
+      </select>
+      <label>Lead Type</label>
+      <select id="addLeadType">
+        <option value="Inbound">Inbound</option>
+        <option value="Outbound">Outbound</option>
+        <option value="Referral">Referral</option>
+        <option value="Event">Event</option>
+      </select>
+      <label>Notes</label>
+      <textarea id="addNotes" rows="3" placeholder="Optional notes..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="panel-btn secondary" onclick="closeModal('modal-addContact')">Cancel</button>
+      <button class="panel-btn primary" onclick="saveContact()">Save Contact</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-editContact">
+  <div class="modal">
+    <h3>Edit Contact</h3>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <label>Full Name</label>
+      <input type="text" id="editName">
+      <label>Email</label>
+      <input type="email" id="editEmail">
+      <label>Phone</label>
+      <input type="text" id="editPhone">
+      <label>Business Name</label>
+      <input type="text" id="editBusiness">
+      <label>Business Type</label>
+      <select id="editBizType">
+        <option value="">Select...</option>
+        <option value="Retail">Retail</option>
+        <option value="Wholesale">Wholesale</option>
+        <option value="Service">Service</option>
+        <option value="Manufacturing">Manufacturing</option>
+        <option value="Technology">Technology</option>
+        <option value="Hospitality">Hospitality</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Education">Education</option>
+        <option value="Agriculture">Agriculture</option>
+        <option value="Other">Other</option>
+      </select>
+      <label>Funnel Stage</label>
+      <select id="editStage">
+        <option value="TOFU">TOFU</option>
+        <option value="MOFU">MOFU</option>
+        <option value="BOFU">BOFU</option>
+        <option value="Network">Network</option>
+      </select>
+      <label>Status</label>
+      <select id="editStatus">
+        <option value="New">New</option>
+        <option value="Contacted">Contacted</option>
+        <option value="Replied">Replied</option>
+        <option value="Interested">Interested</option>
+        <option value="Closed">Closed</option>
+        <option value="Cold">Cold</option>
+      </select>
+      <label>Lead Type</label>
+      <select id="editLeadType">
+        <option value="Inbound">Inbound</option>
+        <option value="Outbound">Outbound</option>
+        <option value="Referral">Referral</option>
+        <option value="Event">Event</option>
+      </select>
+      <label>Notes</label>
+      <textarea id="editNotes" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="panel-btn secondary" onclick="closeModal('modal-editContact')">Cancel</button>
+      <button class="panel-btn primary" onclick="updateContact()">Update Contact</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addClient">
+  <div class="modal">
+    <h3>Add New Client</h3>
+    <div class="modal-body">
+      <label>Company Name</label>
+      <input type="text" id="addClientCompany" placeholder="Company name">
+      <label>Contact Name</label>
+      <input type="text" id="addClientName" placeholder="Contact person">
+      <label>Email</label>
+      <input type="email" id="addClientEmail" placeholder="Email address">
+      <label>Phone</label>
+      <input type="text" id="addClientPhone" placeholder="Phone number">
+      <label>Package</label>
+      <select id="addClientPackage">
+        <option value="Starter">Starter - GHS 950/mo</option>
+        <option value="Professional">Professional - GHS 4,500/mo</option>
+        <option value="Enterprise">Enterprise - GHS 10,000/mo</option>
+      </select>
+      <label>Status</label>
+      <select id="addClientStatus">
+        <option value="Active">Active</option>
+        <option value="Onboarding">Onboarding</option>
+        <option value="Suspended">Suspended</option>
+        <option value="Churned">Churned</option>
+      </select>
+      <label>Notes</label>
+      <textarea id="addClientNotes" rows="3" placeholder="Optional notes..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="panel-btn secondary" onclick="closeModal('modal-addClient')">Cancel</button>
+      <button class="panel-btn primary" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-contactDetail">
+  <div class="modal">
+    <h3>Contact Details</h3>
+    <div class="modal-body" id="contactDetailBody"></div>
+    <div class="modal-actions">
+      <button class="panel-btn secondary" onclick="closeModal('modal-contactDetail')">Close</button>
+      <button class="panel-btn primary" onclick="editFromDetail()">Edit</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-broadcastPreview">
+  <div class="modal">
+    <h3>Broadcast Preview</h3>
+    <div class="modal-body" id="broadcastPreviewBody">
+      <p style="color:var(--text-light);">Select recipients and compose a message to see preview.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="panel-btn secondary" onclick="closeModal('modal-broadcastPreview')">Close</button>
+      <button class="panel-btn primary" onclick="sendBroadcast()">Send Now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== CONFIG ====================
+const DEMO_MODE = true;
+const SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdsxSkD4M5I1tl4';
+const WEB_APP_URL = '';
+const AUTO_SYNC_INTERVAL = 60000;
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'gabochie2024';
+
+// ==================== DATA ====================
+let contacts = [];
+let clients = [];
+let selectedContacts = new Set();
+let currentTab = 'contacts';
+
+// ==================== DEMO DATA ====================
+const DEMO_CONTACTS = [
+  {id:'c1',name:'Kwame Mensah',email:'kwame.mensah@gmail.com',phone:'+233 24 123 4567',business:'Mensah Farms',bizType:'Agriculture',stage:'TOFU',status:'New',leadType:'Inbound',source:'Website',score:55,notes:'Interested in digital marketing',date:'2026-04-28'},
+  {id:'c2',name:'Ama Serwaa',email:'ama.serwaa@yahoo.com',phone:'+233 20 234 5678',business:'Serwaa Beauty Supply',bizType:'Retail',stage:'MOFU',status:'Contacted',leadType:'Outbound',source:'Referral',score:68,notes:'Called once, needs follow-up',date:'2026-04-25'},
+  {id:'c3',name:'Yaw Asante',email:'yaw.asante@hotmail.com',phone:'+233 27 345 6789',business:'Asante Logistics',bizType:'Service',stage:'BOFU',status:'Interested',leadType:'Inbound',source:'Website',score:82,notes:'Ready to sign, send proposal',date:'2026-04-20'},
+  {id:'c4',name:'Efia Owusu',email:'efia.owusu@gmail.com',phone:'+233 50 456 7890',business:'Owusu Tech Solutions',bizType:'Technology',stage:'TOFU',status:'New',leadType:'Event',source:'Trade Show',score:45,notes:'Met at Accra Tech Fair',date:'2026-05-01'},
+  {id:'c5',name:'Nana Addo',email:'nana.addo@business.com',phone:'+233 54 567 8901',business:'Addo Enterprises',bizType:'Wholesale',stage:'MOFU',status:'Replied',leadType:'Referral',source:'Referral',score:71,notes:'Replied to email, interested in SEO',date:'2026-04-15'},
+  {id:'c6',name:'Akosua Darko',email:'akosua.darko@gmail.com',phone:'+233 24 678 9012',business:'Darko Fashion House',bizType:'Retail',stage:'TOFU',status:'New',leadType:'Inbound',source:'Instagram',score:38,notes:'Followed from IG campaign',date:'2026-05-03'},
+  {id:'c7',name:'Kofi Boateng',email:'kofi.boateng@yahoo.com',phone:'+233 20 789 0123',business:'Boateng Construction',bizType:'Service',stage:'BOFU',status:'Closed',leadType:'Outbound',source:'Cold Call',score:90,notes:'Signed contract - Professional package',date:'2026-04-10'},
+  {id:'c8',name:'Abena Ofori',email:'abena.ofori@gmail.com',phone:'+233 27 890 1234',business:'Ofori Catering Services',bizType:'Hospitality',stage:'Network',status:'Interested',leadType:'Referral',source:'Referral',score:76,notes:'Referred by Kofi, needs website + marketing',date:'2026-04-22'},
+];
+
+const DEMO_CLIENTS = [
+  {id:'cl1',company:'Boateng Construction',contact:'Kofi Boateng',email:'kofi.boateng@yahoo.com',phone:'+233 20 789 0123',pkg:'Professional',status:'Active',startDate:'2026-05-01',notes:'Full digital marketing package'},
+  {id:'cl2',company:'Mensah Farms',contact:'Kwame Mensah',email:'kwame.mensah@gmail.com',phone:'+233 24 123 4567',pkg:'Starter',status:'Onboarding',startDate:'2026-05-05',notes:'Just started onboarding'},
+];
+
+// ==================== MESSAGE TEMPLATES ====================
+const MESSAGE_TEMPLATES = {
+  'TOFU': {
+    'cold-outreach': 'Hello {name},\n\nI hope this message finds you well. I came across {business} and was impressed by what you are doing.\n\nAt Gabochie Marketing, we specialize in helping businesses like yours grow through strategic digital marketing.\n\nWould you be open to a quick 15-minute call this week to explore how we can support your growth?\n\nBest regards,\nThe Gabochie Team',
+    'follow-up': 'Hi {name},\n\nJust following up on my previous message. I would love to connect with you and learn more about {business}.\n\nWe have helped similar businesses achieve remarkable growth through our tailored marketing solutions.\n\nLooking forward to hearing from you!\n\nBest regards,\nThe Gabochie Team',
+    're-engagement': 'Hi {name},\n\nIt has been a while since we last connected. I wanted to reach out and see if now might be a better time to discuss how Gabochie Marketing can help {business} grow.\n\nWe have some exciting new offerings that might be of interest.\n\nWarmly,\nThe Gabochie Team',
+    'offer': 'Hi {name},\n\nI am excited to share a special offer with you! For a limited time, we are offering a free marketing audit for {business} - a value of GHS 2,000.\n\nThis audit will identify key opportunities to improve your online presence and attract more customers.\n\nWould you be interested?\n\nBest,\nThe Gabochie Team'
+  },
+  'MOFU': {
+    'cold-outreach': 'Hello {name},\n\nI noticed that {business} has been growing steadily. At Gabochie Marketing, we help businesses at your stage scale their marketing efforts efficiently.\n\nOur clients typically see a 3x return on their marketing investment within the first 90 days.\n\nWould you be available for a strategy session next week?\n\nBest regards,\nThe Gabochie Team',
+    'follow-up': 'Hi {name},\n\nFollowing up on our previous conversation. I have put together some ideas specifically for {business} that I would love to share with you.\n\nWould you have 15 minutes this week?\n\nBest,\nThe Gabochie Team',
+    're-engagement': 'Hi {name},\n\nI wanted to check in and see if you are still considering marketing options for {business}. We have some case studies that might be relevant to your current stage.\n\nHappy to share them if you are interested.\n\nWarmly,\nThe Gabochie Team',
+    'offer': 'Hi {name},\n\nAs a special offer for businesses in your stage of growth, we are providing a 20% discount on our Professional package for the first 3 months.\n\nThis includes everything you need to take {business} to the next level.\n\nLet me know if you would like to learn more!\n\nBest,\nThe Gabochie Team'
+  },
+  'BOFU': {
+    'cold-outreach': 'Hello {name},\n\nI understand that {business} is at a decision point regarding marketing services. Gabochie Marketing offers comprehensive solutions tailored to your needs.\n\nOur packages start from GHS 950/month and include everything you need.\n\nWould you like to schedule a demo?\n\nBest regards,\nThe Gabochie Team',
+    'follow-up': 'Hi {name},\n\nI wanted to follow up on our recent discussion. We have prepared a customized proposal for {business} that I believe you will find compelling.\n\nCan I send it over?\n\nBest,\nThe Gabochie Team',
+    're-engagement': 'Hi {name},\n\nI am reaching out one more time because I truly believe Gabochie Marketing can make a difference for {business}.\n\nWe have helped businesses similar to yours achieve remarkable results.\n\nWould you be open to one final conversation?\n\nWarmly,\nThe Gabochie Team',
+    'offer': 'Hi {name},\n\nAs a final push, I would like to offer {business} a 30-day free trial of our Professional package - no strings attached.\n\nSee the results for yourself before making a decision.\n\nShall we set it up?\n\nBest,\nThe Gabochie Team'
+  },
+  'Network': {
+    'cold-outreach': 'Hello {name},\n\nI was referred to connect with you. At Gabochie Marketing, we work with businesses like {business} to help them grow through strategic marketing.\n\nWould you be open to a conversation?\n\nBest regards,\nThe Gabochie Team',
+    'follow-up': 'Hi {name},\n\nGreat connecting with you! As promised, here are some ideas for {business}. I look forward to continuing our conversation.\n\nBest,\nThe Gabochie Team',
+    're-engagement': 'Hi {name},\n\nHope you are doing well! I wanted to touch base and see if there is anything Gabochie Marketing can help {business} with.\n\nAlways happy to chat!\n\nWarmly,\nThe Gabochie Team',
+    'offer': 'Hi {name},\n\nAs part of our network, we would like to offer {business} an exclusive referral discount.\n\nReach out to learn more!\n\nBest,\nThe Gabochie Team'
+  }
+};
+
+// ==================== PRICING PACKAGES ====================
+const PRICING_PACKAGES = [
+  {name:'Starter',price:950,desc:'Basic digital marketing',features:['Social media management','Basic SEO','Monthly report','Email support']},
+  {name:'Professional',price:4500,desc:'Comprehensive marketing',features:['All Starter features','Advanced SEO','Google Ads management','Content creation','Weekly reports','Priority support']},
+  {name:'Enterprise',price:10000,desc:'Full-service partnership',features:['All Professional features','Dedicated account manager','Multi-channel strategy','Custom development','Daily reports','24/7 support','Strategy sessions']}
+];
+
+// ==================== INITIALIZATION ====================
+function init() {
+  if (DEMO_MODE) {
+    contacts = JSON.parse(JSON.stringify(DEMO_CONTACTS));
+    clients = JSON.parse(JSON.stringify(DEMO_CLIENTS));
+    checkFollowUps();
+    updateStats();
+    renderAll();
+  }
+}
+
+function renderAll() {
+  renderContacts();
+  renderPipeline();
+  renderToday();
+  renderClients();
+  renderOpportunities();
+  populateRevContacts();
+  updateBadges();
+}
+
+// ==================== AUTH ====================
+function handleLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const error = document.getElementById('loginError');
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appMain').style.display = 'block';
+    init();
+    return;
+  }
+  if (DEMO_MODE) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appMain').style.display = 'block';
+    init();
+    return;
+  }
+  error.textContent = 'Invalid credentials. Please try again.';
+}
+
+function handleLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appMain').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+// ==================== TAB SWITCHING ====================
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const nav = document.getElementById('nav-' + tab);
+  if (nav) nav.classList.add('active');
+  const titles = {contacts:'Contacts',ai:'AI Messages',pipeline:'Pipeline',today:'Today\'s Queue',broadcast:'Broadcast', 'csv-processor':'CSV & Excel',clients:'Clients',settings:'Settings',opportunity:'Opportunity Identifier',revenue:'Revenue Analysis',pricing:'Pricing & Psychology'};
+  document.getElementById('pageTitle').textContent = titles[tab] || 'Dashboard';
+  if (tab === 'pipeline') renderPipeline();
+  if (tab === 'today') refreshToday();
+  if (tab === 'opportunity') renderOpportunities();
+  if (tab === 'revenue') analyzeRevenue();
+  if (tab === 'pricing') analyzePricingPsych();
+}
+
+// ==================== STATS ====================
+function updateStats() {
+  const total = contacts.length;
+  const leads = contacts.filter(c => c.status !== 'Closed' && c.status !== 'Cold').length;
+  const converted = contacts.filter(c => c.status === 'Closed').length;
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+  const week = contacts.filter(c => new Date(c.date) >= weekAgo).length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-leads').textContent = leads;
+  document.getElementById('stat-converted').textContent = converted;
+  document.getElementById('stat-week').textContent = week;
+}
+
+// ==================== BADGES ====================
+function updateBadges() {
+  document.getElementById('badge-contacts').textContent = contacts.length;
+  document.getElementById('badge-clients').textContent = clients.length;
+  document.getElementById('badge-pipeline').textContent = contacts.filter(c => c.status === 'New' || c.status === 'Contacted').length;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('badge-today').textContent = contacts.filter(c => c.date === today).length;
+  const hotOpps = contacts.filter(c => scoreContact(c) >= 70).length;
+  document.getElementById('badge-opportunity').textContent = hotOpps;
+}
+
+// ==================== FOLLOW-UPS ====================
+function checkFollowUps() {
+  const today = new Date().toISOString().split('T')[0];
+  const due = contacts.filter(c => c.date === today && c.status !== 'Closed' && c.status !== 'Cold');
+  if (due.length > 0) {
+    document.getElementById('followupAlert').style.display = 'flex';
+    document.getElementById('followupText').textContent = 'You have ' + due.length + ' follow-up(s) due today.';
+  } else {
+    document.getElementById('followupAlert').style.display = 'none';
+  }
+}
+
+// ==================== CONTACTS CRUD ====================
+function renderContacts() {
+  const search = (document.getElementById('contactSearch').value || '').toLowerCase();
+  const stageFilter = document.getElementById('contactStageFilter').value;
+  const statusFilter = document.getElementById('contactStatusFilter').value;
+  let filtered = contacts.filter(c => {
+    if (search && !c.name.toLowerCase().includes(search) && !c.email.toLowerCase().includes(search) && !c.business.toLowerCase().includes(search)) return false;
+    if (stageFilter && c.stage !== stageFilter) return false;
+    if (statusFilter && c.status !== statusFilter) return false;
+    return true;
+  });
+  const tbody = document.getElementById('contactsBody');
+  tbody.innerHTML = '';
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">&#128203;</div>No contacts found</div></td></tr>';
+    return;
+  }
+  filtered.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td><input type="checkbox" class="row-check" data-id="' + c.id + '" ' + (selectedContacts.has(c.id) ? 'checked' : '') + ' onchange="toggleCheck(\'' + c.id + '\')"></td>' +
+      '<td><strong>' + esc(c.name) + '</strong></td>' +
+      '<td>' + esc(c.email) + '</td>' +
+      '<td>' + esc(c.phone) + '</td>' +
+      '<td>' + esc(c.business) + '</td>' +
+      '<td><span class="tag tag-' + c.stage.toLowerCase() + '">' + c.stage + '</span></td>' +
+      '<td><span class="status-badge status-' + c.status.toLowerCase() + '">' + c.status + '</span></td>' +
+      '<td>' + (c.score ? '<span class="score-badge score-' + (c.score >= 70 ? 'hot' : c.score >= 40 ? 'warm' : 'cold') + '">' + c.score + '</span>' : '-') + '</td>' +
+      '<td>' + esc(c.source || '-') + '</td>' +
+      '<td style="white-space:nowrap">' + c.date + '</td>' +
+      '<td style="white-space:nowrap">' +
+      '<button class="panel-btn secondary" style="padding:4px 10px;font-size:11px;" onclick="viewContact(\'' + c.id + '\')">View</button> ' +
+      '<button class="panel-btn secondary" style="padding:4px 10px;font-size:11px;background:var(--primary-light);color:#fff;" onclick="editContact(\'' + c.id + '\')">Edit</button> ' +
+      '<button class="panel-btn danger" style="padding:4px 10px;font-size:11px;" onclick="deleteContact(\'' + c.id + '\')">Del</button>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+  document.querySelectorAll('.row-check').forEach(cb => {
+    cb.addEventListener('change', function() {
+      if (this.checked) selectedContacts.add(this.dataset.id);
+      else selectedContacts.delete(this.dataset.id);
+      updateBulkBar();
+    });
+  });
+}
+
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toggleCheck(id) {
+  if (selectedContacts.has(id)) selectedContacts.delete(id);
+  else selectedContacts.add(id);
+  updateBulkBar();
+}
+
+function toggleAllChecks() {
+  const checked = document.getElementById('checkAll').checked;
+  document.querySelectorAll('.row-check').forEach(cb => {
+    cb.checked = checked;
+    if (checked) selectedContacts.add(cb.dataset.id);
+    else selectedContacts.delete(cb.dataset.id);
+  });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBarContacts');
+  const count = document.getElementById('bulkCountContacts');
+  count.textContent = selectedContacts.size + ' selected';
+  if (selectedContacts.size > 0) bar.classList.add('show');
+  else bar.classList.remove('show');
+}
+
+function saveContact() {
+  const name = document.getElementById('addName').value.trim();
+  const email = document.getElementById('addEmail').value.trim();
+  const phone = document.getElementById('addPhone').value.trim();
+  const business = document.getElementById('addBusiness').value.trim();
+  const bizType = document.getElementById('addBizType').value;
+  const stage = document.getElementById('addStage').value;
+  const leadType = document.getElementById('addLeadType').value;
+  const notes = document.getElementById('addNotes').value.trim();
+  if (!name) { alert('Name is required'); return; }
+  const contact = {
+    id:'c' + Date.now(),
+    name, email, phone, business, bizType, stage, status:'New',
+    leadType, notes, source:'Manual', score:scoreContact({name,email,phone,business,bizType,stage,leadType,status:'New'}),
+    date:new Date().toISOString().split('T')[0]
+  };
+  contacts.unshift(contact);
+  document.getElementById('addName').value=''; document.getElementById('addEmail').value=''; document.getElementById('addPhone').value='';
+  document.getElementById('addBusiness').value=''; document.getElementById('addNotes').value='';
+  closeModal('modal-addContact');
+  updateStats(); renderAll(); showAlert('success','Contact added successfully!');
+}
+
+function editContact(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('editId').value = c.id;
+  document.getElementById('editName').value = c.name;
+  document.getElementById('editEmail').value = c.email;
+  document.getElementById('editPhone').value = c.phone;
+  document.getElementById('editBusiness').value = c.business;
+  document.getElementById('editBizType').value = c.bizType || '';
+  document.getElementById('editStage').value = c.stage;
+  document.getElementById('editStatus').value = c.status;
+  document.getElementById('editLeadType').value = c.leadType || '';
+  document.getElementById('editNotes').value = c.notes || '';
+  openModal('modal-editContact');
+}
+
+function updateContact() {
+  const id = document.getElementById('editId').value;
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  c.name = document.getElementById('editName').value.trim();
+  c.email = document.getElementById('editEmail').value.trim();
+  c.phone = document.getElementById('editPhone').value.trim();
+  c.business = document.getElementById('editBusiness').value.trim();
+  c.bizType = document.getElementById('editBizType').value;
+  c.stage = document.getElementById('editStage').value;
+  c.status = document.getElementById('editStatus').value;
+  c.leadType = document.getElementById('editLeadType').value;
+  c.notes = document.getElementById('editNotes').value.trim();
+  c.score = scoreContact(c);
+  closeModal('modal-editContact');
+  updateStats(); renderAll(); showAlert('success','Contact updated successfully!');
+}
+
+function deleteContact(id) {
+  if (!confirm('Delete this contact?')) return;
+  contacts = contacts.filter(c => c.id !== id);
+  selectedContacts.delete(id);
+  updateStats(); renderAll(); showAlert('info','Contact deleted.');
+}
+
+function viewContact(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  const body = document.getElementById('contactDetailBody');
+  body.innerHTML = '<div style="margin-bottom:12px;"><strong style="font-size:16px;">' + esc(c.name) + '</strong></div>' +
+    '<div class="settings-row"><span class="sr-label">Email</span><span>' + esc(c.email) + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Phone</span><span>' + esc(c.phone) + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Business</span><span>' + esc(c.business) + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Type</span><span>' + esc(c.bizType || '-') + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Stage</span><span><span class="tag tag-' + c.stage.toLowerCase() + '">' + c.stage + '</span></span></div>' +
+    '<div class="settings-row"><span class="sr-label">Status</span><span><span class="status-badge status-' + c.status.toLowerCase() + '">' + c.status + '</span></span></div>' +
+    '<div class="settings-row"><span class="sr-label">Score</span><span>' + (c.score ? '<span class="score-badge score-' + (c.score >= 70 ? 'hot' : c.score >= 40 ? 'warm' : 'cold') + '">' + c.score + '</span>' : '-') + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Lead Type</span><span>' + esc(c.leadType || '-') + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Source</span><span>' + esc(c.source || '-') + '</span></div>' +
+    '<div class="settings-row"><span class="sr-label">Date Added</span><span>' + c.date + '</span></div>' +
+    (c.notes ? '<div class="settings-row" style="flex-direction:column;align-items:flex-start;"><span class="sr-label">Notes</span><p style="margin-top:4px;">' + esc(c.notes) + '</p></div>' : '');
+  openModal('modal-contactDetail');
+  window._detailContactId = id;
+}
+
+function editFromDetail() {
+  closeModal('modal-contactDetail');
+  if (window._detailContactId) editContact(window._detailContactId);
+}
+
+// ==================== CLIENTS CRUD ====================
+function renderClients() {
+  const search = (document.getElementById('clientSearch').value || '').toLowerCase();
+  const filtered = clients.filter(c => !search || c.company.toLowerCase().includes(search) || c.contact.toLowerCase().includes(search) || c.email.toLowerCase().includes(search));
+  const tbody = document.getElementById('clientsBody');
+  tbody.innerHTML = '';
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">&#128101;</div>No clients found</div></td></tr>';
+    return;
+  }
+  filtered.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td><strong>' + esc(c.company) + '</strong></td>' +
+      '<td>' + esc(c.contact) + '</td>' +
+      '<td>' + esc(c.email) + '</td>' +
+      '<td>' + esc(c.phone) + '</td>' +
+      '<td>' + esc(c.pkg) + '</td>' +
+      '<td><span class="status-badge status-' + c.status.toLowerCase() + '">' + c.status + '</span></td>' +
+      '<td>' + c.startDate + '</td>' +
+      '<td><button class="panel-btn danger" style="padding:4px 10px;font-size:11px;" onclick="deleteClient(\'' + c.id + '\')">Del</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function saveClient() {
+  const company = document.getElementById('addClientCompany').value.trim();
+  const contact = document.getElementById('addClientName').value.trim();
+  const email = document.getElementById('addClientEmail').value.trim();
+  const phone = document.getElementById('addClientPhone').value.trim();
+  const pkg = document.getElementById('addClientPackage').value;
+  const status = document.getElementById('addClientStatus').value;
+  const notes = document.getElementById('addClientNotes').value.trim();
+  if (!company || !contact) { alert('Company and contact name are required'); return; }
+  clients.push({id:'cl' + Date.now(),company,contact,email,phone,pkg,status,startDate:new Date().toISOString().split('T')[0],notes});
+  document.getElementById('addClientCompany').value=''; document.getElementById('addClientName').value='';
+  document.getElementById('addClientEmail').value=''; document.getElementById('addClientPhone').value='';
+  document.getElementById('addClientNotes').value='';
+  closeModal('modal-addClient');
+  updateStats(); renderAll(); showAlert('success','Client added successfully!');
+}
+
+function deleteClient(id) {
+  if (!confirm('Delete this client?')) return;
+  clients = clients.filter(c => c.id !== id);
+  renderAll(); showAlert('info','Client deleted.');
+}
+
+// ==================== PIPELINE (KANBAN) ====================
+function renderPipeline() {
+  const funnelFilter = document.getElementById('pipelineFunnelFilter').value;
+  let filtered = contacts;
+  if (funnelFilter) filtered = filtered.filter(c => c.stage === funnelFilter);
+  const statuses = ['New','Contacted','Replied','Interested','Closed','Cold'];
+  const kanban = document.getElementById('kanban');
+  kanban.innerHTML = '';
+  statuses.forEach(s => {
+    const items = filtered.filter(c => c.status === s);
+    const col = document.createElement('div');
+    col.className = 'kanban-col';
+    col.innerHTML = '<h4>' + s + ' <span class="count">' + items.length + '</span></h4>';
+    items.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'kanban-card';
+      card.style.borderLeftColor = s === 'Closed' ? 'var(--accent)' : s === 'Cold' ? 'var(--text-light)' : 'var(--primary-light)';
+      card.innerHTML =
+        '<div class="card-name">' + esc(c.name) + '</div>' +
+        '<div class="card-detail">' + esc(c.business) + ' - ' + esc(c.phone) + '</div>' +
+        '<div class="card-tags"><span class="tag tag-' + c.stage.toLowerCase() + '">' + c.stage + '</span></div>' +
+        '<div style="margin-top:6px;display:flex;gap:4px;">' +
+        (c.stage !== 'BOFU' ? '<button class="panel-btn primary" style="padding:2px 8px;font-size:10px;" onclick="advancePipeline(\'' + c.id + '\')">Advance</button>' : '') +
+        '<button class="panel-btn secondary" style="padding:2px 8px;font-size:10px;" onclick="editContact(\'' + c.id + '\')">Edit</button></div>';
+      card.ondblclick = function() { viewContact(c.id); };
+      col.appendChild(card);
+    });
+    kanban.appendChild(col);
+  });
+}
+
+function advancePipeline(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  const order = ['New','Contacted','Replied','Interested','Closed'];
+  const idx = order.indexOf(c.status);
+  if (idx >= 0 && idx < order.length - 1) {
+    c.status = order[idx + 1];
+    c.score = scoreContact(c);
+    renderPipeline();
+    updateStats();
+    renderContacts();
+    showAlert('success', c.name + ' moved to ' + c.status);
+  }
+}
+
+function refreshPipeline() { renderPipeline(); }
+
+// ==================== TODAY QUEUE ====================
+function renderToday() {
+  const today = new Date().toISOString().split('T')[0];
+  const items = contacts.filter(c => c.date === today && c.status !== 'Closed' && c.status !== 'Cold');
+  const tbody = document.getElementById('todayBody');
+  tbody.innerHTML = '';
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">&#128203;</div>No tasks for today</div></td></tr>';
+    return;
+  }
+  items.forEach(c => {
+    const tr = document.createElement('tr');
+    const priority = c.score >= 70 ? 'High' : c.score >= 40 ? 'Medium' : 'Low';
+    const priorityColor = c.score >= 70 ? 'var(--danger)' : c.score >= 40 ? 'var(--warning)' : 'var(--text-light)';
+    tr.innerHTML = '<td><strong>' + esc(c.name) + '</strong></td>' +
+      '<td>Follow-up (' + esc(c.stage) + ')</td>' +
+      '<td><span class="tag tag-' + c.stage.toLowerCase() + '">' + c.stage + '</span></td>' +
+      '<td><span style="color:' + priorityColor + ';font-weight:700;">' + priority + '</span></td>' +
+      '<td>Today</td>' +
+      '<td><button class="panel-btn primary" style="padding:4px 10px;font-size:11px;" onclick="editContact(\'' + c.id + '\')">Process</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function refreshToday() { renderToday(); }
+
+// ==================== BROADCAST ====================
+function loadBroadcastTemplate() {
+  const template = document.getElementById('broadcastTemplate').value;
+  const templates = {
+    'promo':'Special promotion just for you! Get 20% off our marketing services this month. Reply to learn more!',
+    'event':'You are invited to our upcoming webinar on digital marketing strategies for 2026. Save your spot now!',
+    'follow-up':'Hi {name}, just checking in. How is everything going with {business}? Let us know if you need anything!',
+    'newsletter':'Monthly Newsletter: Top 5 marketing tips for this month. Read more at marketing.gabochie.com'
+  };
+  if (templates[template]) document.getElementById('broadcastMessage').value = templates[template];
+}
+
+function insertPlaceholder(ph) {
+  const ta = document.getElementById('broadcastMessage');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  ta.value = ta.value.substring(0, start) + ph + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = start + ph.length;
+}
+
+function sendBroadcast() {
+  const msg = document.getElementById('broadcastMessage').value.trim();
+  if (!msg) { alert('Please enter a message'); return; }
+  const target = document.getElementById('broadcastTarget').value;
+  let recipients = target === 'all' ? contacts : contacts.filter(c => c.stage === target);
+  if (recipients.length === 0) { alert('No recipients found for the selected target.'); return; }
+  if (!confirm('Send broadcast to ' + recipients.length + ' recipients?')) return;
+  showAlert('success', 'Broadcast sent to ' + recipients.length + ' contacts! (Demo mode)');
+}
+
+// ==================== AI MESSAGES ====================
+function updateAIPreview() {
+  const stage = document.getElementById('aiFunnelStage').value;
+  const template = document.getElementById('aiTemplate').value;
+  const name = document.getElementById('aiLeadName').value || '[Lead Name]';
+  const tpls = MESSAGE_TEMPLATES[stage];
+  if (tpls && tpls[template]) {
+    document.getElementById('aiPreview').textContent = tpls[template].replace(/{name}/g, name).replace(/{business}/g, '[Business Name]');
+  } else {
+    document.getElementById('aiPreview').textContent = 'Select a template to preview...';
+  }
+}
+
+function generateAIMessage() {
+  const stage = document.getElementById('aiFunnelStage').value;
+  const tpls = MESSAGE_TEMPLATES[stage];
+  const keys = Object.keys(tpls);
+  const rand = keys[Math.floor(Math.random() * keys.length)];
+  document.getElementById('aiTemplate').value = rand;
+  updateAIPreview();
+  showAlert('info','AI-generated message based on ' + stage + ' stage.');
+}
+
+function sendAIMessage() {
+  const stage = document.getElementById('aiFunnelStage').value;
+  const name = document.getElementById('aiLeadName').value || 'Lead';
+  const recipients = contacts.filter(c => c.stage === stage);
+  if (recipients.length === 0) { alert('No contacts in ' + stage + ' stage.'); return; }
+  showAlert('success', 'AI message sent to ' + recipients.length + ' ' + stage + ' contacts! (Demo)');
+}
+
+function editAIMessage() {
+  const stage = document.getElementById('aiFunnelStage').value;
+  const template = document.getElementById('aiTemplate').value;
+  const tpls = MESSAGE_TEMPLATES[stage];
+  if (tpls && tpls[template]) {
+    document.getElementById('broadcastMessage').value = tpls[template];
+    switchTab('broadcast');
+  }
+}
+
+function copyAIMessage() {
+  const text = document.getElementById('aiPreview').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    showAlert('success','Message copied to clipboard!');
+  }).catch(function() {
+    alert('Copy to clipboard failed. Please copy manually.');
+  });
+}
+
+// ==================== OPPORTUNITY SCORING ====================
+function scoreContact(c) {
+  let score = 0;
+  if (c.bizType === 'Technology' || c.bizType === 'Finance' || c.bizType === 'Healthcare') score += 30;
+  else if (c.bizType === 'Retail' || c.bizType === 'Service') score += 20;
+  else if (c.bizType) score += 10;
+  if (c.email && c.email.includes('@')) score += 20;
+  if (c.phone && c.phone.length >= 8) score += 20;
+  if (c.stage === 'TOFU') score += 10;
+  else if (c.stage === 'MOFU') score += 20;
+  else if (c.stage === 'BOFU') score += 30;
+  else if (c.stage === 'Network') score += 15;
+  if (c.leadType === 'Inbound') score += 20;
+  else if (c.leadType === 'Referral') score += 15;
+  else if (c.leadType === 'Outbound') score += 10;
+  if (c.status === 'Interested') score += 20;
+  else if (c.status === 'Replied') score += 15;
+  else if (c.status === 'Contacted') score += 10;
+  else if (c.status === 'Closed') score += 5;
+  return Math.min(100, score);
+}
+
+function renderOpportunities() {
+  const filtered = contacts.filter(c => c.status !== 'Cold');
+  const tbody = document.getElementById('opportunityBody');
+  tbody.innerHTML = '';
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">&#127919;</div>No opportunities found</div></td></tr>';
+    return;
+  }
+  filtered.sort((a, b) => (b.score || 0) - (a.score || 0));
+  filtered.forEach(c => {
+    const score = c.score || 0;
+    const priority = score >= 70 ? 'Hot' : score >= 40 ? 'Warm' : 'Cold';
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>' + esc(c.name) + '</strong></td>' +
+      '<td>' + esc(c.business) + '</td>' +
+      '<td><span class="tag tag-' + c.stage.toLowerCase() + '">' + c.stage + '</span></td>' +
+      '<td><span class="score-badge score-' + priority.toLowerCase() + '">' + score + '</span></td>' +
+      '<td><span class="status-badge status-' + priority.toLowerCase() + '">' + priority + '</span></td>' +
+      '<td>' + esc(c.leadType || '-') + '</td>' +
+      '<td><span class="status-badge status-' + c.status.toLowerCase() + '">' + c.status + '</span></td>' +
+      '<td><button class="panel-btn primary" style="padding:4px 10px;font-size:11px;" onclick="editContact(\'' + c.id + '\')">Engage</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function setOppFilter(filter) {
+  const cards = document.querySelectorAll('#opportunityBody tr');
+  cards.forEach((tr, i) => {
+    if (i === 0 && cards.length === 1) return;
+    if (filter === 'all') tr.style.display = '';
+    else {
+      const scoreCell = tr.querySelector('.score-badge');
+      if (scoreCell) {
+        const cls = scoreCell.className;
+        const match = filter === 'hot' ? cls.includes('hot') : filter === 'warm' ? cls.includes('warm') : cls.includes('cold');
+        tr.style.display = match ? '' : 'none';
+      }
+    }
+  });
+  document.querySelectorAll('#panel-opportunity .panel-btn.secondary').forEach(b => b.classList.remove('primary'));
+  const btn = document.getElementById('oppFilter' + filter.charAt(0).toUpperCase() + filter.slice(1));
+  if (btn) btn.classList.add('primary');
+}
+
+function scoreAllOpportunities() {
+  contacts.forEach(c => { c.score = scoreContact(c); });
+  renderOpportunities();
+  showAlert('success','All contacts scored!');
+}
+
+// ==================== REVENUE ANALYSIS ====================
+function populateRevContacts() {
+  const sel = document.getElementById('revContactSelect');
+  sel.innerHTML = '<option value="">All Contacts</option>';
+  contacts.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name + ' - ' + c.business;
+    sel.appendChild(opt);
+  });
+}
+
+function analyzeRevenue() {
+  const selId = document.getElementById('revContactSelect').value;
+  const target = selId ? contacts.filter(c => c.id === selId) : contacts.filter(c => c.status !== 'Cold' && c.status !== 'New');
+  let total = 0, monthly = 0, high = 0, count = 0;
+  const tbody = document.getElementById('revenueBody');
+  tbody.innerHTML = '';
+  if (target.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">&#128176;</div>No qualified contacts for revenue analysis</div></td></tr>';
+    document.getElementById('revTotal').textContent = 'GHS 0';
+    document.getElementById('revMonthly').textContent = 'GHS 0';
+    document.getElementById('revHigh').textContent = 'GHS 0';
+    document.getElementById('revCount').textContent = '0';
+    return;
+  }
+  target.forEach(c => {
+    const score = c.score || scoreContact(c);
+    const pkg = score >= 70 ? PRICING_PACKAGES[2] : score >= 40 ? PRICING_PACKAGES[1] : PRICING_PACKAGES[0];
+    const annual = pkg.price * 12;
+    const confidence = score >= 70 ? 'High' : score >= 40 ? 'Medium' : 'Low';
+    total += annual;
+    monthly += pkg.price;
+    high = Math.max(high, annual);
+    count++;
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>' + esc(c.name) + '</strong></td>' +
+      '<td>' + esc(c.business) + '</td>' +
+      '<td>' + pkg.name + ' (GHS ' + pkg.price.toLocaleString() + '/mo)</td>' +
+      '<td><strong>GHS ' + annual.toLocaleString() + '</strong></td>' +
+      '<td><span class="status-badge status-' + (confidence === 'High' ? 'interested' : confidence === 'Medium' ? 'replied' : 'cold') + '">' + confidence + '</span></td>' +
+      '<td><span class="score-badge score-' + (score >= 70 ? 'hot' : score >= 40 ? 'warm' : 'cold') + '">' + (score >= 70 ? 'High' : score >= 40 ? 'Medium' : 'Low') + '</span></td>';
+    tbody.appendChild(tr);
+  });
+  document.getElementById('revTotal').textContent = 'GHS ' + total.toLocaleString();
+  document.getElementById('revMonthly').textContent = 'GHS ' + monthly.toLocaleString();
+  document.getElementById('revHigh').textContent = 'GHS ' + high.toLocaleString();
+  document.getElementById('revCount').textContent = count;
+}
+
+function calcRevenue(contacts) {
+  return analyzeRevenue();
+}
+
+// ==================== PRICING & PSYCHOLOGY ====================
+function analyzePricingPsych() {
+  const grid = document.getElementById('psychGrid');
+  grid.innerHTML = '';
+  const strategies = [
+    {name:'Charm Pricing (GHS 950)',desc:'Price just below a round number. GHS 950 feels significantly cheaper than GHS 1,000 due to left-digit effect.',apply:'Apply to Starter package'},
+    {name:'Anchoring Effect',desc:'Present higher-priced option first to make mid-range seem reasonable. Show Enterprise (GHS 10K) before Professional (GHS 4.5K).',apply:'Use in proposals'},
+    {name:'Decoy Effect',desc:'Add a slightly less attractive option to push customers toward target. Professional package is the sweet spot.',apply:'Feature Professional first'},
+    {name:'Scarcity & Urgency',desc:'Limited-time offers create FOMO. "Only 3 spots left at this price" increases conversion.',apply:'Add to broadcast messages'},
+    {name:'Social Proof Pricing',desc:'"Join 50+ businesses using Gabochie Marketing" - social proof reduces perceived risk and justifies price.',apply:'Add to landing pages'},
+    {name:'Price Bracketing',desc:'Offer 3 tiers (Good/Better/Best). Most customers choose the middle option (Professional).',apply:'Standard package structure'},
+    {name:'Value Stacking',desc:'Itemize all included services to show the total value vs. price paid. Increases perceived value.',apply:'In proposals and sales calls'},
+    {name:'Loss Aversion',desc:'Frame as "Don't miss out on GHS 50K in potential revenue" rather than "Spend GHS 4.5K/mo".',apply:'In sales conversations'},
+  ];
+  strategies.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'psych-card';
+    card.innerHTML = '<h4>' + esc(s.name) + '</h4><p style="font-size:13px;color:var(--text-light);">' + esc(s.desc) + '</p><div class="psych-strategy"><strong>Apply:</strong> ' + esc(s.apply) + '</div>';
+    grid.appendChild(card);
+  });
+}
+
+// ==================== CSV/EXCEL PROCESSING ====================
+let csvData = [];
+let csvHeaders = [];
+let csvMapping = {};
+
+function handleCSVFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const text = e.target.result;
+      processCSVData(text);
+    };
+    reader.readAsText(file);
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, {type:'array'});
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const html = XLSX.utils.sheet_to_json(firstSheet, {header:1});
+        if (html.length > 0) {
+          const lines = html.map(row => {
+            if (Array.isArray(row)) return row.map(c => c !== undefined && c !== null ? String(c) : '').join(',');
+            return '';
+          }).filter(l => l);
+          showAlert('info','Excel file read: ' + html.length + ' rows found');
+          processCSVData(lines.join('\n'), true);
+        } else {
+          showAlert('error','No data found in Excel file');
+        }
+      } catch(err) {
+        showAlert('error','Error reading Excel file: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showAlert('error','Unsupported file format: .' + ext);
+  }
+}
+
+function processCSVData(text, isExcel) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) { showAlert('error','File has insufficient data'); return; }
+  csvHeaders = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  csvData = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+    if (vals.length === csvHeaders.length && vals.some(v => v)) {
+      const row = {};
+      csvHeaders.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+      csvData.push(row);
+    }
+  }
+  if (csvData.length === 0) { showAlert('error','No valid data rows found'); return; }
+  document.getElementById('csvPreview').style.display = 'block';
+  document.getElementById('csvRowCount').textContent = csvData.length + ' rows';
+  renderCSVPreview();
+  renderCSVMapping();
+  document.getElementById('importBtn').disabled = false;
+  if (!isExcel) showAlert('success', csvData.length + ' records loaded from CSV!');
+}
+
+function renderCSVPreview() {
+  const div = document.getElementById('csvPreviewTable');
+  let html = '<table><thead><tr>';
+  csvHeaders.forEach(h => { html += '<th>' + esc(h) + '</th>'; });
+  html += '</tr></thead><tbody>';
+  csvData.slice(0, 10).forEach(row => {
+    html += '<tr>';
+    csvHeaders.forEach(h => { html += '<td>' + esc(row[h] || '') + '</td>'; });
+    html += '</tr>';
+  });
+  if (csvData.length > 10) html += '<tr><td colspan="' + csvHeaders.length + '" style="text-align:center;color:var(--text-light);font-style:italic;">... and ' + (csvData.length - 10) + ' more rows</td></tr>';
+  html += '</tbody></table>';
+  div.innerHTML = html;
+}
+
+function renderCSVMapping() {
+  const div = document.getElementById('csvMapping');
+  div.innerHTML = '';
+  const fields = ['name','email','phone','business','bizType','stage','leadType','source','notes'];
+  const fieldLabels = {name:'Full Name',email:'Email',phone:'Phone',business:'Business',bizType:'Business Type',stage:'Stage',leadType:'Lead Type',source:'Source',notes:'Notes'};
+  fields.forEach(f => {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'display:flex;flex-direction:column;gap:4px;';
+    const label = document.createElement('label');
+    label.style.cssText = 'font-size:12px;font-weight:600;color:var(--text-light);';
+    label.textContent = fieldLabels[f] || f;
+    const sel = document.createElement('select');
+    sel.style.cssText = 'padding:6px 10px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:12px;font-family:inherit;';
+    sel.id = 'map-' + f;
+    const optNone = document.createElement('option');
+    optNone.value = ''; optNone.textContent = '- Skip -';
+    sel.appendChild(optNone);
+    csvHeaders.forEach(h => {
+      const opt = document.createElement('option');
+      opt.value = h;
+      opt.textContent = h;
+      const hLower = h.toLowerCase();
+      if (hLower.includes(f.toLowerCase()) || hLower.includes(fieldLabels[f].toLowerCase().split(' ')[0])) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    wrapper.appendChild(label);
+    wrapper.appendChild(sel);
+    div.appendChild(wrapper);
+  });
+}
+
+function processImport() {
+  const mapping = {};
+  fields = ['name','email','phone','business','bizType','stage','leadType','source','notes'];
+  fields.forEach(f => {
+    const sel = document.getElementById('map-' + f);
+    if (sel && sel.value) mapping[f] = sel.value;
+  });
+  let imported = 0;
+  const ghanaPhoneRegex = /^(?:\+233|0)[2345]\d{8}$/;
+  csvData.forEach(row => {
+    const name = row[mapping.name];
+    if (!name || name.trim() === '') { return; }
+    const phoneRaw = mapping.phone ? (row[mapping.phone] || '').replace(/[\s\-()]/g, '') : '';
+    if (phoneRaw && !ghanaPhoneRegex.test(phoneRaw)) { return; }
+    const dup = contacts.some(c => c.email === (row[mapping.email] || '') || c.phone === phoneRaw);
+    if (dup) return;
+    const contact = {
+      id:'c' + Date.now() + Math.random().toString(36).substr(2,4),
+      name: name.trim(),
+      email: mapping.email ? (row[mapping.email] || '').trim() : '',
+      phone: phoneRaw,
+      business: mapping.business ? (row[mapping.business] || '').trim() : '',
+      bizType: mapping.bizType ? (row[mapping.bizType] || '').trim() : '',
+      stage: mapping.stage ? (row[mapping.stage] || '').trim() : 'TOFU',
+      status: 'New',
+      leadType: mapping.leadType ? (row[mapping.leadType] || '').trim() : 'Inbound',
+      source: 'Import',
+      notes: mapping.notes ? (row[mapping.notes] || '').trim() : '',
+      score: 0,
+      date: new Date().toISOString().split('T')[0]
+    };
+    contact.score = scoreContact(contact);
+    contacts.push(contact);
+    imported++;
+  });
+  if (imported > 0) {
+    updateStats(); renderAll();
+    showAlert('success', imported + ' contacts imported successfully!');
+    document.getElementById('csvPreview').style.display = 'none';
+    document.getElementById('csvFile').value = '';
+    document.getElementById('importBtn').disabled = true;
+  } else {
+    showAlert('info', 'No new contacts to import (all duplicates or invalid).');
+  }
+}
+
+// ==================== MODALS ====================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('open');
+});
+
+// ==================== BULK ACTIONS ====================
+function bulkUpdateStage() {
+  const stage = prompt('Enter stage to set (TOFU, MOFU, BOFU, Network):');
+  if (!stage || !['TOFU','MOFU','BOFU','Network'].includes(stage.toUpperCase())) { alert('Invalid stage'); return; }
+  selectedContacts.forEach(id => {
+    const c = contacts.find(x => x.id === id);
+    if (c) c.stage = stage.toUpperCase();
+  });
+  selectedContacts.clear();
+  updateBulkBar();
+  renderAll(); showAlert('success','Stage updated for selected contacts.');
+}
+
+function bulkDelete() {
+  if (!confirm('Delete ' + selectedContacts.size + ' contacts?')) return;
+  contacts = contacts.filter(c => !selectedContacts.has(c.id));
+  selectedContacts.clear();
+  updateBulkBar();
+  updateStats(); renderAll(); showAlert('info','Selected contacts deleted.');
+}
+
+// ==================== AUTO-SYNC ====================
+let autoSyncInterval = null;
+function startAutoSync() {
+  if (autoSyncInterval) clearInterval(autoSyncInterval);
+  autoSyncInterval = setInterval(function() {
+    if (DEMO_MODE) return;
+    const dot = document.getElementById('syncDot');
+    const text = document.getElementById('syncText');
+    dot.style.background = 'var(--warning)';
+    text.textContent = 'Syncing...';
+    setTimeout(function() {
+      dot.style.background = 'var(--accent)';
+      text.textContent = 'Auto-sync';
+    }, 2000);
+  }, AUTO_SYNC_INTERVAL);
+}
+
+// ==================== NOTIFICATIONS ====================
+function showAlert(type, message) {
+  const div = document.createElement('div');
+  div.className = 'alert alert-' + type;
+  div.textContent = message;
+  const content = document.querySelector('.content');
+  content.insertBefore(div, content.firstChild);
+  setTimeout(function() { if (div.parentNode) div.remove(); }, 4000);
+}
+
+// ==================== SETTINGS EVENTS ====================
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('toggleAutoSync').addEventListener('change', function() {
+    if (this.checked) startAutoSync();
+    else if (autoSyncInterval) { clearInterval(autoSyncInterval); autoSyncInterval = null; }
+  });
+  document.getElementById('toggleNotifications').addEventListener('change', function() {
+    if (this.checked && 'Notification' in window) Notification.requestPermission();
+  });
+  document.getElementById('loginPass').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleLogin();
+  });
+  document.getElementById('csvDropzone').addEventListener('dragover', function(e) {
+    e.preventDefault(); this.classList.add('dragover');
+  });
+  document.getElementById('csvDropzone').addEventListener('dragleave', function() {
+    this.classList.remove('dragover');
+  });
+  document.getElementById('csvDropzone').addEventListener('drop', function(e) {
+    e.preventDefault(); this.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      document.getElementById('csvFile').files = files;
+      handleCSVFile({target:{files:files}});
+    }
+  });
+});
+</script>
+</body>
+</html>
