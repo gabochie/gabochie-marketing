@@ -38,18 +38,64 @@ const DEFAULT_GROQ_MODEL = 'llama3-70b-8192';
 const DEFAULT_OLLAMA_URL = 'http://localhost:11434';
 const DEFAULT_OLLAMA_MODEL = 'llama3';
 
+// Auth
+const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+// ── Helpers ──
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function checkAuth_(token) {
+  if (!token) return false;
+  const props = PropertiesService.getScriptProperties();
+  const stored = props.getProperty('SESSION_' + token);
+  if (!stored) return false;
+  const session = JSON.parse(stored);
+  if (Date.now() > session.expiry) {
+    props.deleteProperty('SESSION_' + token);
+    return false;
+  }
+  return true;
+}
+
 function doGet() {
+  return json({ status: 'ok', name: 'Gabochie Marketing API', version: '2.0' });
+}
+
+function doPost(e) {
   try {
-    return HtmlService.createHtmlOutputFromFile('Index')
-      .setTitle('Gabochie Marketing Admin')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+    const data = JSON.parse(e.postData.contents);
+    const action = data.action;
+    const token = data.token;
+
+    // Login and health check don't require auth
+    if (action === 'login') return json(handleLogin(data));
+    if (action === 'ping') return json({ success: true });
+
+    // Everything else requires valid session
+    if (!checkAuth_(token)) return json({ success: false, error: 'Unauthorized', code: 'AUTH_EXPIRED' });
+
+    switch (action) {
+      case 'syncGoogleSheets': return json(syncGoogleSheets());
+      case 'addContact': return json(addContact(data));
+      case 'updateContact': return json(updateContact(data));
+      case 'deleteContact': return json(deleteContact(parseInt(data.id)));
+      case 'updateStatus': return json(updateStatus(data));
+      case 'getFollowUpsDue': return json(getFollowUpsDue());
+      case 'getClients': return json(getClients());
+      case 'createClient': return json(createClient(data));
+      case 'getTemplates': return json(getTemplates());
+      case 'saveTemplates': return json(saveTemplates(data.templates));
+      case 'getAppSettings': return json(getAppSettings());
+      case 'saveAppSettings': return json(saveAppSettings(data.settings || data));
+      case 'generateMessage': return json(generateMessage(data));
+      case 'processCSVContent': return json(processCSVContent(data.csvContent, data.fileName));
+      default: return json({ success: false, error: 'Unknown action: ' + action });
+    }
   } catch (e) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: 'error',
-      message: 'Failed to load Index.html: ' + e.toString(),
-      hint: 'Create an HTML file named "Index" (not "Index.html") in the Apps Script editor and paste the frontend code into it.'
-    })).setMimeType(ContentService.MimeType.JSON);
+    return json({ success: false, error: e.toString() });
   }
 }
 
@@ -114,8 +160,18 @@ function waLink_(phone) {
 
 // ── Auth ──
 function login(username, password) {
-  const ok = username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
-  return { success: ok, token: ok ? Utilities.getUuid() : null };
+  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+    return { success: false, error: 'Invalid credentials' };
+  }
+  const token = Utilities.getUuid();
+  const expiry = Date.now() + SESSION_DURATION_MS;
+  PropertiesService.getScriptProperties().setProperty('SESSION_' + token, JSON.stringify({ expiry }));
+  return { success: true, token, expiresAt: expiry };
+}
+
+// Legacy: called by old login function name
+function handleLogin(data) {
+  return login(data.username || data.user, data.password || data.pass);
 }
 
 // ── Sync: Pull All Contacts ──

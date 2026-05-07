@@ -1028,37 +1028,31 @@ let selectedContacts = new Set();
 let currentTab = 'contacts';
 let backendAuthToken = null;
 
-// ==================== BACKEND SERVICE ====================
-function hasBackend() {
-  return typeof google !== 'undefined' && google.script && google.script.run;
+// ==================== BACKEND SERVICE (fetch-based) ====================
+function fetchWithTimeout(url, opts, timeout) {
+  timeout = timeout || 15000;
+  const controller = new AbortController();
+  const id = setTimeout(function() { controller.abort(); }, timeout);
+  opts = opts || {};
+  opts.signal = controller.signal;
+  return fetch(url, opts).then(function(r) { clearTimeout(id); return r; });
 }
 
-function gsRun(fn, ...args) {
-  return new Promise(function(resolve, reject) {
-    if (!hasBackend()) { reject(new Error('Backend not available')); return; }
-    try {
-      var runner = google.script.run
-        .withSuccessHandler(resolve)
-        .withFailureHandler(reject);
-      // Direct call by function name (bracket notation may fail on google.script.run proxy)
-      if (fn === 'syncGoogleSheets') runner.syncGoogleSheets.apply(runner, args);
-      else if (fn === 'addContact') runner.addContact.apply(runner, args);
-      else if (fn === 'updateContact') runner.updateContact.apply(runner, args);
-      else if (fn === 'deleteContact') runner.deleteContact.apply(runner, args);
-      else if (fn === 'updateStatus') runner.updateStatus.apply(runner, args);
-      else if (fn === 'getFollowUpsDue') runner.getFollowUpsDue.apply(runner, args);
-      else if (fn === 'getClients') runner.getClients.apply(runner, args);
-      else if (fn === 'createClient') runner.createClient.apply(runner, args);
-      else if (fn === 'getTemplates') runner.getTemplates.apply(runner, args);
-      else if (fn === 'saveTemplates') runner.saveTemplates.apply(runner, args);
-      else if (fn === 'getAppSettings') runner.getAppSettings.apply(runner, args);
-      else if (fn === 'saveAppSettings') runner.saveAppSettings.apply(runner, args);
-      else if (fn === 'generateMessage') runner.generateMessage.apply(runner, args);
-      else if (fn === 'processCSVContent') runner.processCSVContent.apply(runner, args);
-      else if (fn === 'login') runner.login.apply(runner, args);
-      else reject(new Error('Unknown function: ' + fn));
-    } catch (e) { reject(e); }
-  });
+function hasBackend() {
+  return WEB_APP_URL && WEB_APP_URL.length > 5;
+}
+
+async function apiCall(action, payload) {
+  if (!hasBackend()) throw new Error('Backend not configured (WEB_APP_URL is empty)');
+  payload = payload || {};
+  payload.action = action;
+  payload.token = backendAuthToken;
+  var resp = await fetchWithTimeout(WEB_APP_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }, 20000);
+  return resp.json();
 }
 
 // Model mapping: Backend → Frontend
@@ -1104,95 +1098,79 @@ const Backend = {
   async init() {
     if (!hasBackend()) { this.ready = false; return false; }
     try {
-      this.ready = true;
-      return true;
+      var res = await apiCall('ping');
+      this.ready = res && res.success !== false;
+      return this.ready;
     } catch (e) { this.ready = false; return false; }
   },
   async login(user, pass) {
-    if (!this.ready) return { success: false };
     try {
-      const result = await gsRun('login', user, pass);
-      if (result && result.success && result.token) backendAuthToken = result.token;
+      var result = await apiCall('login', { user: user, pass: pass });
+      if (result && result.success && result.token) {
+        backendAuthToken = result.token;
+        this.ready = true;
+      }
       return result;
     } catch (e) { return { success: false, error: e.toString() }; }
   },
   async getContacts() {
-    if (!this.ready) return { success: false };
     try {
-      const raw = await gsRun('syncGoogleSheets');
+      var raw = await apiCall('syncGoogleSheets');
       if (Array.isArray(raw)) return { success: true, data: raw.map(beToFe) };
       if (raw && raw.success && Array.isArray(raw.data)) return { success: true, data: raw.data.map(beToFe) };
       return { success: false, error: 'Invalid response' };
     } catch (e) { return { success: false, error: e.toString() }; }
   },
   async addContact(fe) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('addContact', feToBe(fe)); }
+    try { return await apiCall('addContact', feToBe(fe)); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async updateStatus(id, status) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('updateStatus', { id: parseInt(id), status: status.toLowerCase() }); }
+    try { return await apiCall('updateStatus', { id: parseInt(id), status: status.toLowerCase() }); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async getFollowUps() {
-    if (!this.ready) return { success: false, dueLeads: [] };
-    try { return await gsRun('getFollowUpsDue'); }
+    try { return await apiCall('getFollowUpsDue'); }
     catch (e) { return { success: false, dueLeads: [], error: e.toString() }; }
   },
   async getClients() {
-    if (!this.ready) return { success: false, clients: [] };
-    try { return await gsRun('getClients'); }
+    try { return await apiCall('getClients'); }
     catch (e) { return { success: false, clients: [], error: e.toString() }; }
   },
   async createClient(data) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('createClient', data); }
+    try { return await apiCall('createClient', data); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async getTemplates() {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('getTemplates'); }
+    try { return await apiCall('getTemplates'); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async saveTemplates(tpls) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('saveTemplates', tpls); }
+    try { return await apiCall('saveTemplates', { templates: tpls }); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async getSettings() {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('getAppSettings'); }
+    try { return await apiCall('getAppSettings'); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async saveSettings(s) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('saveAppSettings', s); }
+    try { return await apiCall('saveAppSettings', { settings: s }); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async generateMessage(payload) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('generateGeminiMessage', payload); }
+    try { return await apiCall('generateMessage', payload); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async processCSV(csvContent, fileName) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('processCSVContent', csvContent, fileName); }
+    try { return await apiCall('processCSVContent', { csvContent: csvContent, fileName: fileName }); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async updateContact(data) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('updateContact', data); }
+    try { return await apiCall('updateContact', data); }
     catch (e) { return { success: false, error: e.toString() }; }
   },
   async deleteContact(id) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('deleteContact', parseInt(id)); }
-    catch (e) { return { success: false, error: e.toString() }; }
-  },
-  async generateMessage(payload) {
-    if (!this.ready) return { success: false };
-    try { return await gsRun('generateMessage', payload); }
+    try { return await apiCall('deleteContact', { id: parseInt(id) }); }
     catch (e) { return { success: false, error: e.toString() }; }
   }
 };
@@ -1356,6 +1334,8 @@ async function handleLogin() {
 }
 
 function handleLogout() {
+  backendAuthToken = null;
+  Backend.ready = false;
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('appMain').style.display = 'none';
   document.getElementById('loginUser').value = '';
