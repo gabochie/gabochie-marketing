@@ -1051,7 +1051,7 @@ async function apiCall(action, payload) {
   payload.token = backendAuthToken;
   var resp = await fetchWithTimeout(WEB_APP_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(payload)
   }, 20000);
   return resp.json();
@@ -1309,7 +1309,7 @@ async function handleLogin() {
   // Try backend first if available
   var backendOk = hasBackend();
   if (backendOk) {
-    Backend.init();
+    await Backend.init();
     var authResult = await Backend.login(user, pass);
     if (authResult && authResult.success) {
       document.getElementById('loginScreen').style.display = 'none';
@@ -1321,12 +1321,25 @@ async function handleLogin() {
 
   // Fallback: local credentials or demo mode
   if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    // Try backend login again (in case init hadn't finished)
+    if (!backendAuthToken && hasBackend()) {
+      try {
+        var retryResult = await Backend.login(user, pass);
+        if (retryResult && retryResult.success) backendAuthToken = retryResult.token;
+      } catch (_) {}
+    }
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appMain').style.display = 'block';
     init();
     return;
   }
   if (DEMO_MODE) {
+    if (!backendAuthToken && hasBackend()) {
+      try {
+        var retryResult = await Backend.login(user, pass);
+        if (retryResult && retryResult.success) backendAuthToken = retryResult.token;
+      } catch (_) {}
+    }
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appMain').style.display = 'block';
     init();
