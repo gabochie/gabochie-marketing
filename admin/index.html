@@ -617,7 +617,9 @@ input[type="checkbox"].row-check { width: 16px; height: 16px; cursor: pointer; }
             <div id="csvMapping" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;"></div>
           </div>
         </div>
-        <div id="csvResult" style="margin-top:12px;"></div>
+          <div id="csvResult" style="margin-top:12px;">
+            <p style="font-size:13px;color:var(--text-light);text-align:center;padding:20px;">Upload a file and import to see the report here.</p>
+          </div>
       </div>
 
       <!-- ==================== PANEL: CLIENTS ==================== -->
@@ -2109,15 +2111,15 @@ async function processImport() {
     const sel = document.getElementById('map-' + f);
     if (sel && sel.value) mapping[f] = sel.value;
   });
-  let imported = 0;
+  var stats = { totalRows: csvData.length, imported: 0, skippedNoName: 0, skippedPhone: 0, skippedDup: 0, backendOk: 0, backendFail: 0, backendErrors: [] };
   const ghanaPhoneRegex = /^(?:\+233|0)[2345]\d{8}$/;
   csvData.forEach(row => {
     const name = row[mapping.name];
-    if (!name || name.trim() === '') { return; }
+    if (!name || name.trim() === '') { stats.skippedNoName++; return; }
     const phoneRaw = mapping.phone ? (row[mapping.phone] || '').replace(/[\s\-()]/g, '') : '';
-    if (phoneRaw && !ghanaPhoneRegex.test(phoneRaw)) { return; }
-    const dup = contacts.some(c => c.email === (row[mapping.email] || '') || c.phone === phoneRaw);
-    if (dup) return;
+    if (phoneRaw && !ghanaPhoneRegex.test(phoneRaw)) { stats.skippedPhone++; return; }
+    const dup = contacts.some(c => c.email === (row[mapping.email] || '') || (phoneRaw && c.phone === phoneRaw));
+    if (dup) { stats.skippedDup++; return; }
     const contact = {
       id:'c' + Date.now() + Math.random().toString(36).substr(2,4),
       name: name.trim(),
@@ -2135,19 +2137,40 @@ async function processImport() {
     };
     contact.score = scoreContact(contact);
     contacts.push(contact);
-    imported++;
+    stats.imported++;
   });
-  // Send to backend in bulk
-  if (imported > 0 && Backend.ready) {
-    try {
-      for (var i = contacts.length - imported; i < contacts.length; i++) {
-        await Backend.addContact(contacts[i]);
-      }
-    } catch (e) { /* local only */ }
+  // Send to backend
+  if (stats.imported > 0 && Backend.ready) {
+    var startIdx = contacts.length - stats.imported;
+    for (var i = startIdx; i < contacts.length; i++) {
+      try {
+        var res = await Backend.addContact(contacts[i]);
+        if (res && res.success) stats.backendOk++; else { stats.backendFail++; stats.backendErrors.push(contacts[i].name + ': ' + (res ? res.error : 'no response')); }
+      } catch (e) { stats.backendFail++; stats.backendErrors.push(contacts[i].name + ': ' + e.message); }
+    }
   }
-  if (imported > 0) {
+  // Build report
+  var html = '<div style="background:var(--card-bg);border:2px solid var(--border);border-radius:var(--radius);padding:16px;">';
+  html += '<h3 style="margin:0 0 10px;font-size:14px;">Import Report</h3>';
+  html += '<table style="width:100%;font-size:13px;"><tbody>';
+  html += '<tr><td style="padding:4px 8px;color:var(--text-light);">File Rows</td><td style="padding:4px 8px;font-weight:600;">' + stats.totalRows + '</td></tr>';
+  html += '<tr><td style="padding:4px 8px;color:var(--text-light);">Imported</td><td style="padding:4px 8px;font-weight:600;color:var(--green);">' + stats.imported + '</td></tr>';
+  html += '<tr><td style="padding:4px 8px;color:var(--text-light);">Skipped (no name)</td><td style="padding:4px 8px;font-weight:600;color:#e67e22;">' + (stats.skippedNoName || 0) + '</td></tr>';
+  html += '<tr><td style="padding:4px 8px;color:var(--text-light);">Skipped (invalid phone)</td><td style="padding:4px 8px;font-weight:600;color:#e67e22;">' + (stats.skippedPhone || 0) + '</td></tr>';
+  html += '<tr><td style="padding:4px 8px;color:var(--text-light);">Skipped (duplicate)</td><td style="padding:4px 8px;font-weight:600;color:#e67e22;">' + (stats.skippedDup || 0) + '</td></tr>';
+  if (Backend.ready) {
+    html += '<tr><td style="padding:4px 8px;color:var(--text-light);">Backend Synced</td><td style="padding:4px 8px;font-weight:600;color:var(--green);">' + stats.backendOk + '/' + stats.imported + '</td></tr>';
+    if (stats.backendErrors.length > 0) {
+      html += '<tr><td colspan="2" style="padding:8px;"><details><summary style="cursor:pointer;color:var(--red);font-weight:600;">' + stats.backendFail + ' backend error(s)</summary><ul style="margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--text-light);">';
+      stats.backendErrors.forEach(function(e) { html += '<li>' + esc(e) + '</li>'; });
+      html += '</ul></details></td></tr>';
+    }
+  }
+  html += '</tbody></table></div>';
+  document.getElementById('csvResult').innerHTML = html;
+  if (stats.imported > 0) {
     updateStats(); renderAll();
-    showAlert('success', imported + ' contacts imported successfully!');
+    showAlert('success', stats.imported + ' contacts imported! ' + stats.backendOk + ' synced to sheet.');
     document.getElementById('csvPreview').style.display = 'none';
     document.getElementById('csvFile').value = '';
     document.getElementById('importBtn').disabled = true;
