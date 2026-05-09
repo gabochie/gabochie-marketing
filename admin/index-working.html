@@ -324,16 +324,20 @@
           
           <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 500;">Username</label>
-            <input type="text" id="loginUser" placeholder="Enter username" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px;">
+            <input type="text" id="loginUser" placeholder="Enter username" value="admin" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px;">
           </div>
           
           <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 500;">Password</label>
-            <input type="password" id="loginPass" placeholder="Enter password" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px;">
+            <input type="password" id="loginPass" placeholder="Enter password" value="gabochie2024" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px;">
           </div>
           
           <button onclick="handleLogin()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px;">
             Sign In
+          </button>
+          
+          <button onclick="bypassLogin()" style="width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; margin-top: 10px;">
+            🔓 Direct Access (Bypass Login)
           </button>
           
           <div id="loginError" style="color: var(--danger); margin-top: 10px; text-align: center; display: none;"></div>
@@ -445,13 +449,21 @@
       const pass = document.getElementById('loginPass').value.trim();
       const error = document.getElementById('loginError');
 
+      console.log('Login attempt:', { user, pass: pass.replace(/./g, '•'), expectedPass: ADMIN_PASS.replace(/./g, '•') });
+
       if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        console.log('Login successful');
+        console.log('✅ Login successful');
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appMain').style.display = 'block';
         loadDemoData();
       } else {
-        error.textContent = 'Invalid credentials';
+        console.log('❌ Login failed');
+        console.log('User:', user, 'Expected:', ADMIN_USER);
+        console.log('Pass:', pass, 'Expected:', ADMIN_PASS);
+        console.log('User match:', user === ADMIN_USER);
+        console.log('Pass match:', pass === ADMIN_PASS);
+        
+        error.textContent = 'Invalid credentials. Please check username and password.';
         error.style.display = 'block';
       }
     }
@@ -616,16 +628,95 @@
       document.getElementById('newContactBusiness').value = '';
     }
 
-    // Sync Cold Leads (placeholder)
-    function syncColdLeads() {
-      alert('CSV sync feature - This would read from C:/Users/user/Desktop/unified_database.csv and import 1,767 leads');
-      console.log('Sync cold leads feature clicked');
+    // Sync Cold Leads - Updated for new CSV file
+    async function syncColdLeads() {
+      try {
+        console.log('Starting sync from new CSV file...');
+        showAlert('info', 'Syncing cold leads from new CSV...', 'Reading 01_unified_database.csv');
+        
+        // Read new CSV file
+        const response = await fetch('C:/Users/user/Desktop/01_unified_database.csv');
+        const csvText = await response.text();
+        const lines = csvText.split('\n');
+        
+        let syncedCount = 0;
+        let errorCount = 0;
+        
+        // Skip header and process each row
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          // Parse CSV line (handle quoted fields)
+          const fields = line.split(',').map(field => {
+            return field.replace(/^"(.*)"$/, '$1').replace(/^"(.*)$/, '$1').replace(/""/g, '"');
+          });
+          
+          if (fields.length >= 8) {
+            const leadData = {
+              action: 'addContact',
+              id: Date.now().toString() + i,
+              name: fields[7] || '', // contact_person
+              businessName: fields[1] || '', // business_name
+              phone: fields[3] || '', // phone
+              email: fields[6] || '', // email
+              website: fields[4] || '', // website
+              subcategory: fields[2] || '', // category
+              location: fields[5] || '', // location
+              leadSource: 'Cold Lead CSV Sync - 01_unified',
+              notes: `Imported from 01_unified_database.csv - Revenue Tier: ${fields[11] || 'Unknown'} - Source: ${fields[9] || 'Unknown'}`,
+              status: 'new',
+              offerType: 'Cold Outreach',
+              productOffer: 'Lead Generation',
+              timestamp: new Date().toISOString()
+            };
+            
+            // Add to local contacts array for immediate display
+            contacts.push({
+              id: leadData.id,
+              name: leadData.name,
+              email: leadData.email,
+              phone: leadData.phone,
+              business: leadData.businessName,
+              stage: 'TOFU',
+              status: 'New',
+              score: 50,
+              source: leadData.leadSource,
+              date: new Date().toISOString().split('T')[0]
+            });
+            
+            syncedCount++;
+          }
+        }
+        
+        // Update display immediately
+        updateStats();
+        renderContacts();
+        
+        showAlert('success', 
+          `Sync completed! ${syncedCount} leads imported.`,
+          `Successfully imported ${syncedCount} cold leads from 01_unified_database.csv.`
+        );
+        
+      } catch (error) {
+        console.error('Sync error:', error);
+        showAlert('error', 'Sync failed', error.message);
+      }
     }
 
     // Test Backend (placeholder)
     function testBackend() {
       alert('Backend test feature - This would test connection to Google Apps Script');
       console.log('Test backend feature clicked');
+    }
+
+    // Bypass Login function
+    function bypassLogin() {
+      console.log('🔓 Direct access granted via bypass');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appMain').style.display = 'block';
+      loadDemoData();
+      showAlert('success', 'Direct access granted', 'You have accessed the admin dashboard directly.');
     }
   </script>
 </body>
