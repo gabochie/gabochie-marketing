@@ -441,6 +441,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Admin dashboard loaded');
       updateStats();
+      initializeAutoSync(); // Initialize auto-sync button
     });
 
     // Login function
@@ -628,11 +629,11 @@
       document.getElementById('newContactBusiness').value = '';
     }
 
-    // Sync Cold Leads - Updated for new CSV file
+    // Sync Cold Leads - Updated for new CSV file with Google Sheets integration
     async function syncColdLeads() {
       try {
         console.log('Starting sync from new CSV file...');
-        showAlert('info', 'Syncing cold leads from new CSV...', 'Reading 01_unified_database.csv');
+        showAlert('info', 'Syncing cold leads to Google Sheets...', 'Reading 01_unified_database.csv and syncing to sheet');
         
         // Read new CSV file
         const response = await fetch('C:/Users/user/Desktop/01_unified_database.csv');
@@ -641,6 +642,10 @@
         
         let syncedCount = 0;
         let errorCount = 0;
+        let sheetSyncCount = 0;
+        
+        // Google Apps Script URL - Update with your actual URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
         
         // Skip header and process each row
         for (let i = 1; i < lines.length; i++) {
@@ -671,6 +676,30 @@
               timestamp: new Date().toISOString()
             };
             
+            // Sync to Google Sheet via Apps Script
+            try {
+              const sheetResponse = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(leadData)
+              });
+              
+              const sheetResult = await sheetResponse.json();
+              
+              if (sheetResult && sheetResult.success) {
+                sheetSyncCount++;
+                console.log(`✅ Sheet sync successful for: ${leadData.name}`);
+              } else {
+                console.log(`❌ Sheet sync failed for: ${leadData.name}`, sheetResult);
+                errorCount++;
+              }
+            } catch (sheetError) {
+              console.error(`❌ Sheet sync error for: ${leadData.name}`, sheetError);
+              errorCount++;
+            }
+            
             // Add to local contacts array for immediate display
             contacts.push({
               id: leadData.id,
@@ -686,6 +715,9 @@
             });
             
             syncedCount++;
+            
+            // Add small delay to avoid overwhelming the API
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
         }
         
@@ -694,8 +726,8 @@
         renderContacts();
         
         showAlert('success', 
-          `Sync completed! ${syncedCount} leads imported.`,
-          `Successfully imported ${syncedCount} cold leads from 01_unified_database.csv.`
+          `Sync completed! ${syncedCount} leads processed, ${sheetSyncCount} synced to Google Sheet.`,
+          `Successfully processed ${syncedCount} cold leads from 01_unified_database.csv. ${sheetSyncCount} were synced to Google Sheet.`
         );
         
       } catch (error) {
@@ -716,7 +748,52 @@
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appMain').style.display = 'block';
       loadDemoData();
-      showAlert('success', 'Direct access granted', 'You have accessed the admin dashboard directly.');
+      showAlert('success', 'Direct access granted', 'You have accessed admin dashboard directly.');
+    }
+
+    // Auto-sync functionality
+    let autoSyncInterval = null;
+    let autoSyncEnabled = false;
+    const AUTO_SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+    function toggleAutoSync() {
+      const btn = document.getElementById('autoSyncBtn');
+      
+      if (autoSyncEnabled) {
+        // Disable auto-sync
+        autoSyncEnabled = false;
+        if (autoSyncInterval) {
+          clearInterval(autoSyncInterval);
+          autoSyncInterval = null;
+        }
+        btn.textContent = '🔄 Enable Auto-Sync';
+        btn.style.background = 'var(--text-light)';
+        showAlert('info', 'Auto-sync disabled', 'Automatic sync has been turned off.');
+      } else {
+        // Enable auto-sync
+        autoSyncEnabled = true;
+        autoSyncInterval = setInterval(async () => {
+          console.log('🔄 Auto-sync triggered');
+          await syncColdLeads();
+        }, AUTO_SYNC_INTERVAL);
+        btn.textContent = '⏸️ Disable Auto-Sync';
+        btn.style.background = 'var(--accent)';
+        showAlert('success', 'Auto-sync enabled', 'Automatic sync will run every 5 minutes.');
+      }
+    }
+
+    // Initialize auto-sync on dashboard load
+    function initializeAutoSync() {
+      const headerActions = document.querySelector('.header > div');
+      if (headerActions) {
+        const autoSyncBtn = document.createElement('button');
+        autoSyncBtn.id = 'autoSyncBtn';
+        autoSyncBtn.className = 'panel-btn secondary';
+        autoSyncBtn.textContent = '🔄 Enable Auto-Sync';
+        autoSyncBtn.style.marginLeft = '10px';
+        autoSyncBtn.onclick = toggleAutoSync;
+        headerActions.appendChild(autoSyncBtn);
+      }
     }
   </script>
 </body>
