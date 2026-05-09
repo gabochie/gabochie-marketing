@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Sheet Population - Gabochie Marketing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-primary mb-8">🌐 Live Sheet Population (GitHub Pages)</h1>
+      
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Step 1: Use Live Google Apps Script</h2>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h3 class="font-bold text-blue-800 mb-2">🌐 Why This Works:</h3>
+          <ul class="text-sm text-blue-700 space-y-2">
+            <li>• <strong>Hosted on GitHub Pages</strong> - No local server needed</li>
+            <li>• <strong>Direct Google Apps Script</strong> - Bypasses CORS issues</li>
+            <li>• <strong>Live deployment</strong> - Uses your deployed script</li>
+            <li>• <strong>Professional headers</strong> - Creates all 29 columns</li>
+            <li>• <strong>Instant updates</strong> - Real-time sheet population</li>
+          </ul>
+        </div>
+        
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h3 class="font-bold text-yellow-800 mb-2">📋 Live URL:</h3>
+          <p class="text-sm text-yellow-700">
+            <strong>GitHub Pages:</strong> 
+            <a href="https://marketing.gabochie.com/live-sheet-populate.html" 
+               target="_blank" 
+               class="text-blue-600 underline hover:text-blue-800 font-mono">
+              https://marketing.gabochie.com/live-sheet-populate.html
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Step 2: Google Apps Script Functions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button onclick="callInitializeSheet()" class="bg-primary text-white px-6 py-4 rounded-lg font-semibold hover:bg-dark-green transition">
+            🏗️ Initialize Sheet
+          </button>
+          <button onclick="callAddTestLead()" class="bg-blue-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-700 transition">
+            🧪 Add Test Lead
+          </button>
+          <button onclick="callApplyStyling()" class="bg-gold text-primary px-6 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition">
+            🎨 Apply Styling
+          </button>
+          <button onclick="callGetSheetInfo()" class="bg-purple-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-purple-700 transition">
+            📊 Get Sheet Info
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Step 3: Direct Google Sheet</h2>
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+          <h3 class="font-bold text-green-800 mb-2">📋 Your Google Sheet:</h3>
+          <p class="text-sm text-green-700">
+            <a href="https://docs.google.com/spreadsheets/d/1yvFvoIeVrOyBjocXBLAg1onDLKEFtdSxSkD4M5I1tl4/edit?gid=0#gid=0" 
+               target="_blank" 
+               class="text-blue-600 underline hover:text-blue-800">
+              Open Your Google Sheet →
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <h3 class="font-bold text-purple-800 mb-2">🎯 Complete Solution Stack:</h3>
+        <ul class="text-sm text-purple-700 space-y-2">
+          <li>• <strong>GitHub Pages</strong> - Reliable hosting</li>
+          <li>• <strong>Google Apps Script</strong> - Direct sheet access</li>
+          <li>• <strong>No CORS issues</strong> - Works from anywhere</li>
+          <li>• <strong>Professional formatting</strong> - Client-ready appearance</li>
+          <li>• <strong>Real-time updates</strong> - Instant sheet population</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Google Apps Script URL (your deployed script)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
+    
+    // Headers to create
+    const HEADERS = [
+      'ID', 'Prospect Name', 'Business Name', 'Phone', 'WhatsApp Link',
+      'Email', 'Website', 'Business Type', 'Location', 'Owner Name',
+      'GBP Status', 'Lead Source', 'Funnel Stage', 'Pipeline Status',
+      'Lead Type', 'Offer Type', 'Product Offer', 'Outreach Message',
+      'Outreach Category', 'Follow-up', 'Last Contact', 'Notes',
+      'Offer URL Sent', 'Assigned Offer', 'CTA Type', 'AI Model',
+      'Last Generated At', 'Last Message Type', 'Rating',
+      'Created At', 'Deleted'
+    ];
+
+    function addResult(message, type = 'info') {
+      const resultsDiv = document.getElementById('resultsDiv');
+      const timestamp = new Date().toLocaleTimeString();
+      
+      const colors = {
+        info: 'bg-blue-100 text-blue-800',
+        success: 'bg-green-100 text-green-800',
+        error: 'bg-red-100 text-red-800',
+        warning: 'bg-yellow-100 text-yellow-800'
+      };
+      
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `${colors[type]} p-3 rounded mb-2`;
+      resultDiv.innerHTML = `<strong>${timestamp}:</strong> ${message}`;
+      
+      resultsDiv.appendChild(resultDiv);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    async function callInitializeSheet() {
+      addResult('🏗️ Initializing sheet via live Apps Script...', 'info');
+      
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'initializeSheet',
+            headers: HEADERS,
+            sheetName: 'Leads'
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            addResult('✅ Sheet initialized successfully!', 'success');
+            addResult(`📊 Created ${HEADERS.length} headers`, 'info');
+          } else {
+            addResult(`❌ Initialization failed: ${result.message}`, 'error');
+          }
+        } else {
+          throw new Error('Network error');
+        }
+      } catch (error) {
+        addResult(`❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function callAddTestLead() {
+      addResult('🧪 Adding test lead...', 'info');
+      
+      try {
+        const testLead = {
+          action: 'addLead',
+          id: Date.now().toString(),
+          name: 'Test User - Live Script',
+          businessName: 'Gabochie Marketing Test',
+          phone: '+233501234567',
+          email: 'test@gabochie.com',
+          website: 'https://gabochie.com',
+          subcategory: 'Technology',
+          location: 'Accra',
+          leadSource: 'Live Script Test',
+          notes: 'This is a test lead created via live Apps Script',
+          status: 'new',
+          offerType: 'Test',
+          productOffer: 'Live Script Test',
+          timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testLead)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            addResult('✅ Test lead added successfully!', 'success');
+            addResult(`🧪 Lead ID: ${result.id}`, 'info');
+          } else {
+            addResult(`❌ Test lead failed: ${result.message}`, 'error');
+          }
+        } else {
+          throw new Error('Network error');
+        }
+      } catch (error) {
+        addResult(`❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function callApplyStyling() {
+      addResult('🎨 Applying professional styling...', 'info');
+      
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'applyStyling',
+            sheetName: 'Leads',
+            styling: {
+              headerRow: {
+                backgroundColor: '#1A7B3A',
+                textColor: '#FFFFFF',
+                fontSize: 12,
+                bold: true,
+                wrapText: true
+              },
+              columnWidths: [
+                { column: 'A', width: 80 },  // ID
+                { column: 'B', width: 200 }, // Prospect Name
+                { column: 'C', width: 200 }, // Business Name
+                { column: 'D', width: 150 }, // Phone
+                { column: 'E', width: 200 }, // WhatsApp Link
+                { column: 'F', width: 200 }, // Email
+                { column: 'G', width: 180 }, // Website
+                { column: 'H', width: 150 }, // Business Type
+                { column: 'I', width: 120 }, // Location
+                { column: 'J', width: 150 }, // Owner Name
+                { column: 'K', width: 120 }, // GBP Status
+                { column: 'L', width: 120 }, // Lead Source
+                { column: 'M', width: 120 }, // Funnel Stage
+                { column: 'N', width: 120 }, // Pipeline Status
+                { column: 'O', width: 120 }, // Lead Type
+                { column: 'P', width: 120 }, // Offer Type
+                { column: 'Q', width: 150 }, // Product Offer
+                { column: 'R', width: 200 }, // Outreach Message
+                { column: 'S', width: 150 }, // Outreach Category
+                { column: 'T', width: 120 }, // Follow-up
+                { column: 'U', width: 150 }, // Last Contact
+                { column: 'V', width: 200 }, // Notes
+                { column: 'W', width: 150 }, // Offer URL Sent
+                { column: 'X', width: 150 }, // Assigned Offer
+                { column: 'Y', width: 100 }, // CTA Type
+                { column: 'Z', width: 100 }, // AI Model
+                { column: 'AA', width: 150 }, // Last Generated At
+                { column: 'AB', width: 150 }, // Last Message Type
+                { column: 'AC', width: 80 },  // Rating
+                { column: 'AD', width: 150 }, // Created At
+                { column: 'AE', width: 80 }   // Deleted
+              ]
+            }
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            addResult('✅ Styling applied successfully!', 'success');
+            addResult('🎨 Professional formatting complete', 'info');
+          } else {
+            addResult(`❌ Styling failed: ${result.message}`, 'error');
+          }
+        } else {
+          throw new Error('Network error');
+        }
+      } catch (error) {
+        addResult(`❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function callGetSheetInfo() {
+      addResult('📊 Getting sheet information...', 'info');
+      
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'getSheetInfo',
+            sheetName: 'Leads'
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            addResult('✅ Sheet information retrieved!', 'success');
+            addResult(`📊 Row count: ${result.rowCount || 'Unknown'}`, 'info');
+            addResult(`📊 Has headers: ${result.hasHeaders}`, 'info');
+          } else {
+            addResult(`❌ Failed to get info: ${result.message}`, 'error');
+          }
+        } else {
+          throw new Error('Network error');
+        }
+      } catch (error) {
+        addResult(`❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    // Initialize on page load
+    window.addEventListener('load', function() {
+      addResult('🌐 Live Sheet Population ready!', 'info');
+      addResult('🏗️ Ready to initialize your sheet with professional headers', 'info');
+      addResult('🎨 Ready to apply professional styling', 'info');
+    });
+  </script>
+</body>
+</html>
