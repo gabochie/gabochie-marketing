@@ -312,6 +312,11 @@
         <span class="nav-icon">⚙️</span> Settings
       </div>
       
+      <div class="nav-section">Build</div>
+      <div class="nav-item" onclick="switchTab('build-checklist')">
+        <span class="nav-icon">📋</span> Build Checklist
+      </div>
+      
       <div class="nav-footer">
       <div style="margin-bottom: 10px;">
         <a href="https://www.youtube.com/@gabochiemarketing" target="_blank" class="text-white/70 hover:text-white transition text-xs">
@@ -364,6 +369,9 @@
             <button class="panel-btn info" onclick="testBackend()">🧪 Test Backend</button>
           </div>
         </header>
+
+        <!-- Contacts Content -->
+        <div id="contactsContent">
 
         <!-- Stats Section -->
         <div class="stats-grid">
@@ -483,6 +491,18 @@
     function switchTab(tab) {
       currentTab = tab;
       document.getElementById('pageTitle').textContent = tab.charAt(0).toUpperCase() + tab.slice(1);
+      
+      // Hide all content sections
+      document.getElementById('contactsContent').style.display = 'none';
+      document.getElementById('buildChecklistContent').style.display = 'none';
+      
+      // Show selected content
+      if (tab === 'contacts') {
+        document.getElementById('contactsContent').style.display = 'block';
+      } else if (tab === 'build-checklist') {
+        document.getElementById('buildChecklistContent').style.display = 'block';
+        loadBuildChecklist();
+      }
     }
 
     // Stats update
@@ -836,6 +856,211 @@
         btn.style.background = 'var(--accent)';
         showAlert('success', 'Auto-sync enabled', 'Automatic sync will run every 5 minutes.');
       }
+    }
+
+    // Build Checklist Functions
+    function loadBuildChecklist() {
+      console.log('📋 Loading build checklist...');
+      updateBuildStatus();
+    }
+
+    async function runBuildChecklist() {
+      console.log('🔍 Running comprehensive build checklist...');
+      
+      let totalChecks = 0;
+      let passedChecks = 0;
+      let failedChecks = 0;
+      
+      // Reset all checkboxes
+      const checkboxes = document.querySelectorAll('#buildChecklistContent input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+        cb.disabled = true;
+      });
+      
+      // Local Environment Checks
+      totalChecks++;
+      try {
+        const response = await fetch('http://localhost:8080');
+        if (response.ok) {
+          document.getElementById('check-local-server').checked = true;
+          passedChecks++;
+          console.log('✅ Local server check passed');
+        } else {
+          failedChecks++;
+          console.log('❌ Local server check failed');
+        }
+      } catch (error) {
+        failedChecks++;
+        console.log('❌ Local server check failed:', error);
+      }
+      
+      totalChecks++;
+      try {
+        const response = await fetch('http://localhost:8080/admin/index-working.html');
+        if (response.ok) {
+          document.getElementById('check-admin-dashboard').checked = true;
+          passedChecks++;
+          console.log('✅ Admin dashboard check passed');
+        } else {
+          failedChecks++;
+          console.log('❌ Admin dashboard check failed');
+        }
+      } catch (error) {
+        failedChecks++;
+        console.log('❌ Admin dashboard check failed:', error);
+      }
+      
+      totalChecks++;
+      try {
+        const response = await fetch('C:/Users/user/Desktop/01_unified_database.csv');
+        if (response.ok) {
+          document.getElementById('check-csv-file').checked = true;
+          passedChecks++;
+          console.log('✅ CSV file check passed');
+        } else {
+          failedChecks++;
+          console.log('❌ CSV file check failed');
+        }
+      } catch (error) {
+        failedChecks++;
+        console.log('❌ CSV file check failed:', error);
+      }
+      
+      // Live Environment Checks
+      totalChecks++;
+      try {
+        const response = await fetch('https://marketing.gabochie.com');
+        if (response.ok) {
+          document.getElementById('check-live-website').checked = true;
+          passedChecks++;
+          console.log('✅ Live website check passed');
+        } else {
+          failedChecks++;
+          console.log('❌ Live website check failed');
+        }
+      } catch (error) {
+        failedChecks++;
+        console.log('❌ Live website check failed:', error);
+      }
+      
+      // System Integration Checks
+      totalChecks++;
+      const socialLinks = [
+        'https://www.facebook.com/profile.php?id=61573906026304',
+        'https://www.instagram.com/gabochiemarketing/',
+        'https://x.com/GabochieMarktng',
+        'https://www.youtube.com/@gabochiemarketing',
+        'https://www.tiktok.com/@gabochiemarketing'
+      ];
+      
+      let socialChecksPassed = 0;
+      for (const link of socialLinks) {
+        try {
+          const response = await fetch(link, { method: 'HEAD' });
+          if (response.ok) socialChecksPassed++;
+        } catch (error) {
+          console.log(`Social link check failed: ${link}`);
+        }
+      }
+      
+      if (socialChecksPassed >= 3) {
+        document.getElementById('check-social-links').checked = true;
+        passedChecks++;
+        console.log('✅ Social links check passed');
+      } else {
+        failedChecks++;
+        console.log('❌ Social links check failed');
+      }
+      
+      // Update build status
+      updateBuildStats(totalChecks, passedChecks, failedChecks);
+      
+      // Re-enable checkboxes
+      checkboxes.forEach(cb => {
+        cb.disabled = false;
+      });
+      
+      console.log('🎉 Build checklist completed');
+      showAlert('success', 'Build Checklist Complete', `${passedChecks}/${totalChecks} checks passed`);
+    }
+
+    function updateBuildStats(total, passed, failed) {
+      document.getElementById('build-total').textContent = total;
+      document.getElementById('build-passed').textContent = passed;
+      document.getElementById('build-failed').textContent = failed;
+      
+      const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+      const statusElement = document.getElementById('build-status');
+      
+      if (passRate >= 90) {
+        statusElement.textContent = 'READY FOR DEPLOYMENT';
+        statusElement.style.color = 'var(--success)';
+      } else if (passRate >= 70) {
+        statusElement.textContent = 'NEEDS ATTENTION';
+        statusElement.style.color = 'var(--warning)';
+      } else {
+        statusElement.textContent = 'NOT READY';
+        statusElement.style.color = 'var(--danger)';
+      }
+      
+      document.getElementById('build-last-check').textContent = new Date().toLocaleString();
+    }
+
+    function updateBuildStatus() {
+      const checkboxes = document.querySelectorAll('#buildChecklistContent input[type="checkbox"]');
+      let checked = 0;
+      checkboxes.forEach(cb => {
+        if (cb.checked) checked++;
+      });
+      
+      updateBuildStats(checkboxes.length, checked, checkboxes.length - checked);
+    }
+
+    function exportBuildReport() {
+      const report = {
+        timestamp: new Date().toISOString(),
+        checklist: {
+          localServer: document.getElementById('check-local-server').checked,
+          adminDashboard: document.getElementById('check-admin-dashboard').checked,
+          csvFile: document.getElementById('check-csv-file').checked,
+          liveWebsite: document.getElementById('check-live-website').checked,
+          liveAdmin: document.getElementById('check-live-admin').checked,
+          googleSheets: document.getElementById('check-google-sheets').checked,
+          socialLinks: document.getElementById('check-social-links').checked,
+          testingSystem: document.getElementById('check-testing-system').checked,
+          reporting: document.getElementById('check-reporting').checked,
+          autoSync: document.getElementById('check-auto-sync').checked
+        },
+        stats: {
+          total: document.getElementById('build-total').textContent,
+          passed: document.getElementById('build-passed').textContent,
+          failed: document.getElementById('build-failed').textContent,
+          status: document.getElementById('build-status').textContent,
+          lastCheck: document.getElementById('build-last-check').textContent
+        }
+      };
+      
+      const dataStr = JSON.stringify(report, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `build-report-${new Date().toISOString().split('T')[0]}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      
+      showAlert('success', 'Build Report Exported', 'Report downloaded successfully');
+    }
+
+    function resetChecklist() {
+      const checkboxes = document.querySelectorAll('#buildChecklistContent input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+      });
+      updateBuildStatus();
+      showAlert('info', 'Checklist Reset', 'All checks have been cleared');
     }
 
     // Initialize auto-sync on dashboard load
