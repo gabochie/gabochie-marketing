@@ -890,6 +890,7 @@ input[type="checkbox"].row-check { width: 16px; height: 16px; cursor: pointer; }
             <button class="panel-btn primary" onclick="bulkUpdateStage()">Set Stage</button>
             <button class="panel-btn danger" onclick="bulkDelete()">Delete</button>
             <button class="panel-btn info" onclick="testBackend()">Test Backend</button>
+            <button class="panel-btn accent" onclick="syncColdLeads()">Sync Cold Leads</button>
           </div>
 
         </div>
@@ -4504,8 +4505,79 @@ function bulkDelete() {
 
 let autoSyncInterval = null;
 
-async function doSync() {
+async function syncColdLeads() {
+  try {
+    showAlert('info', 'Syncing cold leads from CSV...', 'This may take a few minutes.');
+    
+    // Read CSV file
+    const response = await fetch('C:/Users/user/Desktop/unified_database.csv');
+    const csvText = await response.text();
+    const lines = csvText.split('\n');
+    
+    let syncedCount = 0;
+    let errorCount = 0;
+    
+    // Skip header and process each row
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      
+      // Parse CSV line (handle quoted fields)
+      const fields = line.split(',').map(field => {
+        return field.replace(/^"(.*)"$/, '$1').replace(/^"(.*)$/, '$1').replace(/""/g, '"');
+      });
+      
+      if (fields.length >= 8) {
+        const leadData = {
+          action: 'addContact',
+          id: Date.now().toString() + i,
+          name: fields[1] || '',
+          businessName: fields[2] || '',
+          phone: fields[3] || '',
+          email: fields[6] || '',
+          website: fields[4] || '',
+          subcategory: fields[0] || '',
+          location: fields[14] || '',
+          leadSource: 'Cold Lead CSV Sync',
+          notes: `Imported from cold leads database - Revenue Tier: ${fields[11] || 'Unknown'}`,
+          status: 'new',
+          offerType: 'Cold Outreach',
+          productOffer: 'Lead Generation',
+          timestamp: new Date().toISOString()
+        };
+        
+        // Add to Google Sheet via backend
+        const result = await apiCall('addContact', leadData);
+        if (result && result.success) {
+          syncedCount++;
+        } else {
+          errorCount++;
+        }
+      }
+    }
+    
+    showAlert('success', 
+      `Sync completed! ${syncedCount} leads imported, ${errorCount} errors.`,
+      `Successfully imported ${syncedCount} cold leads from your CSV database.`
+    );
+    
+    // Refresh contacts display
+    if (Backend.ready) {
+      await Backend.getContacts().then(result => {
+        if (result && result.success) {
+          contacts = result.data;
+          updateStats();
+          renderContacts();
+        }
+      });
+    }
+    
+  } catch (error) {
+    showAlert('error', 'Sync failed', error.message);
+  }
+}
 
+async function doSync() {
   if (!Backend.ready) return;
 
   const dot = document.getElementById('syncDot');
