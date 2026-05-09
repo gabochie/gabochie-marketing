@@ -5,6 +5,7 @@ description: "Discover why your Ghana business is not appearing on Google Maps a
 categories: [google-maps, troubleshooting, ghana]
 tags: [google-business-profile, visibility, local-seo]
 date: 2026-05-03
+feature-image: /assets/images/blog-features/team-meeting-professional.jpg
 ---
 
 You searched for your business on Google Maps. Nothing. You searched for your service in your area. Competitors everywhere. You? Invisible. Here is exactly why this happens and how to fix it.
