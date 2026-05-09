@@ -629,13 +629,92 @@
       document.getElementById('newContactBusiness').value = '';
     }
 
-    // Sync Cold Leads - Updated for new CSV file with Google Sheets integration
+    // Pull from Google Sheets
+    async function pullFromSheets() {
+      try {
+        console.log('📥 Pulling data from Google Sheets...');
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
+        
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({ action: 'getContacts' })
+        });
+        
+        const result = await response.json();
+        
+        if (result && result.success && Array.isArray(result.data)) {
+          console.log(`✅ Pulled ${result.data.length} contacts from Google Sheets`);
+          contacts = result.data.map(contact => ({
+            id: contact.id || contact._row || Date.now().toString(),
+            name: contact.name || contact['Name'] || '',
+            email: contact.email || contact['Email'] || '',
+            phone: contact.phone || contact['Phone'] || '',
+            business: contact.businessName || contact['Business Name'] || '',
+            stage: contact.stage || contact['Stage'] || 'TOFU',
+            status: contact.status || contact['Status'] || 'New',
+            score: contact.score || 50,
+            source: contact.leadSource || contact['Lead Source'] || 'Google Sheets',
+            date: contact.date || contact['Date'] || new Date().toISOString().split('T')[0]
+          }));
+          updateStats();
+          renderContacts();
+          return true;
+        } else {
+          console.log('❌ Failed to pull from Google Sheets:', result);
+          return false;
+        }
+      } catch (error) {
+        console.error('❌ Pull error:', error);
+        return false;
+      }
+    }
+
+    // Push to Google Sheets
+    async function pushToSheets(contactData) {
+      try {
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
+        
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams(contactData)
+        });
+        
+        const result = await response.json();
+        
+        if (result && result.success) {
+          console.log(`✅ Pushed contact to Google Sheets: ${contactData.name}`);
+          return true;
+        } else {
+          console.log(`❌ Failed to push to Google Sheets: ${contactData.name}`, result);
+          return false;
+        }
+      } catch (error) {
+        console.error(`❌ Push error for: ${contactData.name}`, error);
+        return false;
+      }
+    }
+
+    // Bidirectional Sync - Pull from CSV, Push to Sheets, then Pull back to refresh
     async function syncColdLeads() {
       try {
-        console.log('Starting sync from new CSV file...');
-        showAlert('info', 'Syncing cold leads to Google Sheets...', 'Reading 01_unified_database.csv and syncing to sheet');
+        console.log('🔄 Starting bidirectional sync...');
+        showAlert('info', 'Bidirectional sync in progress...', 'Pulling from CSV, pushing to Sheets, then refreshing...');
         
-        // Read new CSV file
+        // Step 1: Pull existing data from Google Sheets
+        const pullSuccess = await pullFromSheets();
+        if (!pullSuccess) {
+          showAlert('error', 'Sync failed', 'Could not pull existing data from Google Sheets');
+          return;
+        }
+        
+        // Step 2: Read and process CSV file
+        console.log('📄 Reading CSV file...');
         const response = await fetch('C:/Users/user/Desktop/01_unified_database.csv');
         const csvText = await response.text();
         const lines = csvText.split('\n');
@@ -644,15 +723,12 @@
         let errorCount = 0;
         let sheetSyncCount = 0;
         
-        // Google Apps Script URL - Update with your actual URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
-        
-        // Skip header and process each row
+        // Step 3: Process each CSV record and push to Sheets
         for (let i = 1; i < lines.length; i++) {
           const line = lines[i].trim();
           if (!line) continue;
           
-          // Parse CSV line (handle quoted fields)
+          // Parse CSV line
           const fields = line.split(',').map(field => {
             return field.replace(/^"(.*)"$/, '$1').replace(/^"(.*)$/, '$1').replace(/""/g, '"');
           });
@@ -676,62 +752,32 @@
               timestamp: new Date().toISOString()
             };
             
-            // Sync to Google Sheet via Apps Script
-            try {
-              const sheetResponse = await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams(leadData)
-              });
-              
-              const sheetResult = await sheetResponse.json();
-              
-              if (sheetResult && sheetResult.success) {
-                sheetSyncCount++;
-                console.log(`✅ Sheet sync successful for: ${leadData.name}`);
-              } else {
-                console.log(`❌ Sheet sync failed for: ${leadData.name}`, sheetResult);
-                errorCount++;
-              }
-            } catch (sheetError) {
-              console.error(`❌ Sheet sync error for: ${leadData.name}`, sheetError);
+            // Push to Google Sheets
+            const pushSuccess = await pushToSheets(leadData);
+            if (pushSuccess) {
+              sheetSyncCount++;
+            } else {
               errorCount++;
             }
             
-            // Add to local contacts array for immediate display
-            contacts.push({
-              id: leadData.id,
-              name: leadData.name,
-              email: leadData.email,
-              phone: leadData.phone,
-              business: leadData.businessName,
-              stage: 'TOFU',
-              status: 'New',
-              score: 50,
-              source: leadData.leadSource,
-              date: new Date().toISOString().split('T')[0]
-            });
-            
             syncedCount++;
             
-            // Add small delay to avoid overwhelming the API
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Add delay to avoid overwhelming API
+            await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
         
-        // Update display immediately
-        updateStats();
-        renderContacts();
+        // Step 4: Final pull to refresh local data with all changes
+        console.log('🔄 Final pull to refresh local data...');
+        await pullFromSheets();
         
         showAlert('success', 
-          `Sync completed! ${syncedCount} leads processed, ${sheetSyncCount} synced to Google Sheet.`,
-          `Successfully processed ${syncedCount} cold leads from 01_unified_database.csv. ${sheetSyncCount} were synced to Google Sheet.`
+          `Bidirectional sync completed! ${syncedCount} processed, ${sheetSyncCount} synced to Google Sheets.`,
+          `Successfully processed ${syncedCount} cold leads from CSV and synchronized with Google Sheets database.`
         );
         
       } catch (error) {
-        console.error('Sync error:', error);
+        console.error('❌ Bidirectional sync error:', error);
         showAlert('error', 'Sync failed', error.message);
       }
     }
