@@ -2703,19 +2703,9 @@ async function handleLogin() {
 
   if (user === ADMIN_USER && pass === ADMIN_PASS) {
 
-    // Try backend login again (in case init hadn't finished)
+    console.log('Local credentials match - granting access');
 
-    if (!backendAuthToken && hasBackend()) {
-
-      try {
-
-        var retryResult = await Backend.login(user, pass);
-
-        if (retryResult && retryResult.success) backendAuthToken = retryResult.token;
-
-      } catch (_) {}
-
-    }
+    // Grant access immediately for local credentials
 
     document.getElementById('loginScreen').style.display = 'none';
 
@@ -2729,17 +2719,7 @@ async function handleLogin() {
 
   if (DEMO_MODE) {
 
-    if (!backendAuthToken && hasBackend()) {
-
-      try {
-
-        var retryResult = await Backend.login(user, pass);
-
-        if (retryResult && retryResult.success) backendAuthToken = retryResult.token;
-
-      } catch (_) {}
-
-    }
+    console.log('Demo mode - granting access');
 
     document.getElementById('loginScreen').style.display = 'none';
 
@@ -2753,8 +2733,11 @@ async function handleLogin() {
 
   error.textContent = 'Invalid credentials. Please try again.';
 
-}
+  error.style.display = 'block';
 
+  setTimeout(() => { error.style.display = 'none'; }, 3000);
+
+}
 
 
 function handleLogout() {
