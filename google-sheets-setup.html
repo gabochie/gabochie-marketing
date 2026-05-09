@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sheets Setup & Styling - Gabochie Marketing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="google-sheets-init.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-primary mb-8">🏗️ Google Sheets Setup & Styling</h1>
+      
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Initialize Google Sheet</h2>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h3 class="font-bold text-blue-800 mb-2">📋 What This Does:</h3>
+          <ul class="text-sm text-blue-700 space-y-2">
+            <li>• Creates your Google Sheet with proper headers</li>
+            <li>• Applies professional styling to headers</li>
+            <li>• Sets up column widths and formatting</li>
+            <li>• Adds data validation rules</li>
+            <li>• Creates conditional formatting</li>
+            <li>• Tests the complete setup</li>
+          </ul>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button onclick="initializeSheet()" class="bg-primary text-white px-6 py-4 rounded-lg font-semibold hover:bg-dark-green transition">
+            🏗️ Initialize Sheet
+          </button>
+          <button onclick="testInitialization()" class="bg-blue-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-700 transition">
+            🧪 Test Complete Setup
+          </button>
+          <button onclick="getSheetStatus()" class="bg-green-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-green-700 transition">
+            📊 Get Sheet Status
+          </button>
+          <button onclick="createTestLead()" class="bg-gold text-primary px-6 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition">
+            🧪 Create Test Lead
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Results</h2>
+        <div id="resultsDiv" class="bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+          <p class="text-gray-500">Click actions above to see results...</p>
+        </div>
+      </div>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <h3 class="font-bold text-green-800 mb-2">✨ Professional Features:</h3>
+        <ul class="text-sm text-green-700 space-y-1">
+          <li>• <strong>Professional Header Styling</strong> - Green background, white text</li>
+          <li>• <strong>Optimal Column Widths</strong> - Perfect for data readability</li>
+          <li>• <strong>Data Validation Rules</strong> - Phone, email, and dropdown options</li>
+          <li>• <strong>Conditional Formatting</strong> - Color-coded priority levels</li>
+          <li>• <strong>Alternate Row Colors</strong> - Better readability</li>
+          <li>• <strong>Frozen Header Row</strong> - Headers stay visible when scrolling</li>
+          <li>• <strong>Grid Lines</strong> - Professional spreadsheet appearance</li>
+        </ul>
+      </div>
+
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 class="font-bold text-yellow-800 mb-2">📋 Headers That Will Be Created:</h3>
+        <div class="text-sm text-yellow-700 font-mono bg-white p-3 rounded">
+          <div class="grid grid-cols-3 md:grid-cols-4 gap-2">
+            <div><strong>ID</strong></div>
+            <div><strong>Prospect Name</strong></div>
+            <div><strong>Business Name</strong></div>
+            <div><strong>Phone</strong></div>
+            <div><strong>WhatsApp Link</strong></div>
+            <div><strong>Email</strong></div>
+            <div><strong>Website</strong></div>
+            <div><strong>Business Type</strong></div>
+            <div><strong>Location</strong></div>
+            <div><strong>Owner Name</strong></div>
+            <div><strong>GBP Status</strong></div>
+            <div><strong>Lead Source</strong></div>
+            <div><strong>Funnel Stage</strong></div>
+            <div><strong>Pipeline Status</strong></div>
+            <div><strong>Lead Type</strong></div>
+            <div><strong>Offer Type</strong></div>
+            <div><strong>Product Offer</strong></div>
+            <div><strong>Outreach Message</strong></div>
+            <div><strong>Outreach Category</strong></div>
+            <div><strong>Follow-up</strong></div>
+            <div><strong>Last Contact</strong></div>
+            <div><strong>Notes</strong></div>
+            <div><strong>Offer URL Sent</strong></div>
+            <div><strong>Assigned Offer</strong></div>
+            <div><strong>CTA Type</strong></div>
+            <div><strong>AI Model</strong></div>
+            <div><strong>Last Generated At</strong></div>
+            <div><strong>Last Message Type</strong></div>
+            <div><strong>Rating</strong></div>
+            <div><strong>Created At</strong></div>
+            <div><strong>Deleted</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function addResult(message, type = 'info') {
+      const resultsDiv = document.getElementById('resultsDiv');
+      const timestamp = new Date().toLocaleTimeString();
+      
+      const colors = {
+        info: 'bg-blue-100 text-blue-800',
+        success: 'bg-green-100 text-green-800',
+        error: 'bg-red-100 text-red-800',
+        warning: 'bg-yellow-100 text-yellow-800'
+      };
+      
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `${colors[type]} p-3 rounded mb-2`;
+      resultDiv.innerHTML = `<strong>${timestamp}:</strong> ${message}`;
+      
+      resultsDiv.appendChild(resultDiv);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    async function initializeSheet() {
+      addResult('🏗️ Initializing Google Sheet...', 'info');
+      
+      try {
+        const result = await window.sheetsInit.initializeSheet();
+        
+        if (result.success) {
+          addResult('✅ Sheet initialized successfully!', 'success');
+          addResult(`📊 Headers created: ${result.headers.length} columns`, 'info');
+          addResult(`🔗 Sheet ID: ${result.sheetId}`, 'info');
+        } else {
+          addResult(`❌ Initialization failed: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testInitialization() {
+      addResult('🧪 Testing complete initialization...', 'info');
+      
+      try {
+        const result = await window.sheetsInit.testInitialization();
+        
+        if (result.success) {
+          addResult('✅ Complete initialization test passed!', 'success');
+          addResult('🧪 Test lead created successfully', 'info');
+        } else {
+          addResult(`❌ Initialization test failed: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Test error: ${error.message}`, 'error');
+      }
+    }
+
+    async function getSheetStatus() {
+      addResult('📊 Getting sheet status...', 'info');
+      
+      try {
+        const result = await window.sheetsInit.getSheetStatus();
+        
+        if (result.success) {
+          addResult('✅ Sheet status retrieved', 'success');
+          addResult(`📊 Sheet exists: ${result.exists}`, 'info');
+          addResult(`📊 Row count: ${result.rowCount || 'Unknown'}`, 'info');
+        } else {
+          addResult(`❌ Failed to get status: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Status check error: ${error.message}`, 'error');
+      }
+    }
+
+    async function createTestLead() {
+      addResult('🧪 Creating test lead...', 'info');
+      
+      try {
+        const result = await window.sheetsInit.createTestLead();
+        
+        if (result.success) {
+          addResult('✅ Test lead created successfully!', 'success');
+          addResult(`🧪 Lead ID: ${result.id}`, 'info');
+        } else {
+          addResult(`❌ Test lead creation failed: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Test lead error: ${error.message}`, 'error');
+      }
+    }
+
+    // Initialize on page load
+    window.addEventListener('load', function() {
+      addResult('🏗️ Google Sheets Initializer ready!', 'info');
+      addResult('📋 Ready to initialize your sheet with professional styling', 'info');
+    });
+  </script>
+</body>
+</html>

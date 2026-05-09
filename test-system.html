@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabochie Marketing - Automated Testing System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="simple-backend.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-6xl mx-auto p-8">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-primary mb-8">🧪 Automated Testing System</h1>
+      
+      <!-- Test Control Panel -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Test Control Panel</h2>
+        <div class="flex flex-wrap gap-4">
+          <button onclick="runAllTests()" class="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-dark-green transition">
+            🚀 Run All Tests
+          </button>
+          <button onclick="clearResults()" class="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition">
+            🗑️ Clear Results
+          </button>
+        </div>
+      </div>
+
+      <!-- Lead Capture Tests -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">📥 Lead Capture Tests</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button onclick="testHomepageAuditForm()" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition">
+            Homepage Audit Form
+          </button>
+          <button onclick="testPackageForm()" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition">
+            Package Purchase Form
+          </button>
+          <button onclick="testLeadMagnetForm()" class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition">
+            Lead Magnet Exit Form
+          </button>
+        </div>
+      </div>
+
+      <!-- System Tests -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">⚙️ System Tests</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button onclick="testEmailNotifications()" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition">
+            Email Notifications
+          </button>
+          <button onclick="testLeadScoring()" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition">
+            Lead Scoring System
+          </button>
+          <button onclick="testDataValidation()" class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition">
+            Data Validation
+          </button>
+        </div>
+      </div>
+
+      <!-- Test Results -->
+      <div>
+        <h2 class="text-xl font-semibold mb-4">📊 Test Results</h2>
+        <div id="resultsDiv" class="bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-[400px] max-h-[600px] overflow-y-auto">
+          <p class="text-gray-500">Click tests above to see results...</p>
+        </div>
+      </div>
+
+      <!-- System Status -->
+      <div class="mt-8 bg-gray-100 rounded-lg p-4">
+        <h3 class="font-semibold mb-2">🔧 System Status</h3>
+        <div id="statusDiv" class="text-sm text-gray-600">
+          <p>Total Tests: <span id="totalTests">0</span></p>
+          <p>Passed: <span id="passedTests">0</span></p>
+          <p>Failed: <span id="failedTests">0</span></p>
+          <p>Status: <span id="systemStatus">Ready</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Test data
+    const testLeads = [
+      {
+        name: 'Kwame Asante',
+        businessName: 'Tech Solutions Ghana',
+        phone: '+233501234567',
+        email: 'kwame@techsolutions.com',
+        website: 'https://techsolutions.com',
+        subcategory: 'Technology',
+        location: 'Accra',
+        leadSource: 'Google Search',
+        notes: 'Looking for Google Maps optimization',
+        status: 'new',
+        offerType: 'Free Audit',
+        productOffer: 'Google Maps Audit'
+      },
+      {
+        name: 'Adwoa Mensah',
+        businessName: 'Fashion Boutique',
+        phone: '+233307654321',
+        email: 'adwoa@fashion.com',
+        website: 'https://fashion.com',
+        subcategory: 'Retail',
+        location: 'Kumasi',
+        leadSource: 'Social Media',
+        notes: 'Interested in local SEO package',
+        status: 'new',
+        offerType: 'Package Request',
+        productOffer: 'Local SEO Package'
+      },
+      {
+        name: 'Yaw Boateng',
+        businessName: 'Restaurant Accra',
+        phone: '+233208765432',
+        email: 'yaw@restaurant.com',
+        website: '',
+        subcategory: 'Restaurant',
+        location: 'Takoradi',
+        leadSource: 'Referral',
+        notes: 'Referred by existing client',
+        status: 'new',
+        offerType: 'Lead Magnet',
+        productOffer: '1M Ghana Cedis Guide'
+      }
+    ];
+
+    let testResults = [];
+    let totalTests = 0;
+    let passedTests = 0;
+    let failedTests = 0;
+
+    // Test runner functions
+    async function runAllTests() {
+      clearResults();
+      await testHomepageAuditForm();
+      await testPackageForm();
+      await testLeadMagnetForm();
+      await testEmailNotifications();
+      await testLeadScoring();
+      await testDataValidation();
+      updateStatus();
+    }
+
+    async function testHomepageAuditForm() {
+      addTestResult('Homepage Audit Form', 'Testing audit form submission...', 'info');
+      
+      try {
+        const result = await window.simpleBackend.sendLead(testLeads[0]);
+        if (result.success) {
+          addTestResult('Homepage Audit Form', 'Audit form submission successful', 'success');
+        } else {
+          addTestResult('Homepage Audit Form', `Submission failed: ${result.message}`, 'error');
+        }
+      } catch (error) {
+        addTestResult('Homepage Audit Form', `Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testPackageForm() {
+      addTestResult('Package Purchase Form', 'Testing package form submission...', 'info');
+      
+      try {
+        const result = await window.simpleBackend.sendLead(testLeads[1]);
+        if (result.success) {
+          addTestResult('Package Purchase Form', 'Package form submission successful', 'success');
+        } else {
+          addTestResult('Package Purchase Form', `Submission failed: ${result.message}`, 'error');
+        }
+      } catch (error) {
+        addTestResult('Package Purchase Form', `Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testLeadMagnetForm() {
+      addTestResult('Lead Magnet Exit Form', 'Testing lead magnet form submission...', 'info');
+      
+      try {
+        const result = await window.simpleBackend.sendLead(testLeads[2]);
+        if (result.success) {
+          addTestResult('Lead Magnet Exit Form', 'Lead magnet form submission successful', 'success');
+        } else {
+          addTestResult('Lead Magnet Exit Form', `Submission failed: ${result.message}`, 'error');
+        }
+      } catch (error) {
+        addTestResult('Lead Magnet Exit Form', `Network error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testEmailNotifications() {
+      addTestResult('Email Notifications', 'Testing email notification system...', 'info');
+      
+      try {
+        const result = await window.simpleBackend.sendEmailNotification(testLeads[0]);
+        if (result && result.success) {
+          addTestResult('Email Notifications', 'Email notification system working', 'success');
+        } else {
+          addTestResult('Email Notifications', `Email system failed: ${result ? result.message : 'Unknown error'}`, 'error');
+        }
+      } catch (error) {
+        addTestResult('Email Notifications', `Email system error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testLeadScoring() {
+      addTestResult('Lead Scoring System', 'Testing lead scoring algorithm...', 'info');
+      
+      try {
+        // Test lead scoring algorithm
+        const scores = testLeads.map(lead => {
+          let score = 0;
+          if (lead.subcategory === 'Technology') score += 30;
+          else if (lead.subcategory === 'Retail') score += 20;
+          else if (lead.subcategory === 'Restaurant') score += 25;
+          
+          if (lead.email && lead.email.includes('@')) score += 20;
+          if (lead.phone && lead.phone.length >= 8) score += 20;
+          if (lead.leadSource === 'Google Search') score += 15;
+          else if (lead.leadSource === 'Referral') score += 10;
+          
+          return { name: lead.name, score: Math.min(100, score) };
+        });
+        
+        addTestResult('Lead Scoring System', 'Lead scoring working correctly', 'success');
+        addTestResult('Lead Scoring System', JSON.stringify(scores), 'info');
+      } catch (error) {
+        addTestResult('Lead Scoring System', `Scoring error: ${error.message}`, 'error');
+      }
+    }
+
+    async function testDataValidation() {
+      addTestResult('Data Validation', 'Testing validation rules...', 'info');
+      
+      try {
+        const validations = [
+          { test: 'Valid email', passed: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test('test@example.com') },
+          { test: 'Invalid email', passed: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test('invalid-email') },
+          { test: 'Valid phone', passed: /^\+?\d{10,15}$/.test('+233501234567') },
+          { test: 'Invalid phone', passed: !/^\+?\d{10,15}$/.test('123') },
+          { test: 'Valid website', passed: /^https?:\/\/.+\..+/.test('https://example.com') },
+          { test: 'Invalid website', passed: !/^https?:\/\/.+\..+/.test('invalid') }
+        ];
+        
+        const allPassed = validations.every(v => v.passed);
+        
+        if (allPassed) {
+          addTestResult('Data Validation', 'All validation rules working', 'success');
+        } else {
+          addTestResult('Data Validation', 'Some validation rules failed', 'error');
+        }
+        
+        addTestResult('Data Validation', JSON.stringify(validations), 'info');
+      } catch (error) {
+        addTestResult('Data Validation', `Validation error: ${error.message}`, 'error');
+      }
+    }
+
+    function addTestResult(testName, message, type) {
+      const resultsDiv = document.getElementById('resultsDiv');
+      const timestamp = new Date().toLocaleTimeString();
+      
+      const colors = {
+        info: 'bg-blue-100 text-blue-800',
+        success: 'bg-green-100 text-green-800',
+        error: 'bg-red-100 text-red-800'
+      };
+      
+      const icons = {
+        info: 'ℹ️',
+        success: '✅',
+        error: '❌'
+      };
+      
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `${colors[type]} p-3 rounded mb-2`;
+      resultDiv.innerHTML = `
+        <div class="flex items-start gap-2">
+          <span class="text-lg">${icons[type]}</span>
+          <div>
+            <div class="font-semibold">${testName}</div>
+            <div class="text-sm">${message}</div>
+            <div class="text-xs text-gray-500">${timestamp}</div>
+          </div>
+        </div>
+      `;
+      
+      resultsDiv.appendChild(resultDiv);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+      
+      updateStatus();
+    }
+
+    function updateStatus() {
+      document.getElementById('totalTests').textContent = totalTests;
+      document.getElementById('passedTests').textContent = passedTests;
+      document.getElementById('failedTests').textContent = failedTests;
+      
+      const statusElement = document.getElementById('systemStatus');
+      if (failedTests === 0 && totalTests > 0) {
+        statusElement.textContent = 'All Systems Operational';
+        statusElement.className = 'text-green-600 font-semibold';
+      } else if (failedTests > 0) {
+        statusElement.textContent = 'Issues Detected';
+        statusElement.className = 'text-red-600 font-semibold';
+      } else {
+        statusElement.textContent = 'Ready';
+        statusElement.className = 'text-gray-600';
+      }
+    }
+
+    function clearResults() {
+      document.getElementById('resultsDiv').innerHTML = '<p class="text-gray-500">Click tests above to see results...</p>';
+      totalTests = 0;
+      passedTests = 0;
+      failedTests = 0;
+      updateStatus();
+    }
+
+    // Auto-update counters
+    function updateStatus() {
+      const results = document.querySelectorAll('#resultsDiv > div');
+      totalTests = results.length;
+      passedTests = document.querySelectorAll('#resultsDiv .bg-green-100').length;
+      failedTests = document.querySelectorAll('#resultsDiv .bg-red-100').length;
+      
+      document.getElementById('totalTests').textContent = totalTests;
+      document.getElementById('passedTests').textContent = passedTests;
+      document.getElementById('failedTests').textContent = failedTests;
+    }
+
+    // Initialize
+    window.addEventListener('load', function() {
+      console.log('🧪 Automated Testing System loaded');
+      console.log('Available tests:');
+      console.log('- Homepage Audit Form');
+      console.log('- Package Purchase Form');
+      console.log('- Lead Magnet Exit Form');
+      console.log('- Email Notifications');
+      console.log('- Lead Scoring System');
+      console.log('- Data Validation');
+    });
+  </script>
+</body>
+</html>

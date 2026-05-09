@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Backend Setup - Gabochie Marketing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="simple-backend.js"></script>
+</head>
+<body class="bg-gray-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-primary mb-6">🚀 Simple Backend Setup</h1>
+      
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Step 1: Get Formspree Token</h2>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <h3 class="font-bold text-yellow-800 mb-2">📝 What You Need:</h3>
+          <ol class="text-sm text-yellow-700 space-y-2 list-decimal list-inside">
+            <li>Go to <a href="https://formspree.io/" target="_blank" class="text-blue-600 underline">formspree.io</a></li>
+            <li>Sign up for free account</li>
+            <li>Get your formspree token from dashboard</li>
+            <li>Copy the token and paste it below</li>
+          </ol>
+        </div>
+        
+        <div class="space-y-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Formspree Token:</label>
+          <input type="password" id="formspreeToken" class="w-full border border-gray-300 rounded-lg px-4 py-3" 
+                 placeholder="Enter your Formspree token here">
+          <button onclick="saveToken()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            💾 Save Token
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Step 2: Test Connection</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button onclick="testSimpleBackend()" class="bg-primary text-white px-6 py-4 rounded-lg font-semibold hover:bg-dark-green transition">
+            🧪 Test Lead Submission
+          </button>
+          <button onclick="testEmailQueue()" class="bg-green-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-green-700 transition">
+            📧 Check Email Queue
+          </button>
+          <button onclick="exportLeads()" class="bg-gold text-primary px-6 py-4 rounded-lg font-semibold hover:bg-yellow-400 transition">
+            📥 Export Leads CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Results</h2>
+        <div id="resultsDiv" class="bg-gray-50 border border-gray-200 rounded-lg p-4 min-h-[200px]">
+          <p class="text-gray-500">Click actions above to see results...</p>
+        </div>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 class="font-bold text-blue-800 mb-2">🎯 How It Works:</h3>
+        <ul class="text-sm text-blue-700 space-y-1">
+          <li>• <strong>No Google Cloud Console needed</strong></li>
+          <li>• <strong>No API keys required</strong></li>
+          <li>• <strong>Formspree handles the backend</strong></li>
+          <li>• <strong>Direct Google Sheets integration</strong></li>
+          <li>• <strong>Automatic email notifications</strong></li>
+          <li>• <strong>Local backup when service is down</strong></li>
+        </ul>
+      </div>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <h3 class="font-bold text-green-800 mb-2">✅ Benefits:</h3>
+        <ul class="text-sm text-green-700 space-y-1">
+          <li>• Setup in 5 minutes</li>
+          <li>• No technical skills needed</li>
+          <li>• Reliable and maintained</li>
+          <li>• Professional email notifications</li>
+          <li>• Full data ownership</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function saveToken() {
+      const token = document.getElementById('formspreeToken').value;
+      if (!token) {
+        alert('Please enter a Formspree token');
+        return;
+      }
+      
+      localStorage.setItem('formspreeToken', token);
+      window.simpleBackend.serviceUrl = token ? `https://formspree.io/f/mqenywna?token=${token}` : 'https://formspree.io/f/mqenywna';
+      
+      addResult('✅ Token saved successfully!', 'success');
+    }
+
+    function loadToken() {
+      const savedToken = localStorage.getItem('formspreeToken');
+      if (savedToken) {
+        document.getElementById('formspreeToken').value = savedToken;
+        window.simpleBackend.serviceUrl = `https://formspree.io/f/mqenywna?token=${savedToken}`;
+      }
+    }
+
+    function addResult(message, type = 'info') {
+      const resultsDiv = document.getElementById('resultsDiv');
+      const timestamp = new Date().toLocaleTimeString();
+      const colors = {
+        info: 'bg-blue-100 text-blue-800',
+        success: 'bg-green-100 text-green-800',
+        error: 'bg-red-100 text-red-800',
+        warning: 'bg-yellow-100 text-yellow-800'
+      };
+      
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `${colors[type]} p-3 rounded mb-2`;
+      resultDiv.innerHTML = `<strong>${timestamp}:</strong> ${message}`;
+      
+      resultsDiv.appendChild(resultDiv);
+      resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+
+    async function testSimpleBackend() {
+      addResult('🧪 Testing simple backend...', 'info');
+      
+      const testData = {
+        name: 'Test User',
+        businessName: 'Test Business Ghana',
+        phone: '+233501234567',
+        email: 'test@example.com',
+        website: 'https://testbusiness.com',
+        subcategory: 'Technology',
+        location: 'Accra',
+        leadSource: 'Simple Backend Test',
+        notes: 'Testing the simple backend solution',
+        status: 'new',
+        offerType: 'Test',
+        productOffer: 'Simple Backend Verification'
+      };
+      
+      try {
+        const result = await window.simpleBackend.sendLead(testData);
+        if (result.success) {
+          addResult(`✅ Lead submitted successfully! ID: ${result.id}`, 'success');
+        } else {
+          addResult(`❌ Lead submission failed: ${result.message}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Network error: ${error.message}`, 'error');
+      }
+    }
+
+    function testEmailQueue() {
+      addResult('📧 Checking email queue...', 'info');
+      
+      try {
+        const result = window.simpleBackend.getPendingEmails();
+        if (result.success) {
+          addResult(`📧 Found ${result.emails.length} pending emails`, 'success');
+          result.emails.forEach(email => {
+            addResult(`📧 To: ${email.to} | Subject: ${email.subject}`, 'info');
+          });
+        } else {
+          addResult(`❌ Failed to get email queue: ${result.error}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Error checking email queue: ${error.message}`, 'error');
+      }
+    }
+
+    function exportLeads() {
+      addResult('📥 Exporting leads...', 'info');
+      
+      try {
+        window.simpleBackend.exportLeadsCSV();
+        addResult('✅ Leads exported successfully!', 'success');
+      } catch (error) {
+        addResult(`❌ Export failed: ${error.message}`, 'error');
+      }
+    }
+
+    // Load token on page load
+    window.addEventListener('load', function() {
+      loadToken();
+      addResult('🚀 Simple Backend ready!', 'info');
+    });
+  </script>
+</body>
+</html>
