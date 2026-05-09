@@ -886,12 +886,10 @@ input[type="checkbox"].row-check { width: 16px; height: 16px; cursor: pointer; }
 
           <span class="bulk-count" id="bulkCountContacts">0 selected</span>
 
-          <div class="bulk-actions">
-
+          <div class="modal-actions">
             <button class="panel-btn primary" onclick="bulkUpdateStage()">Set Stage</button>
-
             <button class="panel-btn danger" onclick="bulkDelete()">Delete</button>
-
+            <button class="panel-btn info" onclick="testBackend()">Test Backend</button>
           </div>
 
         </div>
@@ -2059,6 +2057,66 @@ let selectedContacts = new Set();
 let currentTab = 'contacts';
 
 let backendAuthToken = null;
+
+
+
+// ==================== BACKEND API ====================
+
+const Backend = {
+
+  ready: false,
+
+  url: 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec',
+
+  async testBackend() {
+
+    try {
+
+      const response = await fetch(this.url, {
+
+        method: 'POST',
+
+        headers: { 'Content-Type': 'application/json' },
+
+        body: JSON.stringify({
+
+          action: 'test',
+
+          timestamp: new Date().toISOString()
+
+        })
+
+      });
+
+      if (response.ok) {
+
+        const result = await response.json();
+
+        if (result.success) {
+
+          showAlert('success', 'Backend test successful!', 'Connection to Google Apps Script is working properly.');
+
+        } else {
+
+          showAlert('error', 'Backend test failed', result.message || 'Unknown error occurred.');
+
+        }
+
+      } else {
+
+        throw new Error('Network error');
+
+      }
+
+    } catch (error) {
+
+      showAlert('error', 'Test failed', error.message);
+
+    }
+
+  }
+
+};
 
 
 
