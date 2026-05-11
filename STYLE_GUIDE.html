@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabochie Marketing — Style Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0F5C28;
+      --primary-light: #1A7B3A;
+      --primary-dark: #0A441D;
+      --accent: #7ED354;
+      --accent-light: #A8E07A;
+      --danger: #E53935;
+      --warning: #FB8C00;
+      --info: #039BE5;
+      --bg: #f0f2f5;
+      --card-bg: #ffffff;
+      --text: #1a1a2e;
+      --text-light: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+      --radius: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6;
+      padding: 40px 20px;
+    }
+    .container { max-width: 1080px; margin: 0 auto; }
+    h1 { font-size: 32px; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    h2 { font-size: 20px; font-weight: 700; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+    h4 { font-size: 14px; font-weight: 600; margin: 16px 0 6px; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; }
+    .subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 32px; }
+
+    .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+
+    .swatch { border-radius: var(--radius); padding: 20px; color: #fff; font-weight: 600; font-size: 13px; display: flex; flex-direction: column; gap: 4px; min-height: 100px; justify-content: flex-end; }
+    .swatch .name { font-weight: 700; font-size: 15px; }
+    .swatch .hex { opacity: .8; font-weight: 400; font-family: monospace; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+    .tag { display: inline-block; padding: 6px 14px; border-radius: var(--radius); font-size: 12px; font-weight: 600; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); color: var(--text-light); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+
+    pre { background: #1a1a2e; color: #e4e4ef; padding: 16px; border-radius: var(--radius); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; overflow-x: auto; line-height: 1.5; }
+    code { font-family: 'SF Mono', monospace; font-size: 13px; background: #e8e8ee; padding: 2px 6px; border-radius: 4px; }
+    pre code { background: none; padding: 0; }
+
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Gabochie Marketing — Style Guide</h1>
+  <p class="subtitle">Design tokens, component patterns, naming conventions, and code standards.</p>
+
+  <!-- ─── COLOR ─── -->
+  <h2>Color Palette</h2>
+  <div class="card-grid">
+    <div class="swatch" style="background:#0F5C28;"><span class="name">Primary</span><span class="hex">#0F5C28</span><span>Buttons, headings, nav active state</span></div>
+    <div class="swatch" style="background:#1A7B3A;"><span class="name">Primary Light</span><span class="hex">#1A7B3A</span><span>Hover states, nav item bg</span></div>
+    <div class="swatch" style="background:#0A441D;"><span class="name">Primary Dark</span><span class="hex">#0A441D</span><span>Footer, text on light bg</span></div>
+    <div class="swatch" style="background:#7ED354;color:#1a1a2e;"><span class="name">Accent</span><span class="hex">#7ED354</span><span>CTA buttons, success alerts</span></div>
+    <div class="swatch" style="background:#A8E07A;color:#1a1a2e;"><span class="name">Accent Light</span><span class="hex">#A8E07A</span><span>Hover on accent, subtle highlights</span></div>
+    <div class="swatch" style="background:#E53935;"><span class="name">Danger</span><span class="hex">#E53935</span><span>Delete, errors, cold status</span></div>
+    <div class="swatch" style="background:#FB8C00;color:#1a1a2e;"><span class="name">Warning</span><span class="hex">#FB8C00</span><span>Warnings, TOFU stage</span></div>
+    <div class="swatch" style="background:#039BE5;"><span class="name">Info</span><span class="hex">#039BE5</span><span>Info badges, MOFU stage</span></div>
+  </div>
+
+  <h3>Funnel Stage Colors</h3>
+  <table>
+    <tr><th>Stage</th><th>CSS</th><th>Badge</th></tr>
+    <tr><td>TOFU</td><td><code>#FB8C00</code></td><td><span class="badge" style="background:#FB8C00;color:#fff;">TOFU</span></td></tr>
+    <tr><td>MOFU</td><td><code>#039BE5</code></td><td><span class="badge" style="background:#039BE5;color:#fff;">MOFU</span></td></tr>
+    <tr><td>BOFU</td><td><code>#0F5C28</code></td><td><span class="badge" style="background:#0F5C28;color:#fff;">BOFU</span></td></tr>
+    <tr><td>Network</td><td><code>#1A7B3A</code></td><td><span class="badge" style="background:#1A7B3A;color:#fff;">Network</span></td></tr>
+  </table>
+
+  <h3>Pipeline Status Colors</h3>
+  <table>
+    <tr><th>Status</th><th>CSS</th><th>Badge</th></tr>
+    <tr><td>New</td><td><code>#FB8C00</code></td><td><span class="badge" style="background:#FB8C00;color:#fff;">New</span></td></tr>
+    <tr><td>Contacted</td><td><code>#039BE5</code></td><td><span class="badge" style="background:#039BE5;color:#fff;">Contacted</span></td></tr>
+    <tr><td>Replied</td><td><code>#1A7B3A</code></td><td><span class="badge" style="background:#1A7B3A;color:#fff;">Replied</span></td></tr>
+    <tr><td>Interested</td><td><code>#0F5C28</code></td><td><span class="badge" style="background:#0F5C28;color:#fff;">Interested</span></td></tr>
+    <tr><td>Closed</td><td><code>#0A441D</code></td><td><span class="badge" style="background:#0A441D;color:#fff;">Closed</span></td></tr>
+    <tr><td>Cold</td><td><code>#E53935</code></td><td><span class="badge" style="background:#E53935;color:#fff;">Cold</span></td></tr>
+  </table>
+
+  <h3>Opportunity Score</h3>
+  <table>
+    <tr><th>Range</th><th>Label</th><th>Badge</th></tr>
+    <tr><td>0–39</td><td>Cold</td><td><span class="badge" style="background:#E53935;color:#fff;">Cold</span></td></tr>
+    <tr><td>40–69</td><td>Warm</td><td><span class="badge" style="background:#FB8C00;color:#fff;">Warm</span></td></tr>
+    <tr><td>70–100</td><td>Hot</td><td><span class="badge" style="background:#7ED354;color:#1a1a2e;">Hot</span></td></tr>
+  </table>
+
+  <!-- ─── TYPOGRAPHY ─── -->
+  <h2>Typography</h2>
+  <div class="card">
+    <h4>Font Family</h4>
+    <p><code>font-family: 'Inter', sans-serif;</code></p>
+    <p style="font-size:12px;color:var(--text-light);margin-top:4px;">Loaded from Google Fonts (300–900 weights)</p>
+
+    <h4 style="margin-top:20px;">Weights</h4>
+    <table>
+      <tr><th>Weight</th><th>Usage</th><th>Example</th></tr>
+      <tr><td>400 (Regular)</td><td>Body text, table cells</td><td style="font-weight:400;">Marketing dashboard</td></tr>
+      <tr><td>500 (Medium)</td><td>Labels, nav items</td><td style="font-weight:500;">Marketing dashboard</td></tr>
+      <tr><td>600 (Semibold)</td><td>Section titles, button text</td><td style="font-weight:600;">Marketing dashboard</td></tr>
+      <tr><td>700 (Bold)</td><td>Panel headings, card titles</td><td style="font-weight:700;">Marketing dashboard</td></tr>
+      <tr><td>800 (Extra Bold)</td><td>Page title</td><td style="font-weight:800;">Marketing dashboard</td></tr>
+    </table>
+
+    <h4 style="margin-top:20px;">Headings</h4>
+    <table>
+      <tr><th>Element</th><th>Size</th><th>Weight</th></tr>
+      <tr><td>H1</td><td>24px</td><td>800</td></tr>
+      <tr><td>H2 (panel header)</td><td>18px</td><td>700</td></tr>
+      <tr><td>H3</td><td>16px</td><td>600</td></tr>
+      <tr><td>Body</td><td>14px</td><td>400</td></tr>
+      <tr><td>Small / meta</td><td>12px</td><td>400</td></tr>
+    </table>
+  </div>
+
+  <!-- ─── LAYOUT ─── -->
+  <h2>Layout & Spacing</h2>
+  <div class="card">
+    <table>
+      <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+      <tr><td><code>--radius</code></td><td>8px</td><td>Card corners, button corners</td></tr>
+      <tr><td><code>--radius-sm</code></td><td>6px</td><td>Input fields, small elements</td></tr>
+      <tr><td><code>--shadow</code></td><td><code>0 2px 8px rgba(0,0,0,0.08)</code></td><td>Card shadow</td></tr>
+      <tr><td><code>--shadow-lg</code></td><td><code>0 8px 32px rgba(0,0,0,0.12)</code></td><td>Modal, login card</td></tr>
+      <tr><td>Padding</td><td>20px</td><td>Card inner padding</td></tr>
+      <tr><td>Gap</td><td>12px</td><td>Grid/flex gaps</td></tr>
+    </table>
+  </div>
+
+  <!-- ─── COMPONENTS ─── -->
+  <h2>Components</h2>
+
+  <h3>Buttons</h3>
+  <div class="card">
+    <table>
+      <tr><th>Class</th><th>Background</th><th>Preview</th></tr>
+      <tr><td><code>.panel-btn</code></td><td>Inherit</td><td><button class="panel-btn" style="pointer-events:none;padding:8px 16px;border:2px solid var(--border);border-radius:var(--radius);font-weight:600;cursor:pointer;font-size:13px;">Default</button></td></tr>
+      <tr><td><code>.panel-btn.primary</code></td><td><code>var(--primary)</code></td><td><button style="pointer-events:none;padding:8px 16px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;font-size:13px;background:var(--primary);color:#fff;">Primary</button></td></tr>
+      <tr><td><code>.panel-btn.accent</code></td><td><code>var(--accent)</code></td><td><button style="pointer-events:none;padding:8px 16px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;font-size:13px;background:var(--accent);color:var(--text);">Accent</button></td></tr>
+      <tr><td><code>.panel-btn.secondary</code></td><td><code>var(--text-light)</code></td><td><button style="pointer-events:none;padding:8px 16px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;font-size:13px;background:var(--text-light);color:#fff;">Secondary</button></td></tr>
+      <tr><td><code>.panel-btn.danger</code></td><td><code>var(--danger)</code></td><td><button style="pointer-events:none;padding:8px 16px;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;font-size:13px;background:var(--danger);color:#fff;">Danger</button></td></tr>
+    </table>
+  </div>
+
+  <h3>Cards</h3>
+  <div class="card">
+    <p>Cards use <code>.card-bg</code> background with <code>var(--radius)</code> and <code>var(--shadow)</code>. Inner padding is 20px.</p>
+    <pre><code>&lt;div style="background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;"&gt;
+  &lt;h2&gt;Panel Title&lt;/h2&gt;
+  &lt;p&gt;Content...&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+
+  <h3>Alert / Toast</h3>
+  <div class="card">
+    <table>
+      <tr><th>Class</th><th>Background</th><th>Preview</th></tr>
+      <tr><td><code>.alert-success</code></td><td><code>var(--accent)</code></td><td><span class="tag" style="background:var(--accent);color:var(--text);">Success message</span></td></tr>
+      <tr><td><code>.alert-error</code></td><td><code>var(--danger)</code></td><td><span class="tag" style="background:var(--danger);color:#fff;">Error message</span></td></tr>
+      <tr><td><code>.alert-info</code></td><td><code>var(--info)</code></td><td><span class="tag" style="background:var(--info);color:#fff;">Info message</span></td></tr>
+    </table>
+  </div>
+
+  <h3>Table</h3>
+  <div class="card">
+    <p>Tables are wrapped in <code>.table-wrap</code> for overflow scrolling.</p>
+    <pre><code>&lt;div class="table-wrap"&gt;
+  &lt;table&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;td&gt;Kwame Mensah&lt;/td&gt;&lt;td&gt;&lt;span class="badge"&gt;New&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+
+  <h3>Filter Bar</h3>
+  <div class="card">
+    <p>Filters use <code>.filter-bar</code> with flexbox layout. Search inputs and select dropdowns inside.</p>
+    <pre><code>&lt;div class="filter-bar"&gt;
+  &lt;input type="text" placeholder="Search..."&gt;
+  &lt;select&gt;&lt;option&gt;All Stages&lt;/option&gt;&lt;/select&gt;
+  &lt;button class="panel-btn accent"&gt;Filter&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+
+  <!-- ─── NAMING CONVENTIONS ─── -->
+  <h2>CSS Naming</h2>
+  <div class="card">
+    <table>
+      <tr><th>Pattern</th><th>Example</th><th>Description</th></tr>
+      <tr><td><code>.panel-*</code></td><td><code>.panel-btn</code>, <code>.panel-header</code>, <code>.panel-actions</code></td><td>Elements inside a dashboard panel</td></tr>
+      <tr><td><code>.nav-*</code></td><td><code>.nav-item</code>, <code>.nav-label</code>, <code>.nav-badge</code></td><td>Sidebar navigation</td></tr>
+      <tr><td><code>.modal-*</code></td><td><code>.modal-overlay</code>, <code>.modal</code>, <code>.modal-actions</code></td><td>Modal dialog parts</td></tr>
+      <tr><td><code>.filter-bar</code></td><td>—</td><td>Top filter/search section</td></tr>
+      <tr><td><code>.table-wrap</code></td><td>—</td><td>Scrollable table wrapper</td></tr>
+      <tr><td><code>.card-*</code></td><td><code>.card-bg</code></td><td>Card backgrounds</td></tr>
+      <tr><td><code>.csv-*</code></td><td><code>.csv-dropzone</code>, <code>.csv-preview</code></td><td>CSV importer section</td></tr>
+    </table>
+  </div>
+
+  <!-- ─── JS CONVENTIONS ─── -->
+  <h2>JavaScript Conventions</h2>
+  <div class="card">
+    <table>
+      <tr><th>Rule</th><th>Standard</th></tr>
+      <tr><td>Variable declaration</td><td><code>var</code> for global/function-scoped, <code>let</code>/<code>const</code> for block-scoped</td></tr>
+      <tr><td>Quotes</td><td>Single quotes (<code>'string'</code>) — avoid double quotes</td></tr>
+      <tr><td>Semicolons</td><td>Always</td></tr>
+      <tr><td>Indentation</td><td>2 spaces</td></tr>
+      <tr><td>Async</td><td><code>async function name() { ... }</code> — not arrow async</td></tr>
+      <tr><td>Promises</td><td><code>try/catch</code> preferred over <code>.then()</code></td></tr>
+      <tr><td>Event handlers</td><td>Inline <code>onclick</code> attributes in HTML, named functions in JS</td></tr>
+      <tr><td>DOM access</td><td><code>document.getElementById()</code> — not <code>querySelector</code> for IDs</td></tr>
+      <tr><td>Template literals</td><td>Backticks for string interpolation</td></tr>
+      <tr><td>Comparison</td><td>Strict <code>===</code> / <code>!==</code></td></tr>
+    </table>
+  </div>
+
+  <!-- ─── BACKEND CONVENTIONS ─── -->
+  <h2>Apps Script (Code.gs) Conventions</h2>
+  <div class="card">
+    <table>
+      <tr><th>Rule</th><th>Standard</th></tr>
+      <tr><td>Indentation</td><td>2 spaces</td></tr>
+      <tr><td>Naming</td><td><code>camelCase</code> functions, <code>UPPER_CASE</code> constants</td></tr>
+      <tr><td>Private helpers</td><td>Trailing underscore: <code>getSheet_()</code>, <code>checkAuth_()</code></td></tr>
+      <tr><td>Sheet access</td><td>Always via <code>getSheet_()</code> / <code>getClientSheet_()</code></td></tr>
+      <tr><td>Return shape</td><td><code>{ success: bool, data/error: ... }</code></td></tr>
+      <tr><td>Error handling</td><td><code>try/catch</code> wrapping every public function</td></tr>
+      <tr><td>doPost routing</td><td>Switch on <code>data.action</code>, each action maps to one function</td></tr>
+      <tr><td>Auth</td><td>All actions (except <code>login</code>/<code>ping</code>) call <code>checkAuth_(token)</code></td></tr>
+    </table>
+  </div>
+
+  <!-- ─── PROJECT STRUCTURE ─── -->
+  <h2>File Structure</h2>
+  <div class="card">
+    <pre><code>/
+├── index.html                  # Main website (marketing.gabochie.com)
+├── admin/
+│   ├── index.html              # Admin dashboard (SPA, all-in-one)
+│   └── Code.gs                 # Google Apps Script backend
+├── client/
+│   ├── login.html              # Client portal login
+│   └── dashboard.html          # Client portal dashboard
+├── assets/                     # Images, icons, static assets
+├── blog/                       # Blog pages
+├── services/                   # Service detail pages
+├── _layouts/                   # Jekyll layouts (for blog)
+├── _posts/                     # Jekyll blog posts
+├── google-apps-script-backend.js   # Simplified backend for main site
+├── .editorconfig               # Editor settings
+├── .eslintrc.json              # JS linting rules
+├── .prettierrc                 # Code formatter config
+├── CNAME                       # GitHub Pages custom domain
+├── robots.txt, sitemap.xml     # SEO
+└── STYLE_GUIDE.html            # This file</code></pre>
+  </div>
+
+  <hr>
+
+  <h2>Sheets Schema</h2>
+  <p style="color:var(--text-light);margin-bottom:16px;">Spreadsheet ID: <code>1yvFvoIeVrOyBjocXBLAg1onDLKEFtdSxSkD4M5I1tl4</code></p>
+
+  <h3>Leads Sheet (31 columns)</h3>
+  <div class="card">
+    <pre><code>ID | Prospect Name | Business Name | Phone | WhatsApp Link | Email | Website
+Business Type | Location | Owner Name | GBP Status | Lead Source
+Funnel Stage | Pipeline Status | Lead Type | Offer Type | Product Offer
+Outreach Message | Outreach Category | Follow-up | Last Contact | Notes
+Offer URL Sent | Assigned Offer | CTA Type | AI Model | Last Generated At
+Last Message Type | Rating | Created At | Deleted</code></pre>
+  </div>
+
+  <h3>Clients Sheet (16 columns)</h3>
+  <div class="card">
+    <pre><code>Email | Password | Name | Business Name | Package | Status
+Start Date | Phase 1 | Phase 2 | Phase 3 | Views | Directions
+Calls | Reviews | Token | Created At</code></pre>
+  </div>
+
+  <hr>
+  <p style="text-align:center;color:var(--text-light);font-size:12px;">
+    Gabochie Marketing — Generated May 2026
+  </p>
+
+</div>
+</body>
+</html>
