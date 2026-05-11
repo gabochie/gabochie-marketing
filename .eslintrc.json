@@ -1,0 +1,32 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": false
+  },
+  "globals": {
+    "XLSX": "readonly",
+    "google": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "script"
+  },
+  "rules": {
+    "no-var": "off",
+    "prefer-const": "warn",
+    "no-unused-vars": ["warn", { "args": "none" }],
+    "no-undef": "warn",
+    "eqeqeq": ["warn", "always"],
+    "curly": "warn",
+    "no-throw-literal": "warn",
+    "semi": ["warn", "always"],
+    "quotes": ["warn", "single", { "avoidEscape": true }],
+    "indent": ["warn", 2, { "SwitchCase": 1 }],
+    "comma-dangle": ["warn", "never"],
+    "no-trailing-spaces": "warn",
+    "eol-last": ["warn", "always"],
+    "no-multiple-empty-lines": ["warn", { "max": 2 }]
+  },
+  "ignorePatterns": ["*.gs", "assets/**", "simple-backend.js"]
+}
