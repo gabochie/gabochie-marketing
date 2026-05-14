@@ -340,9 +340,9 @@
 
           <a href="client/login.html" class="text-sm font-medium text-gray-600 hover:text-primary transition">Client Portal</a>
 
-           <a href="free-audit.html" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-dark-green transition pulse-glow cursor-pointer">
-             Get Free Audit
-           </a>
+            <button onclick="location.href='free-audit.html'" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-dark-green transition pulse-glow cursor-pointer">
+              Get Free Audit
+            </button>
 
         </div>
 
@@ -354,27 +354,57 @@
 
       </div>
 
-    </div>
-
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3">
-
-      <a href="#system" class="block text-sm font-medium text-gray-600 py-2">How It Works</a>
-
-      <a href="#proof" class="block text-sm font-medium text-gray-600 py-2">Results</a>
-
-      <a href="#blog" class="block text-sm font-medium text-gray-600 py-2">Blog</a>
-
-      <a href="#pricing" class="block text-sm font-medium text-gray-600 py-2">Pricing</a>
-
-       <a href="referral.html" class="block text-sm font-medium text-gray-600 py-2">Refer & Earn</a>
-
-       <a href="client/login.html" class="block text-sm font-medium text-gray-600 py-2">Client Portal</a>
-
-       <a href="free-audit.html" class="block w-full bg-primary text-white px-5 py-3 rounded-full text-sm font-semibold text-center cursor-pointer">
-         Get Free Audit
-       </a>
-
-      </div>
+   <!-- HERO SECTION -->
+   <section class="relative bg-gray-50 pt-24 pb-28">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+       <div class="text-center">
+         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-body-text mb-6">
+           We turn Google Maps into a <span class="text-primary">predictable customer acquisition channel</span> for Ghanaian businesses
+         </h1>
+         <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+           Get more calls, more visits, and more sales by optimizing your Google Business Profile. Our proven system helps Ghanaian businesses dominate local search and convert online visibility into real-world customers.
+         </p>
+         <div class="flex flex-wrap justify-center gap-4 mb-10">
+           <a href="free-audit.html" class="bg-primary text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-dark-green transition transform hover:scale-105">
+             Get Free Audit
+           </a>
+           <a href="#system" class="bg-white/10 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-white/20 transition transform hover:scale-105 border border-white/20">
+             How It Works
+           </a>
+         </div>
+         <div class="grid md:grid-cols-3 gap-6">
+           <div class="flex items-center gap-3">
+             <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+               <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.004A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.029 9-11.622 0-1.767-.472-3.428-1.245-4.642z"/></svg>
+             </div>
+             <div>
+               <h3 class="text-sm font-medium text-body-text">No Upfront Fees</h3>
+               <p class="text-xs text-gray-500">Start with just a free audit - pay only when you see results</p>
+             </div>
+           </div>
+           <div class="flex items-center gap-3">
+             <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+               <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 12h14"/></svg>
+             </div>
+             <div>
+               <h3 class="text-sm font-medium text-body-text">Results in 30 Days</h3>
+               <p class="text-xs text-gray-500">Most clients see improved visibility and increased calls within the first month</p>
+             </div>
+           </div>
+           <div class="flex items-center gap-3">
+             <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+               <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-12 0c-1.105 0-2.1-.41-2.894-1.006C3.484 8.224 3 7.528 3 6.75c0-.69.188-1.343.512-1.872A8.964 8.964 0 015.512 5c1.423 0 2.697.66 3.57 1.606C16.369 6.828 17 7.528 17 8.25c0 .778.18 1.534.512 2.074A8.964 8.964 0 0116.369 12c1.423 0 2.697.66 3.57 1.606"/></svg>
+             </div>
+             <div>
+               <h3 class="text-sm font-medium text-body-text">100% Satisfaction Guarantee</h3>
+               <p class="text-xs text-gray-500">If we don't deliver results as promised, you don't pay</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     </section>
+   <!-- MOBILE MENU (hidden by default on desktop) -->
+   <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3">
 
       <div class="flex flex-wrap items-center justify-center gap-6 text-white/70 text-sm">
 
