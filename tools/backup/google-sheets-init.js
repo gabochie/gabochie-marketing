@@ -57,7 +57,7 @@ class GoogleSheetsInitializer {
    */
   async createSheet() {
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -95,7 +95,7 @@ class GoogleSheetsInitializer {
    */
   async addHeadersWithStyling(headers) {
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -166,7 +166,7 @@ class GoogleSheetsInitializer {
    */
   async applySheetStyling() {
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -315,7 +315,7 @@ class GoogleSheetsInitializer {
     };
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testLead)
@@ -342,7 +342,7 @@ class GoogleSheetsInitializer {
    */
   async getSheetStatus() {
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

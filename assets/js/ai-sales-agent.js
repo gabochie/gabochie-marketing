@@ -3,7 +3,7 @@
 'use strict';
 
 const CONFIG = {
-  apiBase: 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec',
+  apiBase: 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec',
   whatsapp: '233506384917',
   mobileMoney: '059 985 7126',
   brandName: 'Gabochie Marketing',

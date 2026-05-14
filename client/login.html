@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
   <title>Client Login | Gabochie Marketing</title>
   <meta name="description" content="Client portal login for Gabochie Marketing. Track your Google Maps optimization progress.">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -121,7 +122,7 @@
 
   <script>
     const PAGE_START = Date.now();
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec';
 
     async function handleLogin(event) {
       event.preventDefault();

@@ -178,7 +178,7 @@ class DirectSheetPopulator {
             </div>
         </div>
         
-        <form action="https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec" 
+        <form action="https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec" 
               method="POST" target="_blank">
             <input type="hidden" name="action" value="populateSheet">
             <input type="hidden" name="sheetId" value="${this.sheetId}">
@@ -299,7 +299,7 @@ class DirectSheetPopulator {
             <p>Add a test lead to verify your Google Sheet is working</p>
         </div>
         
-        <form action="https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec" 
+        <form action="https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec" 
               method="POST" target="_blank">
             <input type="hidden" name="action" value="addTestData">
             
