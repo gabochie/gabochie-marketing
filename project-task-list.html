@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
 <title>Gabochie Marketing — Project Roadmap</title>
 <style>
   :root {
@@ -40,6 +40,7 @@
   .badge-p3 { background: #fce7f3; color: #9d174d; }
   .badge-p4 { background: #e0e7ff; color: #3730a3; }
 .badge-p5 { background: #fce7f3; color: #9d174d; }
+.badge-p6 { background: #ede9fe; color: #5b21b6; }
   .phase-header h2 { font-size: 0.95rem; font-weight: 600; flex: 1; }
   .phase-body { display: none; padding: 0 18px 14px; }
   .phase-body.open { display: block; }
@@ -169,6 +170,21 @@ const PHASES = [
       { id: 'p5-7', label: 'Set up retargeting pixel (Facebook CAPI + Google Ads) on all pages', done: false },
       { id: 'p5-8', label: 'Create landing page variants for A/B testing ad traffic', done: false },
       { id: 'p5-9', label: 'Track CPA, LTV, and ROAS per channel in a dashboard', done: false },
+    ]
+  },
+  {
+    id: 'p6', label: 'Phase 6 — Revenue Growth & Monetization (Close the 8 Gaps)', badge: 'p6', cls: 'badge-p6',
+    tasks: [
+      { id: 'p6-1', label: 'Add GBP Monthly Management Retainer pricing tier (GHS 500-2,000/mo) to pricing page', done: false },
+      { id: 'p6-2', label: 'Add hybrid performance/commission-based pricing option', done: false },
+      { id: 'p6-3', label: 'Create vertical-specific packages (Restaurant GHS 800/mo, Hotel GHS 2,000/mo, Medical GHS 1,200/mo)', done: false },
+      { id: 'p6-4', label: 'Set up WhatsApp/email post-purchase upsell automation sequences', done: false },
+      { id: 'p6-5', label: 'Create digital products (DIY GBP Guide GHS 500, Video Course GHS 1,500, Audit Templates GHS 200)', done: false },
+      { id: 'p6-6', label: 'Add 3/6-month retainer contract options with discount to pricing page', done: false },
+      { id: 'p6-7', label: 'Launch standalone Review Management service at GHS 500/mo', done: false },
+      { id: 'p6-8', label: 'Automate referral program with commission tracking and mobile money payout system', done: false },
+      { id: 'p6-9', label: 'Integrate online payment processing (mobile money API / Paystack)', done: false },
+      { id: 'p6-10', label: 'Add appointment booking (Calendly or WhatsApp-based scheduler)', done: false },
     ]
   }
 ];
