@@ -38,6 +38,7 @@
   .badge-p2 { background: #fef3c7; color: #92400e; }
   .badge-p3 { background: #fce7f3; color: #9d174d; }
   .badge-p4 { background: #e0e7ff; color: #3730a3; }
+.badge-p5 { background: #fce7f3; color: #9d174d; }
   .phase-header h2 { font-size: 0.95rem; font-weight: 600; flex: 1; }
   .phase-body { display: none; padding: 0 18px 14px; }
   .phase-body.open { display: block; }
@@ -103,6 +104,7 @@ const PHASES = [
       { id: 'p0-5', label: 'Remove bypassLogin + pre-filled credentials from admin UI', done: true },
       { id: 'p0-6', label: 'Delete unused netlify.toml', done: true },
       { id: 'p0-7', label: 'Delete admin/index.html.backup (still contains passwords)', done: true },
+      { id: 'p0-8', label: 'Add mobile money payment info + WhatsApp confirm to success modal', done: true },
     ]
   },
   {
@@ -114,8 +116,9 @@ const PHASES = [
       { id: 'p1-4', label: 'Add Cloudflare Turnstile or reCAPTCHA to all forms', done: false },
       { id: 'p1-5', label: 'Add hidden honeypot fields to spam-check form submissions', done: false },
       { id: 'p1-6', label: 'Set up staging branch on GitHub Pages', done: false },
-      { id: 'p1-7', label: 'Add CSP meta tags to HTML (migrate from netlify.toml)', done: false },
+      { id: 'p1-7', label: 'Add Content-Security-Policy meta tags to HTML for security', done: false },
       { id: 'p1-8', label: 'Test admin login flow end-to-end', done: false },
+      { id: 'p1-9', label: 'Add AI sales agent chat widget to website', done: true },
     ]
   },
   {
@@ -151,6 +154,20 @@ const PHASES = [
       { id: 'p4-4', label: 'A/B test pricing page variants', done: false },
       { id: 'p4-5', label: 'Automated referral payouts (mobile money API)', done: false },
       { id: 'p4-6', label: 'Blog CMS (replace manual HTML with headless CMS)', done: false },
+    ]
+  },
+  {
+    id: 'p5', label: 'Phase 5 — Direct Response Marketing', badge: 'p5', cls: 'badge-p5',
+    tasks: [
+      { id: 'p5-1', label: 'Create lead magnet (free Google Visibility Audit PDF) to capture emails', done: false },
+      { id: 'p5-2', label: 'Set up Facebook Lead Ads targeting Ghana business owners', done: false },
+      { id: 'p5-3', label: 'Set up Google Search Ads — "Google Maps optimization Ghana" + local keywords', done: false },
+      { id: 'p5-4', label: 'Build WhatsApp broadcast sequence from admin panel outreach templates', done: false },
+      { id: 'p5-5', label: 'Launch referral program promo — social posts + email + WhatsApp status', done: false },
+      { id: 'p5-6', label: 'Create 3 YouTube tutorials ("How to get on Google Maps in Ghana")', done: false },
+      { id: 'p5-7', label: 'Set up retargeting pixel (Facebook CAPI + Google Ads) on all pages', done: false },
+      { id: 'p5-8', label: 'Create landing page variants for A/B testing ad traffic', done: false },
+      { id: 'p5-9', label: 'Track CPA, LTV, and ROAS per channel in a dashboard', done: false },
     ]
   }
 ];
