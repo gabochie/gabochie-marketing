@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Google Maps Visibility Audit — Gabochie Marketing</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .brand-primary { color: #1A7B3A; }
+  .brand-accent { color: #7ED354; }
+  .bg-brand-primary { background-color: #1A7B3A; }
+  .bg-brand-accent { background-color: #7ED354; }
+  .bg-brand-dark { background-color: #0F5C28; }
+  .border-brand { border-color: #1A7B3A; }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2.5rem; font-weight: 800; }
+  .score-low { background: #fee2e2; color: #dc2626; border: 4px solid #fca5a5; }
+  .score-mid { background: #fef3c7; color: #d97706; border: 4px solid #fcd34d; }
+  .score-high { background: #d1fae5; color: #059669; border: 4px solid #6ee7b7; }
+  .check-yes { color: #059669; }
+  .check-no { color: #dc2626; }
+  .check-maybe { color: #d97706; }
+  @media (max-width: 640px) { .score-circle { width: 100px; height: 100px; font-size: 1.8rem; } }
+</style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Nav -->
+<nav class="bg-brand-dark text-white py-3 px-4 sm:px-6">
+  <div class="max-w-5xl mx-auto flex items-center justify-between">
+    <a href="index.html" class="font-bold text-lg tracking-tight"><span class="text-accent" style="color:#7ED354;">Gabochie</span> Marketing</a>
+    <span class="text-sm text-white/70">Free Audit Tool</span>
+  </div>
+</nav>
+
+<div class="max-w-3xl mx-auto px-4 py-10" id="app">
+
+  <!-- Step 1: Form -->
+  <div id="stepForm">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">Get Your Free <span class="brand-primary">Google Maps Visibility</span> Audit</h1>
+      <p class="text-gray-600 text-lg">See exactly how your business shows up on Google Maps and what's missing — in under 60 seconds.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
+      <form id="auditForm" class="space-y-4">
+        <!-- honeypot -->
+        <input type="text" name="hp_website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
+            <input type="text" id="fieldBiz" required placeholder="e.g. Akwaaba Restaurant" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A7B3A] focus:border-transparent outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Location/Town *</label>
+            <input type="text" id="fieldLoc" required placeholder="e.g. Osu, Accra" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A7B3A] focus:border-transparent outline-none text-sm">
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+            <input type="text" id="fieldName" required placeholder="Your full name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A7B3A] focus:border-transparent outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+            <input type="tel" id="fieldPhone" required placeholder="e.g. 054 123 4567" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A7B3A] focus:border-transparent outline-none text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="fieldEmail" placeholder="Optional — for your audit report" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A7B3A] focus:border-transparent outline-none text-sm">
+        </div>
+        <button type="submit" id="auditSubmit" class="w-full bg-brand-primary text-white py-3.5 rounded-xl font-bold text-base hover:bg-brand-dark transition flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Run My Free Audit
+        </button>
+        <p class="text-xs text-gray-400 text-center">Your data is safe. We'll send your audit report and may follow up with visibility tips.</p>
+      </form>
+    </div>
+
+    <div class="mt-10 grid sm:grid-cols-3 gap-4 text-center text-sm text-gray-500">
+      <div class="bg-white rounded-xl p-4 shadow-sm"><strong class="text-gray-900">1.</strong> Enter your business details</div>
+      <div class="bg-white rounded-xl p-4 shadow-sm"><strong class="text-gray-900">2.</strong> We analyze your Google visibility</div>
+      <div class="bg-white rounded-xl p-4 shadow-sm"><strong class="text-gray-900">3.</strong> Get your personalized audit + score</div>
+    </div>
+  </div>
+
+  <!-- Step 2: Loading -->
+  <div id="stepLoading" class="hidden text-center py-16">
+    <div class="animate-spin w-12 h-12 border-4 border-[#1A7B3A] border-t-transparent rounded-full mx-auto mb-4"></div>
+    <p class="text-gray-600 text-lg font-medium">Auditing your Google visibility...</p>
+    <p class="text-gray-400 text-sm mt-1">Checking your Business Profile data</p>
+  </div>
+
+  <!-- Step 3: Results -->
+  <div id="stepResults" class="hidden">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Your Audit Results</h2>
+      <p class="text-gray-500">for <span id="resultBizName" class="font-semibold text-gray-700"></span> in <span id="resultBizLoc" class="font-semibold text-gray-700"></span></p>
+    </div>
+
+    <!-- Score card -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100 mb-6">
+      <div class="text-center mb-4">
+        <div class="score-circle" id="resultScoreCircle">
+          <span id="resultScore">0</span><span class="text-lg font-normal">/10</span>
+        </div>
+        <p class="text-xl font-bold mt-3" id="resultGrade">Loading...</p>
+      </div>
+
+      <!-- GBP Status -->
+      <div id="resultGbpData" class="hidden bg-gray-50 rounded-xl p-4 mb-4 text-sm space-y-2">
+        <div class="flex justify-between"><span class="text-gray-500">Google Business Profile</span><span id="gbpFound" class="font-semibold">—</span></div>
+        <div class="flex justify-between"><span class="text-gray-500">Rating</span><span id="gbpRating" class="font-semibold">—</span></div>
+        <div class="flex justify-between"><span class="text-gray-500">Reviews</span><span id="gbpReviews" class="font-semibold">—</span></div>
+        <div class="flex justify-between"><span class="text-gray-500">Category</span><span id="gbpCategory" class="font-semibold">—</span></div>
+        <div class="flex justify-between"><span class="text-gray-500">Status</span><span id="gbpStatus" class="font-semibold">—</span></div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-gray-900">Visibility Checklist</h3>
+        <div id="resultChecklist"></div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="mt-5 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+        <h4 class="font-bold text-yellow-800 text-sm mb-2">Recommended For You</h4>
+        <ul id="resultRecommendations" class="text-sm text-yellow-700 space-y-1 list-disc list-inside"></ul>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="bg-brand-dark text-white rounded-2xl p-6 sm:p-8 text-center">
+      <h3 class="text-xl font-bold mb-2">Want us to fix these issues for you?</h3>
+      <p class="text-white/80 text-sm mb-4">Our team will fully optimize your Google Business Profile. If you don't see results, you don't pay.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="https://wa.me/233506384917" target="_blank" rel="noopener" class="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition inline-flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </a>
+        <a href="index.html#pricing" class="bg-white text-brand-primary px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition inline-flex items-center justify-center gap-2">
+          View Packages
+        </a>
+      </div>
+    </div>
+
+    <div class="text-center mt-6">
+      <button onclick="resetAudit()" class="text-sm text-gray-500 hover:text-gray-700 underline">Audit another business</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window._pageStart = Date.now();
+// ── Config ──
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+const GOOGLE_PLACES_KEY = ''; // Set your Google Cloud Places API key here for real GBP data
+
+const WA_NUMBER = '233506384917';
+const MOBILE_MONEY = '059 985 7126';
+
+// ── Checklist items ──
+const CHECKLIST = [
+  { key: 'name', label: 'Business name matches real-world name', weight: 1.5 },
+  { key: 'address', label: 'Address is correct and complete', weight: 1.5 },
+  { key: 'phone', label: 'Phone number is listed and working', weight: 1 },
+  { key: 'category', label: 'Primary category is accurate', weight: 1.5 },
+  { key: 'hours', label: 'Business hours are set', weight: 1 },
+  { key: 'photos', label: 'Has at least 5 high-quality photos', weight: 1 },
+  { key: 'reviews', label: 'Has recent reviews (last 3 months)', weight: 1 },
+  { key: 'responses', label: 'Responds to reviews', weight: 0.5 },
+  { key: 'posts', label: 'Has Google Posts in the last 30 days', weight: 0.5 },
+  { key: 'website', label: 'Website link is correct', weight: 0.5 },
+];
+
+function getAuditResults(found, data) {
+  const items = CHECKLIST.map(c => {
+    let status = 'no';
+    if (!found) {
+      // No GBP found — everything is missing
+      status = 'no';
+    } else {
+      // Simple heuristic scoring based on what Google returned
+      switch (c.key) {
+        case 'name': status = data.name ? 'yes' : 'no'; break;
+        case 'address': status = data.formatted_address ? 'yes' : 'no'; break;
+        case 'phone': status = data.formatted_phone_number ? 'yes' : 'no'; break;
+        case 'category': status = data.types && data.types.length > 0 ? 'yes' : 'no'; break;
+        case 'hours': status = data.opening_hours ? 'yes' : 'no'; break;
+        case 'photos': status = data.photos && data.photos.length >= 3 ? 'yes' : 'maybe'; break;
+        case 'reviews': status = data.user_ratings_total && data.user_ratings_total > 0 ? 'yes' : 'no'; break;
+        case 'responses': status = 'maybe'; break;
+        case 'posts': status = 'maybe'; break;
+        case 'website': status = data.website ? 'yes' : 'no'; break;
+      }
+    }
+    return { ...c, status };
+  });
+
+  const totalWeight = CHECKLIST.reduce((s, c) => s + c.weight, 0);
+  let score = 0;
+  items.forEach(i => {
+    if (i.status === 'yes') score += i.weight;
+    else if (i.status === 'maybe') score += i.weight * 0.5;
+  });
+
+  const finalScore = found ? Math.round((score / totalWeight) * 10) : 2;
+  const grade = finalScore >= 8 ? 'Excellent!' : finalScore >= 5 ? 'Needs Improvement' : 'Critical — Action Needed';
+  const gradeClass = finalScore >= 8 ? 'text-green-600' : finalScore >= 5 ? 'text-yellow-600' : 'text-red-600';
+  const scoreClass = finalScore >= 7 ? 'score-high' : finalScore >= 4 ? 'score-mid' : 'score-low';
+
+  // Recommendations
+  const recs = [];
+  if (!found) {
+    recs.push('Your business was not found on Google Maps. We can create and verify your profile within 48 hours.');
+    recs.push('Once verified, add complete business details, photos, and start collecting reviews.');
+  } else {
+    const missing = items.filter(i => i.status === 'no');
+    const partial = items.filter(i => i.status === 'maybe');
+    missing.forEach(i => recs.push(i.label.replace('is', 'Add/update your') + '.'));
+    partial.forEach(i => recs.push('Check that ' + i.label.toLowerCase() + '.'));
+    if (recs.length === 0) recs.push('Your profile looks great! Focus on collecting more reviews and posting regular updates.');
+  }
+  recs.push('Want us to handle all of this for you? Chat with us on WhatsApp to get started.');
+
+  return { score: finalScore, grade, gradeClass, scoreClass, items, recs };
+}
+
+function show(elementId) {
+  ['stepForm','stepLoading','stepResults'].forEach(id => {
+    document.getElementById(id).classList.toggle('hidden', id !== elementId);
+  });
+}
+
+function resetAudit() {
+  document.getElementById('auditForm').reset();
+  show('stepForm');
+}
+
+document.getElementById('auditForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  // Anti-spam: honeypot + time check
+  const hp = e.target.querySelector('[name="hp_website"]');
+  if (hp?.value || Date.now() - window._pageStart < 2000) return;
+  const btn = document.getElementById('auditSubmit');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Submitting...';
+
+  const biz = document.getElementById('fieldBiz').value.trim();
+  const loc = document.getElementById('fieldLoc').value.trim();
+  const name = document.getElementById('fieldName').value.trim();
+  const phone = document.getElementById('fieldPhone').value.trim();
+  const email = document.getElementById('fieldEmail').value.trim();
+
+  // Capture lead first
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prospectName: name,
+        phone: phone,
+        email: email,
+        businessName: biz,
+        address: loc,
+        source: 'free-audit-tool',
+        notes: `Free Audit Request for ${biz} in ${loc}`,
+        outreachCategory: 'Free Audit'
+      })
+    });
+  } catch (_) {}
+
+  show('stepLoading');
+
+  // Try Places API lookup
+  let found = false;
+  let gbpData = {};
+
+  if (GOOGLE_PLACES_KEY) {
+    try {
+      const searchRes = await fetch(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(biz + ' ' + loc)}&key=${GOOGLE_PLACES_KEY}`);
+      const searchData = await searchRes.json();
+      if (searchData.status === 'OK' && searchData.results && searchData.results.length > 0) {
+        const placeId = searchData.results[0].place_id;
+        const detailsRes = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,user_ratings_total,formatted_address,types,formatted_phone_number,opening_hours,website,business_status,photos,price_level&key=${GOOGLE_PLACES_KEY}`);
+        const detailsData = await detailsRes.json();
+        if (detailsData.status === 'OK') {
+          found = true;
+          gbpData = detailsData.result;
+          document.getElementById('resultGbpData').classList.remove('hidden');
+          document.getElementById('gbpFound').innerHTML = '<span class="text-green-600">✓ Found</span>';
+          document.getElementById('gbpRating').textContent = gbpData.rating ? gbpData.rating + ' / 5' : 'N/A';
+          document.getElementById('gbpReviews').textContent = gbpData.user_ratings_total || '0';
+          document.getElementById('gbpCategory').textContent = (gbpData.types || []).slice(0, 3).join(', ') || 'N/A';
+          document.getElementById('gbpStatus').innerHTML = gbpData.business_status === 'OPERATIONAL' ? '<span class="text-green-600">Active</span>' : (gbpData.business_status || 'Unknown');
+        }
+      }
+    } catch (e) {
+      console.warn('Places API error:', e);
+    }
+  }
+
+  if (!found) {
+    document.getElementById('resultGbpData').classList.add('hidden');
+  }
+
+  const results = getAuditResults(found, gbpData);
+  document.getElementById('resultBizName').textContent = biz;
+  document.getElementById('resultBizLoc').textContent = loc;
+  document.getElementById('resultScore').textContent = results.score;
+  document.getElementById('resultScoreCircle').className = 'score-circle ' + results.scoreClass;
+  document.getElementById('resultGrade').textContent = results.grade;
+  document.getElementById('resultGrade').className = 'text-xl font-bold mt-3 ' + results.gradeClass;
+
+  // Checklist
+  document.getElementById('resultChecklist').innerHTML = results.items.map(i => {
+    const icon = i.status === 'yes' ? '✓' : i.status === 'maybe' ? '~' : '✗';
+    const cls = i.status === 'yes' ? 'check-yes' : i.status === 'maybe' ? 'check-maybe' : 'check-no';
+    return `<div class="flex items-start gap-3 text-sm py-1.5">
+      <span class="${cls} font-bold text-base flex-shrink-0 w-5">${icon}</span>
+      <span class="text-gray-700">${i.label}</span>
+    </div>`;
+  }).join('');
+
+  // Recommendations
+  document.getElementById('resultRecommendations').innerHTML = results.recs.map(r => `<li>${r}</li>`).join('');
+
+  show('stepResults');
+  btn.disabled = false;
+  btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>\n          Run My Free Audit';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white/60 text-center text-sm py-6 mt-10">
+  <p>&copy; 2026 Gabochie Marketing. All rights reserved.</p>
+  <p class="mt-1"><a href="privacy.html" class="underline hover:text-white">Privacy Policy</a> &middot; <a href="terms.html" class="underline hover:text-white">Terms</a></p>
+</footer>
+
+<script src="assets/js/ai-sales-agent.js"></script>
+</body>
+</html>

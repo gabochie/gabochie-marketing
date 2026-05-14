@@ -474,6 +474,9 @@
 
             <form id="referForm" onsubmit="submitReferral(event)">
 
+              <!-- honeypot -->
+              <input type="text" name="hp_website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+
               <div class="space-y-4">
 
                 <div>
@@ -864,6 +867,8 @@
 
   <script>
 
+    const PAGE_START = Date.now();
+
     // Referral link generation
 
     const BASE_URL = 'https://marketing.gabochie.com';
@@ -971,6 +976,9 @@
     async function submitReferral(event) {
 
       event.preventDefault();
+      // Anti-spam
+      const hp = document.querySelector('[name="hp_website"]');
+      if (hp?.value || Date.now() - PAGE_START < 2000) return;
 
       const btn = document.getElementById('referSubmitBtn');
 

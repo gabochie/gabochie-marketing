@@ -1022,6 +1022,10 @@
 
             <form id="leadForm" class="space-y-4" action="https://formspree.io/f/xeenzony" method="POST">
 
+              <!-- honeypot -->
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+              <input type="hidden" name="_formLoad" value="">
+
               <div>
 
                 <label for="leadName" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
@@ -1632,6 +1636,9 @@
 
             <form id="auditForm" onsubmit="submitAuditForm(event)">
 
+              <!-- honeypot -->
+              <input type="text" name="hp_website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+
               <div class="space-y-4">
 
                 <div>
@@ -1815,6 +1822,8 @@
             <form id="packageForm" onsubmit="submitPackageForm(event)">
 
               <input type="hidden" id="packageName" name="packageName">
+              <!-- honeypot -->
+              <input type="text" name="hp_website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
 
               <div class="space-y-4">
 
@@ -2010,6 +2019,8 @@
 
   <script>
 
+    window._pageStart = Date.now();
+
     // Google Apps Script Web App URL
 
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
@@ -2046,10 +2057,13 @@
 
 
 
-    // Track form submissions for analytics
-
-    document.getElementById('leadForm').addEventListener('submit', function() {
-
+    // Lead form: set timestamp + honeypot check on submit
+    document.getElementById('leadForm').addEventListener('submit', function(e) {
+      // Anti-spam
+      const hp = this.querySelector('[name="_gotcha"]');
+      if (hp?.value) { e.preventDefault(); return; }
+      if (Date.now() - window._pageStart < 2000) { e.preventDefault(); return; }
+      this.querySelector('[name="_formLoad"]').value = Date.now();
       if (typeof gtag !== 'undefined') {
 
         gtag('event', 'lead_capture', {
@@ -2127,6 +2141,9 @@
     async function submitAuditForm(event) {
 
       event.preventDefault();
+      // Anti-spam
+      const hp = document.getElementById('auditForm').querySelector('[name="hp_website"]');
+      if (hp?.value || Date.now() - window._pageStart < 2000) return;
 
       const btn = document.getElementById('auditSubmitBtn');
 
@@ -2358,6 +2375,9 @@
     async function submitPackageForm(event) {
 
       event.preventDefault();
+      // Anti-spam
+      const hp = document.getElementById('packageForm').querySelector('[name="hp_website"]');
+      if (hp?.value || Date.now() - window._pageStart < 2000) return;
 
       const btn = document.getElementById('packageSubmitBtn');
 
