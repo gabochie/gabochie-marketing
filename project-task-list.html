@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabochie Marketing — Project Roadmap</title>
+<style>
+  :root {
+    --primary: #1A7B3A; --primary-dark: #0F5C28; --accent: #7ED354;
+    --bg: #f0f4f0; --card: #ffffff; --text: #2D2D2D; --text-light: #6b7280;
+    --border: #d1d5db; --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+  .container { max-width: 920px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  h1 small { font-size: 0.875rem; color: var(--text-light); font-weight: 400; }
+  .subtitle { color: var(--text-light); font-size: 0.875rem; margin-bottom: 8px; }
+  .how-to { background: #fefce8; border: 1px solid #fde68a; border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem; display: flex; align-items: flex-start; gap: 10px; }
+  .how-to code { background: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #e5e7eb; }
+
+  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  .stat-card { background: var(--card); border-radius: var(--radius); padding: 14px 20px; box-shadow: var(--shadow); flex: 1; min-width: 120px; }
+  .stat-card .num { font-size: 1.6rem; font-weight: 700; color: var(--primary-dark); }
+  .stat-card .label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+  .progress-wrap { background: #e5e7eb; border-radius: 99px; height: 8px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; background: var(--primary); border-radius: 99px; transition: width 0.4s ease; }
+
+  .phase { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; }
+  .phase-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; cursor: pointer; user-select: none; }
+  .phase-header:hover { background: #f9fafb; }
+  .phase-header .arrow { font-size: 0.7rem; transition: transform 0.2s; color: var(--text-light); }
+  .phase-header.open .arrow { transform: rotate(90deg); }
+  .phase-header .badge { font-size: 0.65rem; padding: 2px 10px; border-radius: 99px; font-weight: 600; text-transform: uppercase; }
+  .badge-p0 { background: #d1fae5; color: #065f46; }
+  .badge-p1 { background: #dbeafe; color: #1e40af; }
+  .badge-p2 { background: #fef3c7; color: #92400e; }
+  .badge-p3 { background: #fce7f3; color: #9d174d; }
+  .badge-p4 { background: #e0e7ff; color: #3730a3; }
+  .phase-header h2 { font-size: 0.95rem; font-weight: 600; flex: 1; }
+  .phase-body { display: none; padding: 0 18px 14px; }
+  .phase-body.open { display: block; }
+  .phase-progress { font-size: 0.75rem; color: var(--text-light); white-space: nowrap; }
+
+  .task { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+  .task:last-child { border-bottom: none; }
+  .task .checkbox { accent-color: var(--primary); cursor: pointer; width: 16px; height: 16px; flex-shrink: 0; }
+  .task .label { flex: 1; font-size: 0.875rem; line-height: 1.4; }
+  .task .label.done { text-decoration: line-through; color: var(--text-light); }
+  .task .status { font-size: 0.65rem; font-weight: 600; padding: 1px 8px; border-radius: 99px; text-transform: uppercase; flex-shrink: 0; white-space: nowrap; }
+  .status-done { background: #d1fae5; color: #065f46; }
+  .status-pending { background: #f3f4f6; color: #6b7280; }
+  .status-wip { background: #fef3c7; color: #92400e; }
+  .task .btn-do { font-size: 0.7rem; padding: 3px 12px; border-radius: 99px; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; flex-shrink: 0; transition: all 0.15s; font-weight: 500; }
+  .task .btn-do:hover { background: var(--primary); color: #fff; }
+  .task .btn-do:active { transform: scale(0.95); }
+  .task .btn-do.copied { background: var(--accent); border-color: var(--accent); color: var(--primary-dark); }
+
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--primary-dark); color: #fff; padding: 12px 24px; border-radius: 99px; font-size: 0.85rem; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+  .toast.show { opacity: 1; }
+
+  .footer { text-align: center; padding: 30px 0 10px; color: var(--text-light); font-size: 0.8rem; }
+  @media (max-width: 600px) { .stats { flex-direction: column; } .task { flex-wrap: wrap; } .task .btn-do { width: 100%; text-align: center; } }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <h1>Gabochie Marketing <small>Project Roadmap</small></h1>
+
+  <div class="how-to">
+    <span style="font-size:1.2rem;">&#9432;</span>
+    <div>
+      <strong>How this works:</strong> Click <strong>"Do this &rarr;"</strong> on any pending task &rarr; it copies a command to your clipboard &rarr; paste it into our chat &rarr; I execute it &rarr; when done, I update this file so the task shows <strong class="status-done" style="padding:1px 6px;">done</strong> automatically (just refresh).
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="stat-total">0</div><div class="label">Total Tasks</div></div>
+    <div class="stat-card"><div class="num" id="stat-done">0</div><div class="label">Completed</div></div>
+    <div class="stat-card"><div class="num" id="stat-pct">0%</div><div class="label">Progress</div>
+      <div class="progress-wrap"><div class="progress-fill" id="progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div id="phases"></div>
+  <div class="footer">Tasks auto-save. Refresh to pick up status changes I made.</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const STORAGE_KEY = 'gabochie_roadmap';
+
+const PHASES = [
+  {
+    id: 'p0', label: 'Phase 0 — Security & Cleanup', badge: 'p0', cls: 'badge-p0',
+    tasks: [
+      { id: 'p0-1', label: 'Remove hardcoded admin credentials from source code', done: true },
+      { id: 'p0-2', label: 'Add origin validation + rate limiting to both backends', done: true },
+      { id: 'p0-3', label: 'Align column headers across both backends', done: true },
+      { id: 'p0-4', label: 'Hash client passwords (SHA-256 instead of plaintext)', done: true },
+      { id: 'p0-5', label: 'Remove bypassLogin + pre-filled credentials from admin UI', done: true },
+      { id: 'p0-6', label: 'Delete unused netlify.toml', done: true },
+      { id: 'p0-7', label: 'Delete admin/index.html.backup (still contains passwords)', done: true },
+    ]
+  },
+  {
+    id: 'p1', label: 'Phase 1 — Production Hardening', badge: 'p1', cls: 'badge-p1',
+    tasks: [
+      { id: 'p1-1', label: 'Run setupAdmin() in Google Apps Script editor to set credentials', done: false },
+      { id: 'p1-2', label: 'Run setupPublicBackend() in Apps Script editor', done: false },
+      { id: 'p1-3', label: 'Redeploy both Apps Script projects so security fixes go live', done: false },
+      { id: 'p1-4', label: 'Add Cloudflare Turnstile or reCAPTCHA to all forms', done: false },
+      { id: 'p1-5', label: 'Add hidden honeypot fields to spam-check form submissions', done: false },
+      { id: 'p1-6', label: 'Set up staging branch on GitHub Pages', done: false },
+      { id: 'p1-7', label: 'Add CSP meta tags to HTML (migrate from netlify.toml)', done: false },
+      { id: 'p1-8', label: 'Test admin login flow end-to-end', done: false },
+    ]
+  },
+  {
+    id: 'p2', label: 'Phase 2 — Data & Backend Migration', badge: 'p2', cls: 'badge-p2',
+    tasks: [
+      { id: 'p2-1', label: 'Set up Supabase project and PostgreSQL schema', done: false },
+      { id: 'p2-2', label: 'Port leads/clients from Google Sheets to Supabase', done: false },
+      { id: 'p2-3', label: 'Replace plain-text admin auth with Supabase Auth', done: false },
+      { id: 'p2-4', label: 'Create Edge Functions API layer (Vercel or Cloudflare Workers)', done: false },
+      { id: 'p2-5', label: 'Add Row-Level Security policies in Supabase', done: false },
+      { id: 'p2-6', label: 'Redirect form POSTs from Apps Script to new API', done: false },
+      { id: 'p2-7', label: 'End-to-end test of new backend stack', done: false },
+    ]
+  },
+  {
+    id: 'p3', label: 'Phase 3 — Performance & UX', badge: 'p3', cls: 'badge-p3',
+    tasks: [
+      { id: 'p3-1', label: 'Add Tailwind CLI build step to purge unused CSS', done: false },
+      { id: 'p3-2', label: 'Optimize images (WebP, lazy loading, responsive)', done: false },
+      { id: 'p3-3', label: 'Run SEO audit — meta tags, alt text, structured data', done: false },
+      { id: 'p3-4', label: 'Add Open Graph and Twitter Card meta tags', done: false },
+      { id: 'p3-5', label: 'Lighthouse audit — fix Core Web Vitals', done: false },
+      { id: 'p3-6', label: 'Accessibility audit (ARIA labels, keyboard nav, contrast)', done: false },
+      { id: 'p3-7', label: 'Add service worker for offline fallback', done: false },
+    ]
+  },
+  {
+    id: 'p4', label: 'Phase 4 — Growth Features', badge: 'p4', cls: 'badge-p4',
+    tasks: [
+      { id: 'p4-1', label: 'Email automation for lead follow-ups', done: false },
+      { id: 'p4-2', label: 'Client dashboard — real GBP analytics', done: false },
+      { id: 'p4-3', label: 'GA4 events + conversion tracking', done: false },
+      { id: 'p4-4', label: 'A/B test pricing page variants', done: false },
+      { id: 'p4-5', label: 'Automated referral payouts (mobile money API)', done: false },
+      { id: 'p4-6', label: 'Blog CMS (replace manual HTML with headless CMS)', done: false },
+    ]
+  }
+];
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+function saveState(s) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function render() {
+  const state = loadState();
+  const container = document.getElementById('phases');
+  container.innerHTML = '';
+  let total = 0, done = 0;
+
+  PHASES.forEach(phase => {
+    let phaseDone = 0;
+    const rows = phase.tasks.map(t => {
+      const checked = state[t.id] !== undefined ? state[t.id] : t.done;
+      if (checked) { done++; phaseDone++; }
+      total++;
+
+      const inProgress = state['_wip'] === t.id;
+      let statusCls = 'status-pending', statusText = 'pending';
+      if (checked) { statusCls = 'status-done'; statusText = 'done'; }
+      else if (inProgress) { statusCls = 'status-wip'; statusText = 'in progress'; }
+
+      const labelCls = checked ? 'label done' : 'label';
+      const btnHtml = checked ? '' : `<button class="btn-do" data-task-id="${t.id}" data-task-label="${t.label}">Do this &rarr;</button>`;
+
+      return `<div class="task">
+        <input type="checkbox" class="checkbox" id="${t.id}" ${checked ? 'checked' : ''}>
+        <div class="${labelCls}">${t.label}</div>
+        <span class="status ${statusCls}">${statusText}</span>
+        ${btnHtml}
+      </div>`;
+    }).join('');
+
+    const phasePct = phase.tasks.length ? Math.round(phaseDone / phase.tasks.length * 100) : 0;
+    container.innerHTML += `<div class="phase">
+      <div class="phase-header">
+        <span class="arrow">&#9654;</span>
+        <span class="badge ${phase.cls}">${phase.id}</span>
+        <h2>${phase.label}</h2>
+        <span class="phase-progress">${phaseDone}/${phase.tasks.length} (${phasePct}%)</span>
+      </div>
+      <div class="phase-body">${rows}</div>
+    </div>`;
+  });
+
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-pct').textContent = pct + '%';
+  document.getElementById('progress-bar').style.width = pct + '%';
+
+  // Phase toggle — auto-open phases with incomplete tasks
+  document.querySelectorAll('.phase-header').forEach((h, i) => {
+    h.addEventListener('click', () => {
+      h.classList.toggle('open');
+      h.nextElementSibling.classList.toggle('open');
+    });
+    const phase = PHASES[i];
+    const s = loadState();
+    const allDone = phase.tasks.every(t => (s[t.id] !== undefined ? s[t.id] : t.done));
+    if (!allDone) { h.classList.add('open'); h.nextElementSibling.classList.add('open'); }
+  });
+  if (PHASES.every((p,i) => { const s=loadState(); return p.tasks.every(t=>(s[t.id]!==undefined?s[t.id]:t.done)); })) {
+    document.querySelectorAll('.phase-header').forEach(h => { h.classList.add('open'); h.nextElementSibling.classList.add('open'); });
+  }
+
+  // Checkboxes
+  document.querySelectorAll('.task input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const s = loadState();
+      s[cb.id] = cb.checked;
+      if (cb.checked && s['_wip'] === cb.id) delete s['_wip'];
+      saveState(s);
+      render();
+    });
+  });
+
+  // "Do this" buttons
+  document.querySelectorAll('.btn-do').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.taskId;
+      const label = btn.dataset.taskLabel;
+
+      // Mark as in progress
+      const s = loadState();
+      s['_wip'] = id;
+      saveState(s);
+
+      // Copy command to clipboard
+      const cmd = `/task ${id} ${label}`;
+      navigator.clipboard.writeText(cmd).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Do this →';
+          btn.classList.remove('copied');
+        }, 2000);
+        toast('Command copied! Paste it into the chat to start.');
+      }).catch(() => {
+        // Fallback
+        prompt('Copy this command and paste into the chat:', cmd);
+      });
+
+      render();
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>

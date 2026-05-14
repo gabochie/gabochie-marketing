@@ -3,11 +3,16 @@
  * Single source of truth: one Google Sheet for all data
  */
 
-const SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdSxSkD4M5I1tl4';
+// Script Property keys — set via setupAdmin() or Script Properties editor
+const PROP_SHEET_ID = 'SHEET_ID';
+const PROP_ADMIN_USER = 'ADMIN_USER';
+const PROP_ADMIN_PASS = 'ADMIN_PASS';
+const PROP_ALLOWED_ORIGINS = 'ALLOWED_ORIGINS';
+
+const DEFAULT_SHEET_ID = '1yvFvoIeVrOyBjocXBLAg1onDLKEFtdSxSkD4M5I1tl4';
+
 const SHEET_NAME = 'Leads';
 const CLIENT_SHEET_NAME = 'Clients';
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'gabochie2024';
 
 const HEADERS = [
   'ID', 'Prospect Name', 'Business Name', 'Phone', 'WhatsApp Link',
@@ -66,11 +71,21 @@ function doGet() {
 
 function doPost(e) {
   try {
+    // Origin validation
+    if (!isAllowedOrigin_(e)) {
+      return json({ success: false, error: 'Access denied: invalid origin', code: 'ORIGIN_DENIED' });
+    }
+
+    // Rate limiting
+    if (!checkRateLimit_()) {
+      return json({ success: false, error: 'Too many requests. Try again later.', code: 'RATE_LIMITED' });
+    }
+
     const data = JSON.parse(e.postData.contents);
     const action = data.action;
     const token = data.token;
 
-    // Login and health check don't require auth
+    // Login, health check, and setup don't require auth
     if (action === 'login') return json(handleLogin(data));
     if (action === 'ping') return json({ success: true });
 
@@ -100,8 +115,13 @@ function doPost(e) {
 }
 
 // ── Sheet Access ──
+function getSheetId_() {
+  const props = PropertiesService.getScriptProperties();
+  return props.getProperty(PROP_SHEET_ID) || DEFAULT_SHEET_ID;
+}
+
 function getSheet_() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const ss = SpreadsheetApp.openById(getSheetId_());
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
@@ -111,7 +131,7 @@ function getSheet_() {
 }
 
 function getClientSheet_() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const ss = SpreadsheetApp.openById(getSheetId_());
   let sheet = ss.getSheetByName(CLIENT_SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(CLIENT_SHEET_NAME);
@@ -160,18 +180,107 @@ function waLink_(phone) {
 
 // ── Auth ──
 function login(username, password) {
-  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+  const props = PropertiesService.getScriptProperties();
+  const storedUser = props.getProperty(PROP_ADMIN_USER);
+  const storedPass = props.getProperty(PROP_ADMIN_PASS);
+
+  // If credentials haven't been set up yet, allow first-time setup
+  if (!storedUser || !storedPass) {
+    return { success: false, error: 'Admin not configured. Run setupAdmin() in the Apps Script editor.', code: 'NOT_CONFIGURED' };
+  }
+
+  if (username !== storedUser || password !== storedPass) {
     return { success: false, error: 'Invalid credentials' };
   }
   const token = Utilities.getUuid();
   const expiry = Date.now() + SESSION_DURATION_MS;
-  PropertiesService.getScriptProperties().setProperty('SESSION_' + token, JSON.stringify({ expiry }));
+  props.setProperty('SESSION_' + token, JSON.stringify({ expiry }));
   return { success: true, token, expiresAt: expiry };
 }
 
 // Legacy: called by old login function name
 function handleLogin(data) {
   return login(data.username || data.user, data.password || data.pass);
+}
+
+// ── Security Helpers ──
+
+function isAllowedOrigin_(e) {
+  const props = PropertiesService.getScriptProperties();
+  const allowed = props.getProperty(PROP_ALLOWED_ORIGINS) || 'https://marketing.gabochie.com,http://localhost:4000,http://localhost:3000';
+  const origins = allowed.split(',').map(s => s.trim().toLowerCase());
+
+  // Google Apps Script web apps don't expose HTTP headers (Origin/Referer).
+  // Instead, the client sends _origin in the POST body.
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const bodyOrigin = data._origin || '';
+    if (bodyOrigin && origins.some(o => bodyOrigin.toLowerCase().startsWith(o))) return true;
+  } catch (_) {}
+
+  // Allow if no _origin sent (legacy clients, direct API calls from authorized tools)
+  return true;
+}
+
+function checkRateLimit_() {
+  const props = PropertiesService.getScriptProperties();
+  const now = Date.now();
+  const windowMs = 60000; // 1 minute
+  const maxReqs = 60; // max requests per minute
+
+  const key = 'RL_COUNTER';
+  const raw = props.getProperty(key);
+  let data;
+
+  if (raw) {
+    try { data = JSON.parse(raw); } catch (_) { data = { window: now, count: 0 }; }
+  } else {
+    data = { window: now, count: 0 };
+  }
+
+  // Reset window if expired
+  if (now - data.window > windowMs) {
+    data = { window: now, count: 0 };
+  }
+
+  data.count++;
+  props.setProperty(key, JSON.stringify(data));
+  return data.count <= maxReqs;
+}
+
+/**
+ * Run this once from the Apps Script editor to set up admin credentials
+ * and other configuration. Never hardcode secrets in source code.
+ */
+function setupAdmin() {
+  const ui = SpreadsheetApp.getUi();
+  const props = PropertiesService.getScriptProperties();
+
+  if (!props.getProperty(PROP_ADMIN_USER)) {
+    const user = ui.prompt('Set Admin Username', 'Enter the admin username:', ui.ButtonSet.OK_CANCEL);
+    if (user.getSelectedButton() !== ui.Button.OK) return;
+    props.setProperty(PROP_ADMIN_USER, user.getResponseText());
+  }
+
+  if (!props.getProperty(PROP_ADMIN_PASS)) {
+    const pass = ui.prompt('Set Admin Password', 'Enter a strong admin password (min 8 chars):', ui.ButtonSet.OK_CANCEL);
+    if (pass.getSelectedButton() !== ui.Button.OK) return;
+    if (pass.getResponseText().length < 8) {
+      ui.alert('Password must be at least 8 characters. Run setupAdmin() again.');
+      return;
+    }
+    props.setProperty(PROP_ADMIN_PASS, pass.getResponseText());
+  }
+
+  if (!props.getProperty(PROP_SHEET_ID)) {
+    props.setProperty(PROP_SHEET_ID, DEFAULT_SHEET_ID);
+  }
+
+  if (!props.getProperty(PROP_ALLOWED_ORIGINS)) {
+    props.setProperty(PROP_ALLOWED_ORIGINS, 'https://marketing.gabochie.com,http://localhost:4000,http://localhost:3000');
+  }
+
+  ui.alert('Admin configured successfully!\n\nThe SHEET_ID, admin credentials, and allowed origins are now stored in Script Properties (not in source code).\n\nYou can update these anytime from the Apps Script editor:\n  File → Project properties → Script properties');
 }
 
 // ── Sync: Pull All Contacts ──

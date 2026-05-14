@@ -339,20 +339,16 @@
           
           <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 500;">Username</label>
-            <input type="text" id="loginUser" placeholder="Enter username" value="admin" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px;">
+            <input type="text" id="loginUser" placeholder="Enter username" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px;" autocomplete="username">
           </div>
           
           <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 500;">Password</label>
-            <input type="password" id="loginPass" placeholder="Enter password" value="gabochie2024" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px;">
+            <input type="password" id="loginPass" placeholder="Enter password" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px;" autocomplete="current-password">
           </div>
           
-          <button onclick="handleLogin()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px;">
+          <button id="loginBtn" onclick="handleLogin()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px;">
             Sign In
-          </button>
-          
-          <button onclick="bypassLogin()" style="width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; margin-top: 10px;">
-            🔓 Direct Access (Bypass Login)
           </button>
           
           <div id="loginError" style="color: var(--danger); margin-top: 10px; text-align: center; display: none;"></div>
@@ -552,45 +548,82 @@
 
   <script>
     // Configuration
-    const ADMIN_USER = 'admin';
-    const ADMIN_PASS = 'gabochie2024';
-    const DEMO_MODE = false;
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
     
     // Data storage
     let contacts = [];
     let selectedContacts = new Set();
     let currentTab = 'contacts';
 
+    // Session management
+    function getToken() { return localStorage.getItem('admin_token'); }
+    function setToken(t) { localStorage.setItem('admin_token', t); }
+    function clearToken() { localStorage.removeItem('admin_token'); }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Admin dashboard loaded');
+      // Check for existing session
+      if (getToken()) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appMain').style.display = 'block';
+        pullFromSheets().then(success => {
+          if (!success) loadDemoData();
+        });
+      }
       updateStats();
-      initializeAutoSync(); // Initialize auto-sync button
+      initializeAutoSync();
     });
 
-    // Login function
-    function handleLogin() {
+    // Login function — authenticates via backend
+    async function handleLogin() {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
       const error = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+      const bypassContainer = document.getElementById('bypassContainer');
 
-      console.log('Login attempt:', { user, pass: pass.replace(/./g, '•'), expectedPass: ADMIN_PASS.replace(/./g, '•') });
+      if (bypassContainer) bypassContainer.style.display = 'none';
+      error.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
 
-      if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        console.log('✅ Login successful');
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appMain').style.display = 'block';
-        loadDemoData();
-      } else {
-        console.log('❌ Login failed');
-        console.log('User:', user, 'Expected:', ADMIN_USER);
-        console.log('Pass:', pass, 'Expected:', ADMIN_PASS);
-        console.log('User match:', user === ADMIN_USER);
-        console.log('Pass match:', pass === ADMIN_PASS);
-        
-        error.textContent = 'Invalid credentials. Please check username and password.';
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'login',
+            username: user,
+            password: pass,
+            _origin: window.location.origin
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.token) {
+          setToken(result.token);
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('appMain').style.display = 'block';
+          pullFromSheets().then(success => {
+            if (!success) loadDemoData();
+          });
+        } else if (result.code === 'NOT_CONFIGURED') {
+          error.textContent = 'Admin not configured. Run setupAdmin() in the Apps Script editor first.';
+          error.style.display = 'block';
+        } else {
+          error.textContent = 'Invalid credentials. Please check username and password.';
+          error.style.display = 'block';
+        }
+      } catch (fetchError) {
+        console.error('Login error:', fetchError);
+        error.textContent = 'Cannot reach backend. Check that the Google Apps Script is deployed.';
         error.style.display = 'block';
       }
+
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
     }
 
     // Tab switching
@@ -769,14 +802,18 @@
     async function pullFromSheets() {
       try {
         console.log('📥 Pulling data from Google Sheets...');
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
+        const token = getToken();
         
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({ action: 'getContacts' })
+          body: JSON.stringify({
+            action: 'syncGoogleSheets',
+            token: token || '',
+            _origin: window.location.origin
+          })
         });
         
         const result = await response.json();
@@ -811,14 +848,18 @@
     // Push to Google Sheets
     async function pushToSheets(contactData) {
       try {
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYYyPgmCZQet30LRxeJY_yX15e9EoGPsnPYXa52pojG3wQdnkgjmXXZlpT3WJBrb9g/exec';
+        const token = getToken();
         
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams(contactData)
+          body: JSON.stringify({
+            ...contactData,
+            token: token || '',
+            _origin: window.location.origin
+          })
         });
         
         const result = await response.json();
@@ -922,15 +963,6 @@
     function testBackend() {
       alert('Backend test feature - This would test connection to Google Apps Script');
       console.log('Test backend feature clicked');
-    }
-
-    // Bypass Login function
-    function bypassLogin() {
-      console.log('🔓 Direct access granted via bypass');
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('appMain').style.display = 'block';
-      loadDemoData();
-      showAlert('success', 'Direct access granted', 'You have accessed admin dashboard directly.');
     }
 
     // Auto-sync functionality
