@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self'; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
   <title>WordPress Website Building Services | Gabochie Marketing</title>
   <meta name="description" content="Professional WordPress website design and development services for Ghanaian businesses. Custom, fast, and SEO-optimized websites.">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -36,6 +36,7 @@
   gtag('js', new Date());
   gtag('config', 'G-6Z53BKZ0FR');
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="bg-gray-50">
   <!-- Navigation -->
@@ -413,6 +414,7 @@
                 <textarea id="wbDetails" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"></textarea>
               </div>
             </div>
+            <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
             <button type="submit" class="w-full mt-6 bg-primary text-white py-3 rounded-xl font-semibold hover:bg-dark-green transition">Submit Inquiry</button>
           </form>
         </div>

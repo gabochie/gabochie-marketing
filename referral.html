@@ -8,7 +8,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
 
   <title>Refer & Earn | Gabochie Marketing</title>
 
@@ -81,6 +81,7 @@
   gtag('js', new Date());
   gtag('config', 'G-6Z53BKZ0FR');
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body class="bg-gray-50 text-body-text antialiased">
@@ -545,6 +546,8 @@
               </div>
 
               <div class="mt-6">
+
+                <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
 
                 <button type="submit" id="referSubmitBtn" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-green transition pulse-glow flex items-center justify-center gap-2">
 

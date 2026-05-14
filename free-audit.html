@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
 <title>Free Google Maps Visibility Audit — Gabochie Marketing</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -51,6 +51,7 @@
   gtag('js', new Date());
   gtag('config', 'G-6Z53BKZ0FR');
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="bg-gray-50">
 
@@ -99,6 +100,7 @@
           <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input type="email" id="fieldEmail" placeholder="Optional — for your audit report" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#1A7B3A] focus:border-transparent outline-none text-sm">
         </div>
+        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
         <button type="submit" id="auditSubmit" class="w-full bg-brand-primary text-white py-3.5 rounded-xl font-bold text-base hover:bg-brand-dark transition flex items-center justify-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
           Run My Free Audit

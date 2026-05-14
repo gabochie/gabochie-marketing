@@ -41,6 +41,7 @@
   .badge-p4 { background: #e0e7ff; color: #3730a3; }
 .badge-p5 { background: #fce7f3; color: #9d174d; }
 .badge-p6 { background: #ede9fe; color: #5b21b6; }
+.badge-p7 { background: #0f172a; color: #e2e8f0; }
   .phase-header h2 { font-size: 0.95rem; font-weight: 600; flex: 1; }
   .phase-body { display: none; padding: 0 18px 14px; }
   .phase-body.open { display: block; }
@@ -87,7 +88,7 @@
   </div>
 
   <div id="phases"></div>
-  <div class="footer">Tasks auto-save. Refresh to pick up status changes I made.</div>
+  <div class="footer">Tasks auto-save. Refresh to pick up status changes I made.<br><a href="ai-agent-architecture.html" style="color:var(--primary);text-decoration:underline;">View AI Agent Architecture Diagram &rarr;</a></div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -115,7 +116,7 @@ const PHASES = [
       { id: 'p1-1', label: 'Run setupAdmin() in Google Apps Script editor to set credentials', done: true },
       { id: 'p1-2', label: 'Run setupPublicBackend() in Apps Script editor', done: true },
       { id: 'p1-3', label: 'Redeploy both Apps Script projects so security fixes go live', done: true },
-      { id: 'p1-4', label: 'Add Cloudflare Turnstile or reCAPTCHA to all forms (honeypot done)', done: false },
+      { id: 'p1-4', label: 'Add Cloudflare Turnstile or reCAPTCHA to all forms (honeypot done)', done: true },
       { id: 'p1-5', label: 'Add hidden honeypot fields to spam-check form submissions', done: true },
       { id: 'p1-6', label: 'Set up staging branch on GitHub Pages (branch created; configure Pages in repo settings)', done: false },
       { id: 'p1-7', label: 'Add Content-Security-Policy meta tags to HTML for security', done: true },
@@ -158,6 +159,11 @@ const PHASES = [
       { id: 'p4-5', label: 'Automated referral payouts (mobile money API)', done: false },
       { id: 'p4-6', label: 'Blog CMS (replace manual HTML with headless CMS)', done: false },
       { id: 'p4-7', label: 'Build automated email/SMS client reporting (monthly GBP stats sent to clients)', done: false },
+      { id: 'p4-8', label: 'Add Google Analytics link to admin sidebar for visitor traffic monitoring', done: true },
+      { id: 'p4-9', label: 'Build automated sales pipeline: lead status tracking with stage progression in admin CRM', done: false },
+      { id: 'p4-10', label: 'Add automated WhatsApp/email follow-up sequences triggered by lead stage changes', done: false },
+      { id: 'p4-11', label: 'Add lead scoring system: auto-score leads based on form data and engagement', done: false },
+      { id: 'p4-12', label: 'Add kanban/pipeline board view to admin for visual sales funnel management', done: false },
     ]
   },
   {
@@ -190,6 +196,31 @@ const PHASES = [
       { id: 'p6-11', label: 'Add online payment processing (Paystack or Stripe integration)', done: false },
       { id: 'p6-12', label: 'Add multi-currency pricing toggle (GHS/USD) on all service pages', done: false },
       { id: 'p6-13', label: 'Build multi-location GBP management dashboard for enterprise tier', done: false },
+      { id: 'p6-14', label: 'Add Calendly/Appointy booking link to audit modal and package success screens', done: false },
+      { id: 'p6-15', label: 'Add retainer contract selection (3mo/6mo with discount) to package onboarding form', done: false },
+      { id: 'p6-16', label: 'Add mobile money payment confirmation flow to onboarding success screen', done: false },
+      { id: 'p6-17', label: 'Add onboarding timeline/checklist (next steps) display to success screen after signup', done: false },
+    ]
+  },
+  {
+    id: 'p7', label: 'Phase 7 — AI Agent Swarm (Exec VP Orchestrator + Sub-Agents)', badge: 'p7', cls: 'badge-p7',
+    tasks: [
+      { id: 'p7-1', label: 'Set up Supabase database for agent state/memory and lead pipeline persistence', done: false },
+      { id: 'p7-2', label: 'Provision LLM API access (OpenAI GPT-4o-mini or Anthropic Claude Haiku)', done: false },
+      { id: 'p7-3', label: 'Build base agent framework: system prompt, tool calling, memory, task queue', done: false },
+      { id: 'p7-4', label: 'Build Lead Gen Agent: prospecting, list building, source attribution', done: false },
+      { id: 'p7-5', label: 'Build Outreach Agent: automated WhatsApp/email sequences with personalization', done: false },
+      { id: 'p7-6', label: 'Build Lead Qualifier Agent: score leads, route to correct pipeline stage', done: false },
+      { id: 'p7-7', label: 'Build Appointment Agent: Calendly scheduling, reminders, follow-ups', done: false },
+      { id: 'p7-8', label: 'Build Onboarding Agent: auto-setup client portal, send welcome materials, guide setup', done: false },
+      { id: 'p7-9', label: 'Build GBP Optimizer Agent: analyze profiles, suggest improvements, schedule posts', done: false },
+      { id: 'p7-10', label: 'Build Review Agent: auto-request reviews, draft replies, monitor ratings', done: false },
+      { id: 'p7-11', label: 'Build Reporting Agent: monthly client reports, competitor tracking, rank monitoring', done: false },
+      { id: 'p7-12', label: 'Build Content Agent: write blog posts, social media snippets, ad copy', done: false },
+      { id: 'p7-13', label: 'Build Exec VP Orchestrator Agent: assign tasks, review KPIs daily, re-prioritize sub-agents', done: false },
+      { id: 'p7-14', label: 'Build agent dashboard in admin: view agent status, task queue, logs, performance', done: false },
+      { id: 'p7-15', label: 'Add human-in-the-loop approval gates for spend decisions and outbound messaging', done: false },
+      { id: 'p7-16', label: 'End-to-end test: full lead-to-onboarding pipeline executed by agents autonomously', done: false },
     ]
   }
 ];
