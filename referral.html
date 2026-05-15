@@ -8,15 +8,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.frankfurter.app https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
 
   <title>Refer & Earn | Gabochie Marketing</title>
 
-  <meta name="description" content="Refer a business to Gabochie Marketing and earn GHS 200 for every successful referral. Help other Ghanaian businesses get found on Google Maps." />
+  <meta name="description" content="Refer a business to Gabochie Marketing and earn <span class="currency-amt" data-ghs="200">GHS 200</span> for every successful referral. Help other Ghanaian businesses get found on Google Maps." />
 
   <meta property="og:title" content="Refer & Earn - Gabochie Marketing" />
 
-  <meta property="og:description" content="Refer a business and earn GHS 200. Help Ghanaian businesses get found on Google Maps." />
+  <meta property="og:description" content="Refer a business and earn <span class="currency-amt" data-ghs="200">GHS 200</span>. Help Ghanaian businesses get found on Google Maps." />
 
   <meta property="og:type" content="website" />
 
@@ -164,7 +164,7 @@
 
         <span class="inline-block bg-accent/20 text-accent text-sm font-semibold px-4 py-1 rounded-full mb-4">REFER & EARN</span>
 
-        <h1 class="text-4xl md:text-5xl font-black mb-6">Refer a Business. Earn GHS 200.</h1>
+        <h1 class="text-4xl md:text-5xl font-black mb-6">Refer a Business. Earn <span class="currency-amt" data-ghs="200">GHS 200</span>.</h1>
 
         <p class="text-xl text-white/80 mb-8">Know a business that needs more customers from Google Maps? Send them our way. You earn, they win.</p>
 
@@ -190,6 +190,20 @@
 
   </section>
 
+  <!-- CURRENCY TOGGLE -->
+  <section class="pt-8 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-center gap-3 mb-8">
+        <span id="currencyLabelGHS" class="text-sm font-semibold text-primary">GHS</span>
+        <button id="currencyToggle" onclick="toggleCurrency()" class="relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none" style="background-color:#1A7B3A;">
+          <span id="toggleKnob" class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></span>
+        </button>
+        <span id="currencyLabelUSD" class="text-sm font-semibold text-gray-400">USD</span>
+        <span id="rateInfo" class="text-xs text-gray-400 ml-1 hidden">live</span>
+      </div>
+    </div>
+  </section>
+
   <!-- KEY STATS BAR -->
 
   <section class="py-8 bg-white border-b border-gray-100">
@@ -200,7 +214,7 @@
 
         <div>
 
-          <p class="text-3xl font-black text-primary">GHS 200</p>
+          <p class="text-3xl font-black text-primary"><span class="currency-amt" data-ghs="200">GHS 200</span></p>
 
           <p class="text-sm text-gray-500">Per referral</p>
 
@@ -292,7 +306,7 @@
 
           <h3 class="text-xl font-bold text-body-text mb-3">You Get Paid</h3>
 
-          <p class="text-gray-600">When they sign up for any package and pay their first invoice, you earn GHS 200 within 24 hours.</p>
+          <p class="text-gray-600">When they sign up for any package and pay their first invoice, you earn <span class="currency-amt" data-ghs="200">GHS 200</span> within 24 hours.</p>
 
         </div>
 
@@ -330,7 +344,7 @@
 
           </div>
 
-          <p class="text-sm text-gray-600">GHS 200 flat fee for every successful referral that signs up for any package (Starter, Growth, or Market Authority). Paid within 24 hours of their first payment via mobile money or bank transfer.</p>
+          <p class="text-sm text-gray-600"><span class="currency-amt" data-ghs="200">GHS 200</span> flat fee for every successful referral that signs up for any package (Starter, Growth, or Market Authority). Paid within 24 hours of their first payment via mobile money or bank transfer.</p>
 
         </div>
 
@@ -478,7 +492,7 @@
 
             <p class="text-white/80">Tell us about a business that needs better Google Maps visibility.</p>
 
-            <p class="text-accent font-semibold mt-1 text-sm">You earn GHS 200 when they sign up.</p>
+            <p class="text-accent font-semibold mt-1 text-sm">You earn <span class="currency-amt" data-ghs="200">GHS 200</span> when they sign up.</p>
 
           </div>
 
@@ -575,7 +589,7 @@
 
               <p class="text-gray-600 mb-2">Thank you! We'll reach out to the business you referred.</p>
 
-              <p class="text-gray-600 mb-4">You'll earn <strong class="text-primary">GHS 200</strong> when they sign up for any package.</p>
+              <p class="text-gray-600 mb-4">You'll earn <strong class="text-primary"><span class="currency-amt" data-ghs="200">GHS 200</span></strong> when they sign up for any package.</p>
 
               <p class="text-sm text-gray-500 mb-4">Want to refer more businesses?</p>
 
@@ -671,7 +685,7 @@
 
           <div class="hidden px-6 pb-4 text-sm text-gray-600">
 
-            No limit. Refer as many businesses as you want. Each successful referral earns you GHS 200.
+            No limit. Refer as many businesses as you want. Each successful referral earns you <span class="currency-amt" data-ghs="200">GHS 200</span>.
 
           </div>
 
@@ -709,7 +723,7 @@
 
       <h2 class="text-3xl sm:text-4xl font-black mb-4">Know a Business That Needs More Customers?</h2>
 
-      <p class="text-white/80 mb-8 text-lg">Refer them today. You earn GHS 200. They get more visibility on Google Maps. Everyone wins.</p>
+      <p class="text-white/80 mb-8 text-lg">Refer them today. You earn <span class="currency-amt" data-ghs="200">GHS 200</span>. They get more visibility on Google Maps. Everyone wins.</p>
 
       <button onclick="openReferModal()" class="bg-accent text-dark-green px-10 py-4 rounded-full text-xl font-bold hover:bg-accent-light transition pulse-glow cursor-pointer">
 
@@ -1093,6 +1107,67 @@
   </script>
 
 <script src="assets/js/ai-sales-agent.js"></script>
+<script>
+let currencyState = 'GHS';
+let exchangeRate = null;
+
+async function fetchRate() {
+  try {
+    const resp = await fetch('https://api.frankfurter.app/latest?from=GHS&to=USD');
+    const data = await resp.json();
+    exchangeRate = data.rates.USD;
+    document.getElementById('rateInfo')?.classList.remove('hidden');
+    return exchangeRate;
+  } catch {
+    exchangeRate = 0.067;
+    return exchangeRate;
+  }
+}
+
+async function toggleCurrency() {
+  const knob = document.getElementById('toggleKnob');
+  const labelGHS = document.getElementById('currencyLabelGHS');
+  const labelUSD = document.getElementById('currencyLabelUSD');
+  if (currencyState === 'GHS') {
+    if (!exchangeRate) await fetchRate();
+    currencyState = 'USD';
+    knob.style.transform = 'translateX(28px)';
+    labelGHS.className = 'text-sm font-semibold text-gray-400';
+    labelUSD.className = 'text-sm font-semibold text-primary';
+    convertAll('USD');
+    localStorage.setItem('gm_currency', 'USD');
+  } else {
+    currencyState = 'GHS';
+    knob.style.transform = 'translateX(0)';
+    labelGHS.className = 'text-sm font-semibold text-primary';
+    labelUSD.className = 'text-sm font-semibold text-gray-400';
+    convertAll('GHS');
+    localStorage.setItem('gm_currency', 'GHS');
+  }
+}
+
+function convertAll(to) {
+  document.querySelectorAll('.currency-amt').forEach(el => {
+    const ghs = parseFloat(el.dataset.ghs);
+    if (to === 'USD' && exchangeRate) {
+      const usd = (ghs * exchangeRate).toFixed(0);
+      el.innerHTML = '~$' + Number(usd).toLocaleString();
+    } else {
+      el.innerHTML = 'GHS ' + Number(ghs).toLocaleString();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const saved = localStorage.getItem('gm_currency');
+  if (saved === 'USD') {
+    await fetchRate();
+    toggleCurrency();
+  } else {
+    fetchRate();
+  }
+});
+</script>
 </body>
 
 </html>

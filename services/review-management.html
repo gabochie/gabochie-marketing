@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.frankfurter.app https://challenges.cloudflare.com https://script.google.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
   <title>Review Management Service — Gabochie Marketing</title>
-  <meta name="description" content="Automated Google Review management for Ghanaian businesses. Get more 5-star reviews, reply to every review, and monitor your rating. Just GHS 500/mo." />
+  <meta name="description" content="Automated Google Review management for Ghanaian businesses. Get more 5-star reviews, reply to every review, and monitor your rating. Just <span class="currency-amt" data-ghs="500">GHS 500</span>/mo." />
   <meta property="og:title" content="Google Review Management | Gabochie Marketing" />
-  <meta property="og:description" content="Get more 5-star reviews automatically. Just GHS 500/mo." />
+  <meta property="og:description" content="Get more 5-star reviews automatically. Just <span class="currency-amt" data-ghs="500">GHS 500</span>/mo." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://marketing.gabochie.com/services/review-management.html" />
   <link rel="canonical" href="https://marketing.gabochie.com/services/review-management.html" />
@@ -103,14 +103,14 @@
       <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <span class="inline-flex items-center gap-2 bg-accent/20 rounded-full px-4 py-1.5 mb-4">
           <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
-          <span class="text-accent text-sm font-medium">Standalone Service — Just GHS 500/mo</span>
+          <span class="text-accent text-sm font-medium">Standalone Service — Just <span class="currency-amt" data-ghs="500">GHS 500</span>/mo</span>
         </span>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
           Get More 5-Star<br/>
           <span class="text-accent">Google Reviews</span>
         </h1>
         <p class="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10">
-          Automated review requests, smart reply drafting, and rating monitoring — all for <strong class="text-white">GHS 500/month</strong>. No long-term contract.
+          Automated review requests, smart reply drafting, and rating monitoring — all for <strong class="text-white"><span class="currency-amt" data-ghs="500">GHS 500</span>/month</strong>. No long-term contract.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button onclick="openAuditModal()" class="w-full sm:w-auto bg-accent text-dark-green px-8 py-4 rounded-full text-lg font-bold hover:bg-accent-light transition pulse-glow">
@@ -193,6 +193,20 @@
       </div>
     </section>
 
+    <!-- CURRENCY TOGGLE -->
+    <section class="py-16 lg:pt-24 lg:pb-0 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-center gap-3 mb-8">
+          <span id="currencyLabelGHS" class="text-sm font-semibold text-primary">GHS</span>
+          <button id="currencyToggle" onclick="toggleCurrency()" class="relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none" style="background-color:#1A7B3A;">
+            <span id="toggleKnob" class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></span>
+          </button>
+          <span id="currencyLabelUSD" class="text-sm font-semibold text-gray-400">USD</span>
+          <span id="rateInfo" class="text-xs text-gray-400 ml-1 hidden">live</span>
+        </div>
+      </div>
+    </section>
+
     <!-- PRICING CARD -->
     <section class="py-16 lg:py-24 bg-white">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -204,7 +218,7 @@
           </div>
           <div class="p-8 sm:p-10">
             <div class="text-center mb-8">
-              <span class="text-5xl font-black text-primary">GHS 500</span>
+              <span class="text-5xl font-black text-primary"><span class="currency-amt" data-ghs="500">GHS 500</span></span>
               <span class="text-lg text-gray-400">/month</span>
               <p class="text-sm text-gray-500 mt-2">No setup fee. Cancel anytime.</p>
             </div>
@@ -262,7 +276,7 @@
           </details>
           <details class="bg-white rounded-xl p-6 card-hover cursor-pointer">
             <summary class="font-semibold text-body-text">What if I want the full GBP management later?</summary>
-            <p class="mt-3 text-sm text-gray-600">Review Management graduates seamlessly into full GBP management. Your GHS 500/mo applies toward any higher-tier package.</p>
+            <p class="mt-3 text-sm text-gray-600">Review Management graduates seamlessly into full GBP management. Your <span class="currency-amt" data-ghs="500">GHS 500</span>/mo applies toward any higher-tier package.</p>
           </details>
         </div>
       </div>
@@ -432,7 +446,7 @@
         email: document.getElementById('auditEmail').value || '',
         rating: document.getElementById('auditType').value || '',
         outreachCategory: 'Review Management Trial',
-        offerType: 'Review Management - GHS 500/mo',
+        offerType: 'Review Management - <span class="currency-amt" data-ghs="500">GHS 500</span>/mo',
         status: 'new',
         source: 'review-management-page',
         timestamp: new Date().toISOString()
@@ -459,5 +473,66 @@
     });
   </script>
   <script src="../assets/js/ai-sales-agent.js"></script>
+<script>
+let currencyState = 'GHS';
+let exchangeRate = null;
+
+async function fetchRate() {
+  try {
+    const resp = await fetch('https://api.frankfurter.app/latest?from=GHS&to=USD');
+    const data = await resp.json();
+    exchangeRate = data.rates.USD;
+    document.getElementById('rateInfo')?.classList.remove('hidden');
+    return exchangeRate;
+  } catch {
+    exchangeRate = 0.067;
+    return exchangeRate;
+  }
+}
+
+async function toggleCurrency() {
+  const knob = document.getElementById('toggleKnob');
+  const labelGHS = document.getElementById('currencyLabelGHS');
+  const labelUSD = document.getElementById('currencyLabelUSD');
+  if (currencyState === 'GHS') {
+    if (!exchangeRate) await fetchRate();
+    currencyState = 'USD';
+    knob.style.transform = 'translateX(28px)';
+    labelGHS.className = 'text-sm font-semibold text-gray-400';
+    labelUSD.className = 'text-sm font-semibold text-primary';
+    convertAll('USD');
+    localStorage.setItem('gm_currency', 'USD');
+  } else {
+    currencyState = 'GHS';
+    knob.style.transform = 'translateX(0)';
+    labelGHS.className = 'text-sm font-semibold text-primary';
+    labelUSD.className = 'text-sm font-semibold text-gray-400';
+    convertAll('GHS');
+    localStorage.setItem('gm_currency', 'GHS');
+  }
+}
+
+function convertAll(to) {
+  document.querySelectorAll('.currency-amt').forEach(el => {
+    const ghs = parseFloat(el.dataset.ghs);
+    if (to === 'USD' && exchangeRate) {
+      const usd = (ghs * exchangeRate).toFixed(0);
+      el.innerHTML = '~$' + Number(usd).toLocaleString();
+    } else {
+      el.innerHTML = 'GHS ' + Number(ghs).toLocaleString();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const saved = localStorage.getItem('gm_currency');
+  if (saved === 'USD') {
+    await fetchRate();
+    toggleCurrency();
+  } else {
+    fetchRate();
+  }
+});
+</script>
 </body>
 </html>
