@@ -26,7 +26,301 @@
       --shadow: 0 2px 8px rgba(0,0,0,0.08);
       --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
       --radius: 8px;
+      --radius-sm: 6px;
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+    body { background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+    .container { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 0;
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+
+    .sidebar-brand .logo-icon {
+      width: 48px; height: 48px;
+      background: rgba(126,211,84,0.15);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .sidebar-brand .logo-icon svg { width: 28px; height: 28px; fill: var(--accent); }
+
+    .sidebar-brand .brand-name { font-size: 18px; font-weight: 800; color: #fff; }
+    .sidebar-brand .brand-tagline { font-size: 11px; color: var(--accent); opacity: 0.8; margin-top: 2px; }
+
+    .sidebar-nav { flex: 1; padding: 12px 12px; }
+
+    .nav-section {
+      margin: 16px 12px 6px;
+      font-size: 10px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      letter-spacing: 1.5px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      margin-bottom: 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    .nav-item.active {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-weight: 600;
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .nav-icon { margin-right: 12px; font-size: 16px; width: 20px; text-align: center; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: var(--primary-dark);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .sidebar-footer .social-links { display: flex; justify-content: center; gap: 12px; margin-bottom: 8px; }
+    .sidebar-footer .social-links a { color: rgba(255,255,255,0.5); transition: color 0.2s; }
+    .sidebar-footer .social-links a:hover { color: var(--accent); }
+    .sidebar-footer .social-links svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; padding: 24px; overflow-y: auto; background: var(--bg); }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 { font-size: 22px; font-weight: 800; color: var(--text); }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ─── ALERTS ─── */
+    .alert {
+      position: fixed; top: 20px; right: 20px;
+      padding: 14px 20px; border-radius: var(--radius);
+      box-shadow: var(--shadow-lg); z-index: 1000;
+      max-width: 320px; font-size: 13px; font-weight: 500;
+    }
+    .alert-success { background: var(--accent); color: var(--text); }
+    .alert-error { background: var(--danger); color: #fff; }
+    .alert-info { background: var(--info); color: #fff; }
+
+    /* ─── PANELS / CARDS ─── */
+    .panel {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .panel h2 { font-size: 16px; font-weight: 700; color: var(--text); }
+    .panel-actions { display: flex; gap: 8px; }
+
+    /* ─── BUTTONS ─── */
+    .panel-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .panel-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .panel-btn:active { transform: translateY(0); }
+
+    .panel-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .panel-btn.accent { background: var(--accent); color: var(--text); border-color: var(--accent); }
+    .panel-btn.info { background: var(--info); color: #fff; border-color: var(--info); }
+    .panel-btn.secondary { background: var(--text-light); color: #fff; border-color: var(--text-light); }
+    .panel-btn.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    /* ─── STATS CARDS ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      text-align: center;
+      border-top: 3px solid var(--primary-light);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .stat-card .num { font-size: 28px; font-weight: 800; color: var(--primary-dark); }
+    .stat-card .label { font-size: 11px; color: var(--text-light); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+    .stat-card.accent { border-top-color: var(--accent); }
+    .stat-card.info { border-top-color: var(--info); }
+    .stat-card.warning { border-top-color: var(--warning); }
+
+    /* ─── TABLE ─── */
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left; padding: 10px 12px;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-light);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    tr:hover { background: #f8faf8; }
+    tr:last-child td { border-bottom: none; }
+
+    .empty-state { text-align: center; padding: 40px; color: var(--text-light); }
+    .empty-icon { font-size: 48px; margin-bottom: 10px; }
+
+    /* ─── BADGES / TAGS (Style Guide) ─── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .tag {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Funnel Stages */
+    .tag-tofu { background: #FB8C00; color: #fff; }
+    .tag-mofu { background: #039BE5; color: #fff; }
+    .tag-bofu { background: #0F5C28; color: #fff; }
+    .tag-network { background: #1A7B3A; color: #fff; }
+
+    /* Pipeline Status */
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-new { background: #FB8C00; color: #fff; }
+    .status-contacted { background: #039BE5; color: #fff; }
+    .status-replied { background: #1A7B3A; color: #fff; }
+    .status-interested { background: #0F5C28; color: #fff; }
+    .status-closed { background: #0A441D; color: #fff; }
+    .status-cold { background: #E53935; color: #fff; }
+
+    /* Opportunity Score */
+    .score-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .score-hot { background: #7ED354; color: #1a1a2e; }
+    .score-warm { background: #FB8C00; color: #fff; }
+    .score-cold { background: #E53935; color: #fff; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ─── FORM ELEMENTS ─── */
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(26,123,58,0.1); }
+    label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--text); }
 
     * {
       margin: 0;
@@ -292,71 +586,84 @@
   <div class="container">
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
-      <div class="logo">🏢 GABOCHIE</div>
-      
-      <div class="nav-section">Dashboard</div>
-      <div class="nav-item active" onclick="switchTab('contacts')">
-        <span class="nav-icon">👥</span> Contacts
-        <span class="nav-badge" id="badge-contacts">0</span>
+      <div class="sidebar-brand">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </div>
+        <div class="brand-name">Gabochie Marketing</div>
+        <div class="brand-tagline">Admin Dashboard</div>
       </div>
       
-      <div class="nav-item" onclick="switchTab('sync')">
-        <span class="nav-icon">🔄</span> Sync
+      <div class="sidebar-nav">
+        <div class="nav-section">Dashboard</div>
+        <div class="nav-item active" onclick="switchTab('contacts')">
+          <span class="nav-icon">👥</span> Contacts
+          <span class="nav-badge" id="badge-contacts">0</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('sync')">
+          <span class="nav-icon">🔄</span> Sync
+        </div>
+        
+        <div class="nav-section">Tools</div>
+        <div class="nav-item" onclick="switchTab('csv-processor')">
+          <span class="nav-icon">📊</span> CSV Import
+        </div>
+        <div class="nav-item" onclick="window.open('https://analytics.google.com/analytics/web/#/p489335179/report/realtime', '_blank')">
+          <span class="nav-icon">📈</span> Analytics
+        </div>
+        
+        <div class="nav-section">Settings</div>
+        <div class="nav-item" onclick="switchTab('settings')">
+          <span class="nav-icon">⚙️</span> Settings
+        </div>
+        
+        <div class="nav-section">Build</div>
+        <div class="nav-item" onclick="switchTab('build-checklist')">
+          <span class="nav-icon">📋</span> Build Checklist
+        </div>
       </div>
       
-      <div class="nav-section">Tools</div>
-      <div class="nav-item" onclick="switchTab('csv-processor')">
-        <span class="nav-icon">📊</span> CSV Import
+      <div class="sidebar-footer">
+        <div class="social-links">
+          <a href="https://www.youtube.com/@gabochiemarketing" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@gabochiemarketing" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52V6.8a4.84 4.84 0 01-1-.11z"/></svg>
+          </a>
+        </div>
+        v2.0 &mdash; Gabochie Marketing
       </div>
-      <div class="nav-item" onclick="window.open('https://analytics.google.com/analytics/web/#/p489179335/report/realtime', '_blank')">
-        <span class="nav-icon">📈</span> Analytics
-      </div>
-      
-      <div class="nav-section">Settings</div>
-      <div class="nav-item" onclick="switchTab('settings')">
-        <span class="nav-icon">⚙️</span> Settings
-      </div>
-      
-      <div class="nav-section">Build</div>
-      <div class="nav-item" onclick="switchTab('build-checklist')">
-        <span class="nav-icon">📋</span> Build Checklist
-      </div>
-      
-      <div class="nav-footer">
-      <div style="margin-bottom: 10px;">
-        <a href="https://www.youtube.com/@gabochiemarketing" target="_blank" class="text-white/70 hover:text-white transition text-xs">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.918C21.262 3.268 20.04 3.268 20.04 6.186c0 1.897 1.22 3.268 2.458 3.268v4.644c0 1.897-1.22 3.268-2.458 3.268-1.897 0-3.268-1.22-3.268-2.458V6.186c0-1.897 1.22-3.268 2.458-3.268zm-1.897 8.918H8.04V8.918h13.562v1.897zM8.04 15.814h13.562v1.897H8.04z"/></svg>
-        </a>
-        <a href="https://www.tiktok.com/@gabochiemarketing" target="_blank" class="text-white/70 hover:text-white transition text-xs" style="margin-left: 10px;">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.53.02L13.05.03c.82.003 1.18.014 1.18.036v2.018c0 .842.646 1.48 1.48 1.48h1.43c.828 0 1.48-.638 1.48-1.48v-.967c0-.433-.236-.818-.585-1.037l.018-.02c-.82-.003-1.18-.014-1.18-.036v-2.018c0-.842-.646-1.48-1.48-1.48h-1.43c-.828 0-1.48.638-1.48-1.48v-.967c0-.433-.236-.818-.585-1.037l-.018-.02c-.82-.003-1.18-.014-1.18-.036v-2.018c0-.842-.646-1.48-1.48-1.48h-1.43c-.828 0-1.48.638-1.48-1.48v-.967c0-.433-.236-.818-.585-1.037l-.018-.02z"/></svg>
-        </a>
-      </div>
-      Gabochie Marketing v2.0
-    </div>
     </aside>
 
     <!-- Main Content Area -->
     <main class="main">
       <!-- Login Screen -->
-      <div id="loginScreen" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
-        <div style="background: var(--card-bg); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow-lg); max-width: 400px; width: 100%;">
-          <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary);">🔐 Admin Login</h2>
-          
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Username</label>
-            <input type="text" id="loginUser" placeholder="Enter username" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px;" autocomplete="username">
+      <div id="loginScreen" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #f0f2f5 0%, #e2e8e2 100%);">
+        <div style="background: var(--card-bg); padding: 40px; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); max-width: 400px; width: 100%;">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <div style="width: 56px; height: 56px; background: rgba(15,92,40,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="#1A7B3A"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            </div>
+            <h2 style="font-size: 20px; font-weight: 800; color: var(--text);">Admin Login</h2>
+            <p style="font-size: 13px; color: var(--text-light); margin-top: 4px;">Sign in to Gabochie Marketing dashboard</p>
           </div>
           
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Password</label>
-            <input type="password" id="loginPass" placeholder="Enter password" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px;" autocomplete="current-password">
+          <div style="margin-bottom: 16px;">
+            <label>Username</label>
+            <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
           </div>
           
-          <button id="loginBtn" onclick="handleLogin()" style="width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px;">
+          <div style="margin-bottom: 24px;">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password">
+          </div>
+          
+          <button id="loginBtn" onclick="handleLogin()" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 15px; transition: opacity 0.2s;">
             Sign In
           </button>
           
-          <div id="loginError" style="color: var(--danger); margin-top: 10px; text-align: center; display: none;"></div>
+          <div id="loginError" style="color: var(--danger); margin-top: 12px; text-align: center; font-size: 13px; display: none; background: rgba(229,57,53,0.08); padding: 10px; border-radius: var(--radius-sm);"></div>
         </div>
       </div>
 
@@ -364,10 +671,10 @@
       <div id="appMain" style="display: none;">
         <header class="header">
           <h1 id="pageTitle">Contacts</h1>
-          <div style="display: flex; gap: 10px; align-items: center;">
+          <div class="header-actions">
             <button class="panel-btn primary" onclick="openAddContactModal()">+ Add Contact</button>
             <button class="panel-btn accent" onclick="syncColdLeads()">🔄 Sync Cold Leads</button>
-            <button class="panel-btn info" onclick="testBackend()">🧪 Test Backend</button>
+            <button class="panel-btn secondary" onclick="testBackend()">🧪 Test Backend</button>
           </div>
         </header>
 
