@@ -553,6 +553,14 @@
         <p class="text-base text-gray-600 max-w-2xl mx-auto mt-4">
           Start with an affordable local visibility boost, then scale with stronger ongoing management as your business grows. <strong class="text-primary">All plans include a one-time setup + monthly retainer.</strong>
         </p>
+        <div class="flex items-center justify-center gap-3 mt-6">
+          <span id="currencyLabelGHS" class="text-sm font-semibold text-primary">GHS</span>
+          <button id="currencyToggle" onclick="toggleCurrency()" class="relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none" style="background-color:#1A7B3A;">
+            <span id="toggleKnob" class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></span>
+          </button>
+          <span id="currencyLabelUSD" class="text-sm font-semibold text-gray-400">USD</span>
+          <span id="rateInfo" class="text-xs text-gray-400 ml-1 hidden">live</span>
+        </div>
       </div>
       <div class="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
         <!-- Tier 1 -->
@@ -560,14 +568,14 @@
           <h3 class="text-lg font-bold text-body-text mb-2">Starter Visibility</h3>
           <p class="text-sm text-gray-500 mb-6">One-time setup + monthly management</p>
           <div class="mb-2">
-            <span class="text-2xl font-black text-primary">GHS 950</span>
+            <span class="text-2xl font-black text-primary"><span class="currency-amt" data-ghs="950">GHS 950</span></span>
             <span class="text-sm text-gray-400"> setup</span>
           </div>
           <div class="mb-4">
-            <span class="text-3xl font-black text-primary">GHS 500</span>
+            <span class="text-3xl font-black text-primary"><span class="currency-amt" data-ghs="500">GHS 500</span></span>
             <span class="text-sm text-gray-400">/month</span>
           </div>
-          <p class="text-xs text-gray-500 mb-4">First month: GHS 1,450 &bull; Then GHS 500/mo</p>
+          <p class="text-xs text-gray-500 mb-4">First month: <span class="currency-amt" data-ghs="1450">GHS 1,450</span> &bull; Then <span class="currency-amt" data-ghs="500">GHS 500</span>/mo</p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -603,14 +611,14 @@
           <h3 class="text-lg font-bold text-white mb-2">Growth System</h3>
           <p class="text-sm text-white/70 mb-6">One-time setup + monthly management</p>
           <div class="mb-2">
-            <span class="text-2xl font-black text-white">GHS 1,500</span>
+            <span class="text-2xl font-black text-white"><span class="currency-amt" data-ghs="1500">GHS 1,500</span></span>
             <span class="text-sm text-white/60"> setup</span>
           </div>
           <div class="mb-4">
-            <span class="text-3xl font-black text-white">GHS 1,000</span>
+            <span class="text-3xl font-black text-white"><span class="currency-amt" data-ghs="1000">GHS 1,000</span></span>
             <span class="text-sm text-white/60">/month</span>
           </div>
-          <p class="text-xs text-white/60 mb-4">First month: GHS 2,500 &bull; Then GHS 1,000/mo</p>
+          <p class="text-xs text-white/60 mb-4">First month: <span class="currency-amt" data-ghs="2500">GHS 2,500</span> &bull; Then <span class="currency-amt" data-ghs="1000">GHS 1,000</span>/mo</p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-white/90">
               <svg class="w-5 h-5 text-accent flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -643,14 +651,14 @@
           <h3 class="text-lg font-bold text-body-text mb-2">Market Authority</h3>
           <p class="text-sm text-gray-500 mb-6">One-time setup + monthly management</p>
           <div class="mb-2">
-            <span class="text-2xl font-black text-primary">GHS 2,500</span>
+            <span class="text-2xl font-black text-primary"><span class="currency-amt" data-ghs="2500">GHS 2,500</span></span>
             <span class="text-sm text-gray-400"> setup</span>
           </div>
           <div class="mb-4">
-            <span class="text-3xl font-black text-primary">GHS 2,000</span>
+            <span class="text-3xl font-black text-primary"><span class="currency-amt" data-ghs="2000">GHS 2,000</span></span>
             <span class="text-sm text-gray-400">/month</span>
           </div>
-          <p class="text-xs text-gray-500 mb-4">First month: GHS 4,500 &bull; Then GHS 2,000/mo</p>
+          <p class="text-xs text-gray-500 mb-4">First month: <span class="currency-amt" data-ghs="4500">GHS 4,500</span> &bull; Then <span class="currency-amt" data-ghs="2000">GHS 2,000</span>/mo</p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -1242,6 +1250,72 @@
     }
   </script>
 
-<script src="assets/js/ai-sales-agent.js"></script>
+  <script>
+    // ── Currency Converter (open source Frankfurter API) ──
+    let currencyState = 'GHS';
+    let exchangeRate = null;
+
+    async function fetchRate() {
+      try {
+        const resp = await fetch('https://api.frankfurter.app/latest?from=GHS&to=USD');
+        const data = await resp.json();
+        exchangeRate = data.rates.USD;
+        document.getElementById('rateInfo').classList.remove('hidden');
+        return exchangeRate;
+      } catch {
+        // Fallback rate if API unavailable
+        exchangeRate = 0.067;
+        return exchangeRate;
+      }
+    }
+
+    async function toggleCurrency() {
+      const knob = document.getElementById('toggleKnob');
+      const labelGHS = document.getElementById('currencyLabelGHS');
+      const labelUSD = document.getElementById('currencyLabelUSD');
+
+      if (currencyState === 'GHS') {
+        if (!exchangeRate) await fetchRate();
+        currencyState = 'USD';
+        knob.style.transform = 'translateX(28px)';
+        labelGHS.className = 'text-sm font-semibold text-gray-400';
+        labelUSD.className = 'text-sm font-semibold text-primary';
+        convertAll('USD');
+        localStorage.setItem('gm_currency', 'USD');
+      } else {
+        currencyState = 'GHS';
+        knob.style.transform = 'translateX(0)';
+        labelGHS.className = 'text-sm font-semibold text-primary';
+        labelUSD.className = 'text-sm font-semibold text-gray-400';
+        convertAll('GHS');
+        localStorage.setItem('gm_currency', 'GHS');
+      }
+    }
+
+    function convertAll(to) {
+      document.querySelectorAll('.currency-amt').forEach(el => {
+        const ghs = parseFloat(el.dataset.ghs);
+        if (to === 'USD' && exchangeRate) {
+          const usd = (ghs * exchangeRate).toFixed(0);
+          el.innerHTML = '~$' + Number(usd).toLocaleString();
+        } else {
+          el.innerHTML = 'GHS ' + Number(ghs).toLocaleString();
+        }
+      });
+    }
+
+    // Restore preference on load
+    document.addEventListener('DOMContentLoaded', async function() {
+      const saved = localStorage.getItem('gm_currency');
+      if (saved === 'USD') {
+        await fetchRate();
+        toggleCurrency();
+      } else {
+        // Pre-fetch rate in background
+        fetchRate();
+      }
+    });
+  </script>
+  <script src="assets/js/ai-sales-agent.js"></script>
 </body>
 </html>
