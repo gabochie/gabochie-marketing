@@ -73,6 +73,7 @@
   }
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script>
     tailwind.config = {
       theme: {
@@ -164,9 +165,11 @@
         <div class="hidden md:flex items-center gap-8">
           <a href="#system" class="text-sm font-medium text-gray-600 hover:text-primary transition">How It Works</a>
           <a href="#proof" class="text-sm font-medium text-gray-600 hover:text-primary transition">Results</a>
+          <a href="referral.html" class="text-sm font-medium text-gray-600 hover:text-primary transition">Refer & Earn</a>
+          <a href="client/login.html" class="text-sm font-medium text-gray-600 hover:text-primary transition">Client Portal</a>
           <a href="#blog" class="text-sm font-medium text-gray-600 hover:text-primary transition">Blog</a>
           <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-primary transition">Pricing</a>
-          <button onclick="openAuditModal()" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-dark-green transition pulse-glow cursor-pointer">
+          <button onclick="openAuditModal()" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-dark-green transition pulse-grow cursor-pointer">
             Get Free Audit
           </button>
         </div>
@@ -178,6 +181,8 @@
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3">
       <a href="#system" class="block text-sm font-medium text-gray-600 py-2">How It Works</a>
       <a href="#proof" class="block text-sm font-medium text-gray-600 py-2">Results</a>
+      <a href="referral.html" class="block text-sm font-medium text-gray-600 py-2">Refer & Earn</a>
+      <a href="client/login.html" class="block text-sm font-medium text-gray-600 py-2">Client Portal</a>
       <a href="#blog" class="block text-sm font-medium text-gray-600 py-2">Blog</a>
       <a href="#pricing" class="block text-sm font-medium text-gray-600 py-2">Pricing</a>
       <button onclick="openAuditModal()" class="block w-full bg-primary text-white px-5 py-3 rounded-full text-sm font-semibold text-center cursor-pointer">
@@ -518,6 +523,7 @@
                 <label for="leadBusiness" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
                 <input type="text" id="leadBusiness" name="business" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" placeholder="Your Business Name">
               </div>
+              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:0 auto"></div>
               <input type="hidden" name="_subject" value="New Checklist Download - Gabochie Marketing">
               <input type="hidden" name="_next" value="https://marketing.gabochie.com/assets/google-maps-checklist.html">
               <button type="submit" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-green transition pulse-glow">
@@ -545,18 +551,23 @@
           Every package is designed to move your business from invisible to undeniable on Google Maps.
         </p>
         <p class="text-base text-gray-600 max-w-2xl mx-auto mt-4">
-          Start with an affordable local visibility boost, then scale with stronger review and management support as your business grows.
+          Start with an affordable local visibility boost, then scale with stronger ongoing management as your business grows. <strong class="text-primary">All plans include a one-time setup + monthly retainer.</strong>
         </p>
       </div>
       <div class="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
         <!-- Tier 1 -->
         <div class="bg-white rounded-2xl p-8 card-hover border border-gray-200">
           <h3 class="text-lg font-bold text-body-text mb-2">Starter Visibility</h3>
-          <p class="text-sm text-gray-500 mb-6">Quick profile boost for small businesses</p>
-          <div class="mb-6">
-            <span class="text-4xl font-black text-primary">From GHS 950</span>
-            <span class="text-gray-400"> - 1,200</span>
+          <p class="text-sm text-gray-500 mb-6">One-time setup + monthly management</p>
+          <div class="mb-2">
+            <span class="text-2xl font-black text-primary">GHS 950</span>
+            <span class="text-sm text-gray-400"> setup</span>
           </div>
+          <div class="mb-4">
+            <span class="text-3xl font-black text-primary">GHS 500</span>
+            <span class="text-sm text-gray-400">/month</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-4">First month: GHS 1,450 &bull; Then GHS 500/mo</p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -574,8 +585,12 @@
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
               WhatsApp and call integration
             </li>
+            <li class="flex items-center gap-2 text-sm text-gray-600">
+              <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Monthly performance monitoring
+            </li>
           </ul>
-          <button onclick="openPackageModal('Starter Visibility', 'GHS 950 - 1,200')" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
+          <button onclick="openPackageModal('Starter Visibility', 'GHS 950 setup + GHS 500/mo')" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
             Start Here
           </button>
         </div>
@@ -586,14 +601,20 @@
             RECOMMENDED
           </div>
           <h3 class="text-lg font-bold text-white mb-2">Growth System</h3>
-          <p class="text-sm text-white/70 mb-6">Setup + 30-day management</p>
-          <div class="mb-6">
-            <span class="text-4xl font-black text-white">From GHS 4,500</span>
+          <p class="text-sm text-white/70 mb-6">One-time setup + monthly management</p>
+          <div class="mb-2">
+            <span class="text-2xl font-black text-white">GHS 1,500</span>
+            <span class="text-sm text-white/60"> setup</span>
           </div>
+          <div class="mb-4">
+            <span class="text-3xl font-black text-white">GHS 1,000</span>
+            <span class="text-sm text-white/60">/month</span>
+          </div>
+          <p class="text-xs text-white/60 mb-4">First month: GHS 2,500 &bull; Then GHS 1,000/mo</p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-white/90">
               <svg class="w-5 h-5 text-accent flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Everything in Visibility Setup
+              Everything in Starter Visibility
             </li>
             <li class="flex items-center gap-2 text-sm text-white/90">
               <svg class="w-5 h-5 text-accent flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -609,10 +630,10 @@
             </li>
             <li class="flex items-center gap-2 text-sm text-white/90">
               <svg class="w-5 h-5 text-accent flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              30-day performance management
+              Monthly performance reporting
             </li>
           </ul>
-          <button onclick="openPackageModal('Growth System', 'GHS 4,500')" class="block w-full text-center bg-accent text-dark-green py-3 rounded-full font-bold hover:bg-accent-light transition pulse-glow cursor-pointer">
+          <button onclick="openPackageModal('Growth System', 'GHS 1,500 setup + GHS 1,000/mo')" class="block w-full text-center bg-accent text-dark-green py-3 rounded-full font-bold hover:bg-accent-light transition pulse-glow cursor-pointer">
             Get Started
           </button>
         </div>
@@ -620,18 +641,20 @@
         <!-- Tier 3 -->
         <div class="bg-white rounded-2xl p-8 card-hover border border-gray-200">
           <h3 class="text-lg font-bold text-body-text mb-2">Market Authority</h3>
-          <p class="text-sm text-gray-500 mb-6">3-month full management</p>
-          <div class="mb-6">
-            <span class="text-4xl font-black text-primary">From GHS 10,000</span>
+          <p class="text-sm text-gray-500 mb-6">One-time setup + monthly management</p>
+          <div class="mb-2">
+            <span class="text-2xl font-black text-primary">GHS 2,500</span>
+            <span class="text-sm text-gray-400"> setup</span>
           </div>
+          <div class="mb-4">
+            <span class="text-3xl font-black text-primary">GHS 2,000</span>
+            <span class="text-sm text-gray-400">/month</span>
+          </div>
+          <p class="text-xs text-gray-500 mb-4">First month: GHS 4,500 &bull; Then GHS 2,000/mo</p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
               Everything in Growth System
-            </li>
-            <li class="flex items-center gap-2 text-sm text-gray-600">
-              <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              3-month dedicated management
             </li>
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -645,8 +668,12 @@
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
               Priority support
             </li>
+            <li class="flex items-center gap-2 text-sm text-gray-600">
+              <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Dedicated account manager
+            </li>
           </ul>
-          <button onclick="openPackageModal('Market Authority', 'GHS 10,000')" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
+          <button onclick="openPackageModal('Market Authority', 'GHS 2,500 setup + GHS 2,000/mo')" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
             Get Started
           </button>
         </div>
@@ -710,6 +737,8 @@
           <ul class="space-y-2 text-sm text-gray-400">
             <li><a href="#system" class="hover:text-accent transition">How It Works</a></li>
             <li><a href="#proof" class="hover:text-accent transition">Results</a></li>
+            <li><a href="referral.html" class="hover:text-accent transition">Refer & Earn</a></li>
+            <li><a href="client/login.html" class="hover:text-accent transition">Client Portal</a></li>
             <li><a href="#pricing" class="hover:text-accent transition">Pricing</a></li>
             <li><button onclick="openAuditModal()" class="hover:text-accent transition cursor-pointer bg-transparent border-none text-left">Free Audit</button></li>
           </ul>
@@ -795,6 +824,7 @@
                   <textarea id="auditNotes" name="notes" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition resize-none" placeholder="Tell us about your current challenges..."></textarea>
                 </div>
               </div>
+              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
               <div class="mt-6">
                 <button type="submit" id="auditSubmitBtn" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-green transition pulse-glow flex items-center justify-center gap-2">
                   <span>Submit Audit Request</span>
@@ -893,6 +923,7 @@
                   </select>
                 </div>
               </div>
+              <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
               <div class="mt-6">
                 <button type="submit" id="packageSubmitBtn" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-green transition pulse-glow flex items-center justify-center gap-2">
                   <span>Submit Request</span>
@@ -1105,16 +1136,57 @@
       };
 
       try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
+        // Submit lead capture
+        const leadResponse = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify(formData),
           headers: { 'Content-Type': 'application/json' }
         });
 
-        if (response.ok) {
+        // Register client for portal access
+        const clientRegistration = {
+          action: 'registerClient',
+          email: document.getElementById('packageEmail').value,
+          name: document.getElementById('packageFullName').value,
+          businessName: document.getElementById('packageBusinessName').value,
+          package: packageName
+        };
+
+        const clientResponse = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(clientRegistration),
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const clientResult = await clientResponse.json();
+        
+        // Store client credentials locally
+        if (clientResult.success) {
+          localStorage.setItem('pendingClientAccess', JSON.stringify({
+            email: clientRegistration.email,
+            tempPassword: clientResult.tempPassword,
+            portalUrl: 'client/login.html'
+          }));
+        }
+
+        if (leadResponse.ok) {
           document.getElementById('successPackageName').textContent = packageName;
           document.getElementById('packageForm').classList.add('hidden');
           document.getElementById('packageSuccess').classList.remove('hidden');
+          
+          // Show portal access message
+          const successDiv = document.getElementById('packageSuccess');
+          successDiv.innerHTML += `
+            <div class="mt-6 p-4 bg-accent/20 rounded-lg text-left">
+              <p class="font-semibold text-primary mb-2">🔐 Client Portal Access Created!</p>
+              <p class="text-sm text-gray-600 mb-3">Track your optimization progress anytime.</p>
+              <a href="client/login.html" class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-green transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Access Your Portal
+              </a>
+            </div>
+          `;
+          
           if (typeof gtag !== 'undefined') {
             gtag('event', 'package_form_submit', {
               event_category: 'conversion',
@@ -1138,5 +1210,6 @@
     }
   </script>
 
+<script src="assets/js/ai-sales-agent.js"></script>
 </body>
 </html>

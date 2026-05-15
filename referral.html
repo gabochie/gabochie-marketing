@@ -8,6 +8,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://maps.googleapis.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self' https://formspree.io; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
+
   <title>Refer & Earn | Gabochie Marketing</title>
 
   <meta name="description" content="Refer a business to Gabochie Marketing and earn GHS 200 for every successful referral. Help other Ghanaian businesses get found on Google Maps." />
@@ -39,6 +41,8 @@
             'accent-light': '#a8e07a',
             'dark-green': '#0F5C28',
             'body-text': '#2D2D2D',
+            'urgency': '#E53935',
+            'gold': '#FFC107',
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -70,6 +74,14 @@
 
   </style>
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z53BKZ0FR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6Z53BKZ0FR');
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body class="bg-gray-50 text-body-text antialiased">
@@ -474,6 +486,9 @@
 
             <form id="referForm" onsubmit="submitReferral(event)">
 
+              <!-- honeypot -->
+              <input type="text" name="hp_website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+
               <div class="space-y-4">
 
                 <div>
@@ -531,6 +546,8 @@
               </div>
 
               <div class="mt-6">
+
+                <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
 
                 <button type="submit" id="referSubmitBtn" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-green transition pulse-glow flex items-center justify-center gap-2">
 
@@ -706,7 +723,7 @@
 
   <!-- FOOTER -->
 
-  <footer class="bg-gray-900 text-white">
+  <footer class="bg-[#2D2D2D] text-white">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
@@ -852,6 +869,18 @@
 
             </a>
 
+            <a href="https://www.tiktok.com/@gabochiemarketing" target="_blank" class="text-gray-400 hover:text-white transition">
+
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52V6.8a4.84 4.84 0 01-1-.11z"/></svg>
+
+            </a>
+
+            <a href="https://www.youtube.com/@gabochiemarketing" target="_blank" class="text-gray-400 hover:text-white transition">
+
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+
+            </a>
+
           </div>
 
         </div>
@@ -863,6 +892,8 @@
   </footer>
 
   <script>
+
+    const PAGE_START = Date.now();
 
     // Referral link generation
 
@@ -966,11 +997,14 @@
 
     // Form submit
 
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec';
 
     async function submitReferral(event) {
 
       event.preventDefault();
+      // Anti-spam
+      const hp = document.querySelector('[name="hp_website"]');
+      if (hp?.value || Date.now() - PAGE_START < 2000) return;
 
       const btn = document.getElementById('referSubmitBtn');
 

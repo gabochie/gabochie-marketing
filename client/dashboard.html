@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
   <title>Client Dashboard | Gabochie Marketing</title>
   <meta name="description" content="Track your Google Maps optimization progress, view analytics, and manage your business profile.">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,6 +16,12 @@
             accent: '#7ED354',
             'dark-green': '#0F5C28',
             'body-text': '#2D2D2D',
+            'accent-light': '#a8e07a',
+            'urgency': '#E53935',
+            'gold': '#FFC107',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
           }
         }
       }
@@ -22,6 +29,13 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>body { font-family: 'Inter', system-ui, sans-serif; }</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z53BKZ0FR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6Z53BKZ0FR');
+</script>
 </head>
 <body class="bg-gray-50 min-h-screen">
   <!-- Navigation -->
@@ -270,7 +284,7 @@
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec';
 
     // Check authentication
     const clientData = localStorage.getItem('gabochieClient');

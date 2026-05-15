@@ -249,38 +249,26 @@ function checkRateLimit_() {
 }
 
 /**
- * Run this once from the Apps Script editor to set up admin credentials
- * and other configuration. Never hardcode secrets in source code.
+ * Run once from the Apps Script editor to set up admin configuration.
+ * Sets defaults in Script Properties. Update File → Project properties → Script properties as needed.
  */
 function setupAdmin() {
-  const ui = SpreadsheetApp.getUi();
   const props = PropertiesService.getScriptProperties();
 
+  props.setProperty(PROP_SHEET_ID, DEFAULT_SHEET_ID);
+  props.setProperty(PROP_ALLOWED_ORIGINS, 'https://marketing.gabochie.com,http://localhost:4000,http://localhost:3000');
+
+  // Set default admin credentials if not already set
   if (!props.getProperty(PROP_ADMIN_USER)) {
-    const user = ui.prompt('Set Admin Username', 'Enter the admin username:', ui.ButtonSet.OK_CANCEL);
-    if (user.getSelectedButton() !== ui.Button.OK) return;
-    props.setProperty(PROP_ADMIN_USER, user.getResponseText());
+    props.setProperty(PROP_ADMIN_USER, 'admin');
   }
-
   if (!props.getProperty(PROP_ADMIN_PASS)) {
-    const pass = ui.prompt('Set Admin Password', 'Enter a strong admin password (min 8 chars):', ui.ButtonSet.OK_CANCEL);
-    if (pass.getSelectedButton() !== ui.Button.OK) return;
-    if (pass.getResponseText().length < 8) {
-      ui.alert('Password must be at least 8 characters. Run setupAdmin() again.');
-      return;
-    }
-    props.setProperty(PROP_ADMIN_PASS, pass.getResponseText());
+    const randomPass = 'admin_' + Math.random().toString(36).slice(-8);
+    props.setProperty(PROP_ADMIN_PASS, randomPass);
+    console.log('Temporary admin password: ' + randomPass);
   }
 
-  if (!props.getProperty(PROP_SHEET_ID)) {
-    props.setProperty(PROP_SHEET_ID, DEFAULT_SHEET_ID);
-  }
-
-  if (!props.getProperty(PROP_ALLOWED_ORIGINS)) {
-    props.setProperty(PROP_ALLOWED_ORIGINS, 'https://marketing.gabochie.com,http://localhost:4000,http://localhost:3000');
-  }
-
-  ui.alert('Admin configured successfully!\n\nThe SHEET_ID, admin credentials, and allowed origins are now stored in Script Properties (not in source code).\n\nYou can update these anytime from the Apps Script editor:\n  File → Project properties → Script properties');
+  console.log('Admin configured. Update credentials via File → Project properties → Script properties');
 }
 
 // ── Sync: Pull All Contacts ──

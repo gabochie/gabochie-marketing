@@ -3,7 +3,7 @@
 'use strict';
 
 const CONFIG = {
-  apiBase: 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec',
+  apiBase: 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec',
   whatsapp: '233506384917',
   mobileMoney: '059 985 7126',
   brandName: 'Gabochie Marketing',
@@ -53,7 +53,10 @@ const FAQ = {
     answer: 'We accept **Mobile Money**:\n📱 **' + CONFIG.mobileMoney + '**\nName: ' + CONFIG.brandName + '\n\nAfter payment, send us a WhatsApp confirmation and we\'ll activate your service.',
     capture: false
   },
-  'google maps|visibility|ranking|seo|local': {
+  'free.*audit|audit.*free|check.*visibility|visibility.*check|analyze|analysis': {
+    answer: 'Absolutely! Our Free Google Maps Visibility Audit checks how your business appears right now.\n\n➡️ **[Run your free audit here](free-audit.html)** — takes 60 seconds.\n\nYou get a visibility score, checklist of what to fix, and personalized recommendations.',
+    capture: false
+  },
     answer: 'We specialize in getting Ghanaian businesses found on Google Maps. Our system optimizes your Business Profile so when customers search for your service in your area, **you show up first**. \n\nReady to check your current visibility? What\'s your business name and location?',
     capture: true
   },

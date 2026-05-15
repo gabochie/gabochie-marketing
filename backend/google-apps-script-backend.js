@@ -39,8 +39,9 @@ function getSheetId_() {
 
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
-    success: true, message: 'Client registered successfully',
-    tempPassword: tempPassword
+    status: 'ok',
+    name: 'Gabochie Marketing Public API',
+    version: '2.0'
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -90,7 +91,6 @@ function checkRateLimit_() {
  * Stores the Sheet ID in Script Properties (not in source code).
  */
 function setupPublicBackend() {
-  const ui = SpreadsheetApp.getUi();
   const props = PropertiesService.getScriptProperties();
 
   if (!props.getProperty(PROP_SHEET_ID)) {
@@ -101,7 +101,7 @@ function setupPublicBackend() {
     props.setProperty(PROP_ALLOWED_ORIGINS, 'https://marketing.gabochie.com,http://localhost:4000,http://localhost:3000');
   }
 
-  ui.alert('Public backend configured!\n\nSheet ID and allowed origins are now stored in Script Properties.');
+  console.log('Public backend configured. Sheet ID and allowed origins stored in Script Properties.');
 }
 
 function doPost(e) {

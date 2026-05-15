@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://www.googletagmanager.com https://challenges.cloudflare.com; img-src 'self' data: https:; form-action 'self'; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self';">
   <title>Client Login | Gabochie Marketing</title>
   <meta name="description" content="Client portal login for Gabochie Marketing. Track your Google Maps optimization progress.">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,6 +16,12 @@
             accent: '#7ED354',
             'dark-green': '#0F5C28',
             'body-text': '#2D2D2D',
+            'accent-light': '#a8e07a',
+            'urgency': '#E53935',
+            'gold': '#FFC107',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
           }
         }
       }
@@ -22,6 +29,14 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>body { font-family: 'Inter', system-ui, sans-serif; }</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z53BKZ0FR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6Z53BKZ0FR');
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
   <div class="max-w-md w-full">
@@ -42,6 +57,8 @@
       <p class="text-gray-500 mb-6">Sign in to track your Google Maps optimization progress</p>
 
       <form id="loginForm" onsubmit="handleLogin(event)">
+        <!-- honeypot -->
+        <input type="text" name="hp_website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
         <div class="space-y-4">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
@@ -67,6 +84,7 @@
 
         <div id="errorMessage" class="hidden mt-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm"></div>
 
+        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light" style="margin:10px auto"></div>
         <button 
           type="submit" 
           id="loginBtn"
@@ -118,10 +136,14 @@
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+    const PAGE_START = Date.now();
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec';
 
     async function handleLogin(event) {
       event.preventDefault();
+      // Anti-spam
+      const hp = document.querySelector('[name="hp_website"]');
+      if (hp?.value || Date.now() - PAGE_START < 2000) return;
       
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;

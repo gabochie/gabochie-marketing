@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent Swarm Architecture — Gabochie Marketing</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#1A7B3A',
+          accent: '#7ED354',
+          'accent-light': '#a8e07a',
+          'dark-green': '#0F5C28',
+          'body-text': '#2D2D2D',
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .agent-card { transition: all 0.2s; }
+  .agent-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+  .connector { stroke: #94a3b8; stroke-width: 2; fill: none; }
+  .connector-dashed { stroke: #94a3b8; stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+  .arrow { fill: #94a3b8; }
+  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .status-active { animation: pulse-dot 2s infinite; }
+</style>
+</head>
+<body class="bg-gray-50 text-body-text antialiased">
+
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="text-center mb-10">
+    <div class="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-1.5 mb-4">
+      <span class="w-2 h-2 bg-primary rounded-full status-active"></span>
+      <span class="text-primary text-xs font-semibold uppercase tracking-wider">Phase 7 — In Planning</span>
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-black text-body-text mb-3">AI Agent Swarm Architecture</h1>
+    <p class="text-lg text-gray-600 max-w-2xl mx-auto">Exec VP Orchestrator coordinating a team of specialized sub-agents to autonomously generate revenue, onboard clients, and optimize operations.</p>
+  </div>
+
+  <!-- Orchestrator -->
+  <div class="flex justify-center mb-8">
+    <div class="agent-card bg-gradient-to-br from-primary via-dark-green to-primary rounded-2xl p-6 sm:p-8 text-center shadow-xl w-full max-w-lg border-2 border-accent/50">
+      <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+        <span class="text-3xl">👑</span>
+      </div>
+      <h2 class="text-2xl font-black text-white mb-1">Exec VP Orchestrator</h2>
+      <p class="text-accent text-sm font-medium mb-3">p7-13 — Autonomous CEO of the Agent Swarm</p>
+      <p class="text-white/70 text-sm max-w-md mx-auto mb-4">Reviews KPIs daily, assigns tasks to sub-agents, monitors pipeline health, re-prioritizes based on revenue targets and capacity.</p>
+      <div class="flex flex-wrap justify-center gap-2">
+        <span class="bg-white/10 text-white/80 text-xs px-2.5 py-1 rounded-full">Task Assignment</span>
+        <span class="bg-white/10 text-white/80 text-xs px-2.5 py-1 rounded-full">KPI Dashboard</span>
+        <span class="bg-white/10 text-white/80 text-xs px-2.5 py-1 rounded-full">Priority Queue</span>
+        <span class="bg-white/10 text-white/80 text-xs px-2.5 py-1 rounded-full">Human Escalation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Connectors -->
+  <svg class="w-full h-12 sm:h-16" viewBox="0 0 400 60" preserveAspectRatio="xMidYMid meet">
+    <path d="M200 0 L200 40" class="connector"/>
+    <polygon points="196,36 200,46 204,36" class="arrow"/>
+    <line x1="200" y1="46" x2="80" y2="46" class="connector"/>
+    <line x1="200" y1="46" x2="320" y2="46" class="connector"/>
+    <line x1="200" y1="46" x2="200" y2="46" class="connector" style="opacity:0"/>
+    <polygon points="76,42 86,46 76,50" class="arrow"/>
+    <polygon points="324,42 314,46 324,50" class="arrow"/>
+    <text x="140" y="40" class="text-xs" fill="#6b7280" font-size="11">Sales</text>
+    <text x="245" y="40" class="text-xs" fill="#6b7280" font-size="11">Operations</text>
+  </svg>
+
+  <!-- Agent Columns -->
+  <div class="grid md:grid-cols-3 gap-6 mb-12">
+    <!-- Sales Agents -->
+    <div class="space-y-4">
+      <div class="text-center mb-2">
+        <h3 class="font-bold text-body-text text-lg">Sales Agents</h3>
+        <p class="text-xs text-gray-500">Prospecting → Outreach → Qualification → Booking</p>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎯</span>
+            <h4 class="font-bold text-sm">Lead Gen Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-4</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Prospects Google Maps for businesses with low visibility, builds target lists, attributes source.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Google Places API</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Scraping</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Source Tags</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📤</span>
+            <h4 class="font-bold text-sm">Outreach Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-5</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Crafts personalized WhatsApp/email sequences, sends follow-ups at optimal times, A/B tests messaging.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">WhatsApp API</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Email Sequences</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">A/B Testing</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🔍</span>
+            <h4 class="font-bold text-sm">Lead Qualifier Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-6</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Scores leads based on form data, business type, engagement level. Routes hot leads to Booking, cold to nurture.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">LLM Scoring</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Routing</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Nurture Queue</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📅</span>
+            <h4 class="font-bold text-sm">Appointment Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-7</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Schedules Calendly calls, sends reminders, follows up on no-shows, books directly from chat.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Calendly API</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Reminders</span>
+          <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">WhatsApp Confirm</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operations Agents -->
+    <div class="space-y-4">
+      <div class="text-center mb-2">
+        <h3 class="font-bold text-body-text text-lg">Operations Agents</h3>
+        <p class="text-xs text-gray-500">Onboarding → Optimization → Reviews → Reporting</p>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🚀</span>
+            <h4 class="font-bold text-sm">Onboarding Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-8</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Auto-creates client portal account, sends welcome kit, collects business info, kicks off setup workflow.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Portal Setup</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Welcome Sequence</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Info Collection</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">⚙️</span>
+            <h4 class="font-bold text-sm">GBP Optimizer Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-9</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Analyzes GBP profiles, suggests category/description/photo improvements, schedules weekly posts autonomously.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Profile Audit</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Post Scheduling</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">SEO Suggestions</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">⭐</span>
+            <h4 class="font-bold text-sm">Review Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-10</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Auto-requests reviews via WhatsApp, drafts reply suggestions, monitors rating changes across clients.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Review Requests</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Reply Drafting</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Rating Alerts</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📊</span>
+            <h4 class="font-bold text-sm">Reporting Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-11</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Generates monthly client reports (rankings, reviews, calls), tracks competitors, monitors keyword positions.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Client Reports</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Rank Tracking</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">Competitor Intel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intelligence Agents -->
+    <div class="space-y-4">
+      <div class="text-center mb-2">
+        <h3 class="font-bold text-body-text text-lg">Intelligence Agents</h3>
+        <p class="text-xs text-gray-500">Content → Analytics → Strategy</p>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-purple-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">✍️</span>
+            <h4 class="font-bold text-sm">Content Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-12</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Writes SEO blog posts, social media snippets, ad copy, and email newsletters. Maintains brand voice across channels.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Blog Writing</span>
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Social Posts</span>
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Ad Copy</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-purple-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🧠</span>
+            <h4 class="font-bold text-sm">Analytics Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-14</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Crawls GA4, CallRail, and Sheets daily. Surfaces trends, anomalies, and opportunities to the Exec VP.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">GA4 Analysis</span>
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Trend Detection</span>
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Alerts</span>
+        </div>
+      </div>
+      <div class="agent-card bg-white rounded-xl p-5 shadow-md border-l-4 border-purple-500">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🎯</span>
+            <h4 class="font-bold text-sm">Strategy Agent</h4>
+          </div>
+          <span class="text-[10px] font-mono bg-gray-100 px-2 py-0.5 rounded">p7-13</span>
+        </div>
+        <p class="text-xs text-gray-600 mb-3">Evaluates market data, competitor moves, and internal KPIs to recommend pricing changes, new services, and campaign adjustments.</p>
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Market Intel</span>
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Pricing Opt.</span>
+          <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Campaign Recs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Build Roadmap -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+    <h2 class="text-xl font-black text-body-text mb-6">Build Roadmap</h2>
+    <div class="space-y-4">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-primary font-bold text-sm">1</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm">Foundation (p7-1 to p7-3)</h3>
+          <p class="text-xs text-gray-600">Supabase DB for agent memory → LLM API key (GPT-4o-mini / Claude Haiku) → Base agent framework with tool calling and task queue.</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-blue-700 font-bold text-sm">2</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm">Sales Agents (p7-4 to p7-7)</h3>
+          <p class="text-xs text-gray-600">Lead Gen → Outreach → Qualifier → Appointment. Build and test the full prospecting-to-booking pipeline.</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-emerald-700 font-bold text-sm">3</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm">Operations Agents (p7-8 to p7-11)</h3>
+          <p class="text-xs text-gray-600">Onboarding → GBP Optimizer → Review → Reporting. Automate the post-sale delivery and management.</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-purple-700 font-bold text-sm">4</span>
+        </div>
+        <div>
+          <h3 class="font-bold text-sm">Intelligence + Orchestration (p7-12 to p7-16)</h3>
+          <p class="text-xs text-gray-600">Content Agent → Analytics → Exec VP Orchestrator → Agent Dashboard → Human-in-the-loop guardrails → Full E2E test.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Flow -->
+  <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-8">
+    <h2 class="text-xl font-black text-body-text mb-4">Data Flow</h2>
+    <div class="grid sm:grid-cols-4 gap-3 text-center text-xs">
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-lg mb-1">🔌</div>
+        <div class="font-semibold">Inputs</div>
+        <div class="text-gray-500 mt-1">GA4 • Google Places<br>WhatsApp • Email • Forms</div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-lg mb-1">🧠</div>
+        <div class="font-semibold">Processing</div>
+        <div class="text-gray-500 mt-1">LLM (GPT-4o-mini)<br>Agent Framework<br>Task Queue</div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-lg mb-1">💾</div>
+        <div class="font-semibold">Storage</div>
+        <div class="text-gray-500 mt-1">Supabase DB<br>Agent Memory<br>Pipeline State</div>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-lg mb-1">📤</div>
+        <div class="font-semibold">Outputs</div>
+        <div class="text-gray-500 mt-1">WhatsApp • Email<br>Admin Dashboard<br>Client Reports</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center text-sm text-gray-500 border-t border-gray-200 pt-6">
+    <p class="font-semibold text-primary">Gabochie Marketing</p>
+    <p>AI Agent Swarm Architecture — Phase 7 of Project Roadmap</p>
+    <p class="text-xs mt-1"><a href="project-task-list.html" class="text-primary underline">View Full Task List</a></p>
+  </div>
+</div>
+
+</body>
+</html>
