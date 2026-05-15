@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://challenges.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://challenges.cloudflare.com https://script.google.com https://www.googletagmanager.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <title>Review Management Service — Gabochie Marketing</title>
+  <meta name="description" content="Automated Google Review management for Ghanaian businesses. Get more 5-star reviews, reply to every review, and monitor your rating. Just GHS 500/mo." />
+  <meta property="og:title" content="Google Review Management | Gabochie Marketing" />
+  <meta property="og:description" content="Get more 5-star reviews automatically. Just GHS 500/mo." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://marketing.gabochie.com/services/review-management.html" />
+  <link rel="canonical" href="https://marketing.gabochie.com/services/review-management.html" />
+  <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-pin.svg" />
+  <meta name="theme-color" content="#1A7B3A" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1A7B3A',
+            accent: '#7ED354',
+            'accent-light': '#a8e07a',
+            'dark-green': '#0F5C28',
+            'body-text': '#2D2D2D',
+            'urgency': '#E53935',
+            'gold': '#FFC107',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(126, 211, 84, 0.4); }
+      50% { box-shadow: 0 0 0 15px rgba(126, 211, 84, 0); }
+    }
+    .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(26, 123, 58, 0.15); }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6Z53BKZ0FR"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6Z53BKZ0FR');
+  </script>
+</head>
+<body class="bg-white text-body-text antialiased">
+
+  <!-- NAVBAR -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <a href="../index.html" class="flex items-center gap-2">
+          <svg class="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          <span class="text-xl font-bold text-primary">Gabochie Marketing</span>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+          <a href="../index.html#system" class="text-sm font-medium text-gray-600 hover:text-primary transition">How It Works</a>
+          <a href="../index.html#proof" class="text-sm font-medium text-gray-600 hover:text-primary transition">Results</a>
+          <a href="../referral.html" class="text-sm font-medium text-gray-600 hover:text-primary transition">Refer & Earn</a>
+          <a href="../client/login.html" class="text-sm font-medium text-gray-600 hover:text-primary transition">Client Portal</a>
+          <a href="../index.html#pricing" class="text-sm font-medium text-gray-600 hover:text-primary transition">Pricing</a>
+          <button onclick="openAuditModal()" class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-dark-green transition pulse-glow cursor-pointer">
+            Get Free Audit
+          </button>
+        </div>
+        <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="md:hidden p-2 text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3">
+      <a href="../index.html#system" class="block text-sm font-medium text-gray-600 py-2">How It Works</a>
+      <a href="../index.html#proof" class="block text-sm font-medium text-gray-600 py-2">Results</a>
+      <a href="../referral.html" class="block text-sm font-medium text-gray-600 py-2">Refer & Earn</a>
+      <a href="../client/login.html" class="block text-sm font-medium text-gray-600 py-2">Client Portal</a>
+      <a href="../index.html#pricing" class="block text-sm font-medium text-gray-600 py-2">Pricing</a>
+      <button onclick="openAuditModal()" class="block w-full bg-primary text-white px-5 py-3 rounded-full text-sm font-semibold text-center cursor-pointer">
+        Get Free Audit
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="relative pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary via-dark-green to-primary opacity-95"></div>
+      <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="inline-flex items-center gap-2 bg-accent/20 rounded-full px-4 py-1.5 mb-4">
+          <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+          <span class="text-accent text-sm font-medium">Standalone Service — Just GHS 500/mo</span>
+        </span>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
+          Get More 5-Star<br/>
+          <span class="text-accent">Google Reviews</span>
+        </h1>
+        <p class="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10">
+          Automated review requests, smart reply drafting, and rating monitoring — all for <strong class="text-white">GHS 500/month</strong>. No long-term contract.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button onclick="openAuditModal()" class="w-full sm:w-auto bg-accent text-dark-green px-8 py-4 rounded-full text-lg font-bold hover:bg-accent-light transition pulse-glow">
+            Start Free Trial
+          </button>
+          <a href="#how-it-works" class="w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border border-white/30 px-8 py-4 rounded-full text-lg font-semibold hover:bg-white/20 transition">
+            See How It Works
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -->
+    <section class="py-16 lg:py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <span class="text-primary font-semibold text-sm uppercase tracking-wider">The Review Gap</span>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-body-text mt-3 mb-4">
+            Your Reviews Are Costing You Customers
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            Businesses with more 5-star reviews rank higher on Google Maps and get more calls. But most Ghanaian businesses have zero review strategy.
+          </p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+          <div class="bg-gray-50 rounded-2xl p-8 text-center card-hover">
+            <div class="w-16 h-16 bg-urgency/10 rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg class="w-8 h-8 text-urgency" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-body-text mb-3">No Reviews = No Trust</h3>
+            <p class="text-gray-600">82% of customers read reviews before visiting. If you have none, they choose your competitor.</p>
+          </div>
+          <div class="bg-gray-50 rounded-2xl p-8 text-center card-hover">
+            <div class="w-16 h-16 bg-urgency/10 rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg class="w-8 h-8 text-urgency" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-body-text mb-3">Not Asking = Not Getting</h3>
+            <p class="text-gray-600">Satisfied customers will leave a review if you ask. Most businesses never ask systematically.</p>
+          </div>
+          <div class="bg-gray-50 rounded-2xl p-8 text-center card-hover">
+            <div class="w-16 h-16 bg-urgency/10 rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg class="w-8 h-8 text-urgency" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-body-text mb-3">Bad Replies Hurt More</h3>
+            <p class="text-gray-600">Ignoring reviews or replying poorly damages your reputation. Every review deserves a professional response.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="py-16 lg:py-24 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <span class="text-primary font-semibold text-sm uppercase tracking-wider">How It Works</span>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black text-body-text mt-3 mb-4">
+            Three Simple Steps
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            We handle the entire review lifecycle so you can focus on running your business.
+          </p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-black shadow-lg shadow-primary/30">1</div>
+            <h3 class="text-2xl font-bold text-body-text mb-3">We Ask</h3>
+            <p class="text-gray-600 leading-relaxed">We send automated review requests to your customers via WhatsApp. They click a link and leave a review in 30 seconds.</p>
+          </div>
+          <div class="text-center">
+            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-black shadow-lg shadow-primary/30">2</div>
+            <h3 class="text-2xl font-bold text-body-text mb-3">We Reply</h3>
+            <p class="text-gray-600 leading-relaxed">We draft professional responses to every review — positive or negative — and send them for your approval before publishing.</p>
+          </div>
+          <div class="text-center">
+            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 text-white text-3xl font-black shadow-lg shadow-primary/30">3</div>
+            <h3 class="text-2xl font-bold text-body-text mb-3">We Report</h3>
+            <p class="text-gray-600 leading-relaxed">Monthly review report: new reviews earned, rating trend, response rates, and competitor comparison.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING CARD -->
+    <section class="py-16 lg:py-24 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-3xl shadow-xl border-2 border-accent overflow-hidden">
+          <div class="bg-gradient-to-br from-primary via-dark-green to-primary px-8 py-8 text-center">
+            <span class="text-accent font-semibold text-sm uppercase tracking-wider">Simple Pricing</span>
+            <h2 class="text-3xl sm:text-4xl font-black text-white mt-2 mb-2">Review Management</h2>
+            <p class="text-white/70">Everything you need to build your online reputation</p>
+          </div>
+          <div class="p-8 sm:p-10">
+            <div class="text-center mb-8">
+              <span class="text-5xl font-black text-primary">GHS 500</span>
+              <span class="text-lg text-gray-400">/month</span>
+              <p class="text-sm text-gray-500 mt-2">No setup fee. Cancel anytime.</p>
+            </div>
+            <ul class="space-y-4 mb-8 max-w-md mx-auto">
+              <li class="flex items-center gap-3 text-sm text-gray-600">
+                <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Automated review requests via WhatsApp (up to 50/mo)
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-600">
+                <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Professional reply drafting for every review
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-600">
+                <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Rating monitoring + weekly alerts
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-600">
+                <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Monthly review report + competitor comparison
+              </li>
+              <li class="flex items-center gap-3 text-sm text-gray-600">
+                <svg class="w-6 h-6 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                Graduates to full GBP management anytime
+              </li>
+            </ul>
+            <div class="text-center">
+              <button onclick="openAuditModal()" class="bg-primary text-white px-10 py-4 rounded-full text-lg font-bold hover:bg-dark-green transition pulse-glow">
+                Start Free Trial
+              </button>
+              <p class="text-xs text-gray-500 mt-3">First month free with annual commitment. WhatsApp us for details.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-16 lg:py-24 bg-gray-50">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl sm:text-4xl font-black text-body-text mb-4">Frequently Asked Questions</h2>
+        </div>
+        <div class="space-y-4">
+          <details class="bg-white rounded-xl p-6 card-hover cursor-pointer">
+            <summary class="font-semibold text-body-text">Do I need a Google Business Profile first?</summary>
+            <p class="mt-3 text-sm text-gray-600">Yes, you need an active GBP listing. If you don't have one, our <a href="../index.html#pricing" class="text-primary underline">Starter Visibility</a> package includes setup.</p>
+          </details>
+          <details class="bg-white rounded-xl p-6 card-hover cursor-pointer">
+            <summary class="font-semibold text-body-text">How do you send review requests?</summary>
+            <p class="mt-3 text-sm text-gray-600">We send automated WhatsApp messages to your customers with a direct link to leave a review. You provide the phone numbers, we handle the rest.</p>
+          </details>
+          <details class="bg-white rounded-xl p-6 card-hover cursor-pointer">
+            <summary class="font-semibold text-body-text">Can I cancel anytime?</summary>
+            <p class="mt-3 text-sm text-gray-600">Yes. No contract. Cancel with 7 days notice. No questions asked.</p>
+          </details>
+          <details class="bg-white rounded-xl p-6 card-hover cursor-pointer">
+            <summary class="font-semibold text-body-text">What if I want the full GBP management later?</summary>
+            <p class="mt-3 text-sm text-gray-600">Review Management graduates seamlessly into full GBP management. Your GHS 500/mo applies toward any higher-tier package.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="py-16 lg:py-24 bg-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl sm:text-4xl font-black text-body-text mb-6">
+          Ready to Build Your Reputation?
+        </h2>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          Start with a free 7-day trial. No credit card needed. We'll send your first 10 review requests and show you the results.
+        </p>
+        <button onclick="openAuditModal()" class="bg-primary text-white px-10 py-5 rounded-full text-xl font-bold hover:bg-dark-green transition pulse-glow">
+          Start Your Free Trial
+        </button>
+        <p class="text-sm text-gray-500 mt-4">Questions? <a href="https://wa.me/233506384917" target="_blank" class="text-primary font-semibold">Chat on WhatsApp</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-body-text text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-8 h-8 text-accent" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <span class="text-xl font-bold">Gabochie Marketing</span>
+          </div>
+          <p class="text-gray-400 text-sm max-w-sm mb-4">Turning Google Maps into a predictable customer acquisition channel for serious Ghanaian businesses.</p>
+          <div class="flex items-center gap-3">
+            <a href="https://www.facebook.com/profile.php?id=61573906026304" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.791-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+            <a href="https://www.instagram.com/gabochiemarketing/" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+            <a href="https://x.com/GabochieMarktng" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a href="https://www.tiktok.com/@gabochiemarketing" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52V6.8a4.84 4.84 0 01-1-.11z"/></svg></a>
+            <a href="https://www.youtube.com/@gabochiemarketing" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Services</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="../index.html#pricing" class="hover:text-accent transition">GBP Optimization</a></li>
+            <li><a href="review-management.html" class="hover:text-accent transition">Review Management</a></li>
+            <li><a href="wordpress-website-building.html" class="hover:text-accent transition">Website Building</a></li>
+            <li><a href="wordpress-support.html" class="hover:text-accent transition">WP Support</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="../privacy.html" class="hover:text-accent transition">Privacy Policy</a></li>
+            <li><a href="../terms.html" class="hover:text-accent transition">Terms of Service</a></li>
+            <li><a href="../disclaimer.html" class="hover:text-accent transition">Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 pt-8 text-center text-sm text-gray-500">
+        <p>&copy; 2026 Gabochie Marketing. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALS -->
+  <div id="auditModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" onclick="closeAuditModal()"></div>
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+      <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+          <div class="bg-gradient-to-br from-primary via-dark-green to-primary px-6 py-8 sm:px-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-2xl font-bold text-white" id="modal-title">Get Started</h3>
+              <button onclick="closeAuditModal()" class="text-white/70 hover:text-white transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </div>
+            <p class="text-white/80">Fill in your details and we'll get you started with Review Management.</p>
+          </div>
+          <div class="px-6 py-6 sm:px-8">
+            <form id="auditForm" onsubmit="submitAuditForm(event)">
+              <div class="space-y-4">
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label><input type="text" id="auditName" name="prospectName" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" placeholder="John Doe"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Business Name *</label><input type="text" id="auditBusiness" name="businessName" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" placeholder="Your Business Ltd"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label><input type="tel" id="auditPhone" name="phone" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" placeholder="+233 50 123 4567"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label><input type="email" id="auditEmail" name="email" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition" placeholder="john@business.com"></div>
+                <div><label class="block text-sm font-medium text-gray-700 mb-1">Current Google Rating (if known)</label><select id="auditType" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"><option value="">Select your rating</option><option value="No profile">No profile yet</option><option value="1-2 stars">1-2 stars</option><option value="3 stars">3 stars</option><option value="4 stars">4 stars</option><option value="4.5+ stars">4.5+ stars</option></select></div>
+                <div><div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div></div>
+              </div>
+              <div class="mt-6"><button type="submit" id="submitBtn" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-dark-green transition pulse-glow">Start Free Trial</button></div>
+              <p class="text-xs text-gray-500 text-center mt-3">We'll contact you within 24 hours to activate your trial.</p>
+            </form>
+            <div id="successMsg" class="hidden text-center py-8">
+              <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+              <h3 class="text-xl font-bold text-body-text mb-2">Trial Activated!</h3>
+              <p class="text-gray-600 mb-4">We'll send your first 10 review requests within 24 hours. Watch your rating grow!</p>
+              <a href="https://wa.me/233506384917" target="_blank" class="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Chat on WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycShRubz9XK1wVo5FW78CUWNqtVvrs_407Xfp01sEWqyDtqC-OEWIOACVFTjMeSXHE/exec';
+
+    function openAuditModal() {
+      document.getElementById('auditModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAuditModal() {
+      document.getElementById('auditModal').classList.add('hidden');
+      document.body.style.overflow = '';
+      resetForm();
+    }
+    function resetForm() {
+      document.getElementById('auditForm').classList.remove('hidden');
+      document.getElementById('successMsg').classList.add('hidden');
+      document.getElementById('auditForm').reset();
+    }
+
+    async function submitAuditForm(event) {
+      event.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span> Submitting...';
+
+      const formData = {
+        prospectName: document.getElementById('auditName').value,
+        businessName: document.getElementById('auditBusiness').value,
+        phone: document.getElementById('auditPhone').value,
+        email: document.getElementById('auditEmail').value || '',
+        rating: document.getElementById('auditType').value || '',
+        outreachCategory: 'Review Management Trial',
+        offerType: 'Review Management - GHS 500/mo',
+        status: 'new',
+        source: 'review-management-page',
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(formData),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok || true) {
+          document.getElementById('auditForm').classList.add('hidden');
+          document.getElementById('successMsg').classList.remove('hidden');
+        }
+      } catch (e) {
+        document.getElementById('auditForm').classList.add('hidden');
+        document.getElementById('successMsg').classList.remove('hidden');
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeAuditModal();
+    });
+  </script>
+  <script src="../assets/js/ai-sales-agent.js"></script>
+</body>
+</html>
