@@ -170,10 +170,19 @@
         <p class="text-gray-600">Choose the support plan that fits your needs</p>
       </div>
       
+      <div class="flex items-center justify-center gap-3 mb-8">
+        <span id="currencyLabelGHS" class="text-sm font-semibold text-primary">GHS</span>
+        <button id="currencyToggle" onclick="toggleCurrency()" class="relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none" style="background-color:#1A7B3A;">
+          <span id="toggleKnob" class="absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300"></span>
+        </button>
+        <span id="currencyLabelUSD" class="text-sm font-semibold text-gray-400">USD</span>
+        <span id="rateInfo" class="text-xs text-gray-400 ml-1 hidden">live</span>
+      </div>
+      
       <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <div class="border border-gray-200 rounded-2xl p-6">
           <h3 class="font-bold text-body-text text-lg mb-2">Basic</h3>
-          <p class="text-3xl font-bold text-primary mb-4">GHS 350<span class="text-sm text-gray-500 font-normal">/month</span></p>
+          <p class="text-3xl font-bold text-primary mb-4"><span class="currency-amt" data-ghs="350">GHS 350</span><span class="text-sm text-gray-500 font-normal">/month</span></p>
           <p class="text-gray-600 text-sm mb-6">Perfect for simple websites</p>
           <ul class="space-y-3 text-sm text-gray-600 mb-6">
             <li class="flex items-center gap-2"><svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Core updates</li>
@@ -187,7 +196,7 @@
         <div class="border-2 border-primary rounded-2xl p-6 relative">
           <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs px-3 py-1 rounded-full">Popular</div>
           <h3 class="font-bold text-body-text text-lg mb-2">Professional</h3>
-          <p class="text-3xl font-bold text-primary mb-4">GHS 650<span class="text-sm text-gray-500 font-normal">/month</span></p>
+          <p class="text-3xl font-bold text-primary mb-4"><span class="currency-amt" data-ghs="650">GHS 650</span><span class="text-sm text-gray-500 font-normal">/month</span></p>
           <p class="text-gray-600 text-sm mb-6">For growing businesses</p>
           <ul class="space-y-3 text-sm text-gray-600 mb-6">
             <li class="flex items-center gap-2"><svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Everything in Basic</li>
@@ -201,7 +210,7 @@
         
         <div class="border border-gray-200 rounded-2xl p-6">
           <h3 class="font-bold text-body-text text-lg mb-2">Enterprise</h3>
-          <p class="text-3xl font-bold text-primary mb-4">GHS 1,200<span class="text-sm text-gray-500 font-normal">/month</span></p>
+          <p class="text-3xl font-bold text-primary mb-4"><span class="currency-amt" data-ghs="1200">GHS 1,200</span><span class="text-sm text-gray-500 font-normal">/month</span></p>
           <p class="text-gray-600 text-sm mb-6">For established businesses</p>
           <ul class="space-y-3 text-sm text-gray-600 mb-6">
             <li class="flex items-center gap-2"><svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Everything in Professional</li>
@@ -438,5 +447,66 @@
     }
   </script>
 <script src="../assets/js/ai-sales-agent.js"></script>
+<script>
+let currencyState = 'GHS';
+let exchangeRate = null;
+
+async function fetchRate() {
+  try {
+    const resp = await fetch('https://api.frankfurter.app/latest?from=GHS&to=USD');
+    const data = await resp.json();
+    exchangeRate = data.rates.USD;
+    document.getElementById('rateInfo')?.classList.remove('hidden');
+    return exchangeRate;
+  } catch {
+    exchangeRate = 0.067;
+    return exchangeRate;
+  }
+}
+
+async function toggleCurrency() {
+  const knob = document.getElementById('toggleKnob');
+  const labelGHS = document.getElementById('currencyLabelGHS');
+  const labelUSD = document.getElementById('currencyLabelUSD');
+  if (currencyState === 'GHS') {
+    if (!exchangeRate) await fetchRate();
+    currencyState = 'USD';
+    knob.style.transform = 'translateX(28px)';
+    labelGHS.className = 'text-sm font-semibold text-gray-400';
+    labelUSD.className = 'text-sm font-semibold text-primary';
+    convertAll('USD');
+    localStorage.setItem('gm_currency', 'USD');
+  } else {
+    currencyState = 'GHS';
+    knob.style.transform = 'translateX(0)';
+    labelGHS.className = 'text-sm font-semibold text-primary';
+    labelUSD.className = 'text-sm font-semibold text-gray-400';
+    convertAll('GHS');
+    localStorage.setItem('gm_currency', 'GHS');
+  }
+}
+
+function convertAll(to) {
+  document.querySelectorAll('.currency-amt').forEach(el => {
+    const ghs = parseFloat(el.dataset.ghs);
+    if (to === 'USD' && exchangeRate) {
+      const usd = (ghs * exchangeRate).toFixed(0);
+      el.innerHTML = '~$' + Number(usd).toLocaleString();
+    } else {
+      el.innerHTML = 'GHS ' + Number(ghs).toLocaleString();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const saved = localStorage.getItem('gm_currency');
+  if (saved === 'USD') {
+    await fetchRate();
+    toggleCurrency();
+  } else {
+    fetchRate();
+  }
+});
+</script>
 </body>
 </html>
