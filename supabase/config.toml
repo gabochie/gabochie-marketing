@@ -1,0 +1,24 @@
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "auth", "storage"]
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "https://marketing.gabochie.com"
+additional_redirect_urls = ["https://marketing.gabochie.com/admin", "http://localhost:8080"]
+jwt_expiry = 3600
+enable_signup = false
+
+[storage]
+enabled = true
+
+# ── After creating your project on supabase.com, fill in below ──
+# project_id = "your-project-id"
+# [api.keys]
+# anon = "your-anon-key"
+# service_role = "your-service-role-key"
