@@ -118,10 +118,30 @@
   </div>
 
   <!-- Step 2: Loading -->
-  <div id="stepLoading" class="hidden text-center py-16">
-    <div class="animate-spin w-12 h-12 border-4 border-[#1A7B3A] border-t-transparent rounded-full mx-auto mb-4"></div>
-    <p class="text-gray-600 text-lg font-medium">Auditing your Google visibility...</p>
-    <p class="text-gray-400 text-sm mt-1">Checking your Business Profile data</p>
+  <div id="stepLoading" class="hidden text-center py-12">
+    <div class="max-w-md mx-auto">
+      <div class="animate-spin w-12 h-12 border-4 border-[#1A7B3A] border-t-transparent rounded-full mx-auto mb-6"></div>
+      <p class="text-gray-700 text-lg font-semibold mb-1" id="loadTitle">Auditing your Google visibility...</p>
+      <p class="text-gray-400 text-sm mb-6" id="loadSub">Please wait while we check your profile</p>
+      <div class="space-y-3 text-left" id="loadSteps">
+        <div class="flex items-center gap-3 text-sm" id="stepCheckGbp">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Searching for your Google Business Profile...</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm" id="stepAnalyze">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Analyzing your visibility score...</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm" id="stepRecommend">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Generating personalized recommendations...</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm" id="stepResultsLoad">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Preparing your report...</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Step 3: Results -->
@@ -345,13 +365,110 @@ function getAuditResults(found, data, missingKeys) {
 
 function show(elementId) {
   ['stepForm','stepLoading','stepResults'].forEach(id => {
-    document.getElementById(id).classList.toggle('hidden', id !== elementId);
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden', id !== elementId);
   });
 }
 
 function resetAudit() {
   document.getElementById('auditForm').reset();
   show('stepForm');
+}
+
+// ── Dynamic loading steps ──
+let loadTimer = null;
+const LOAD_STEPS = [
+  { id: 'stepCheckGbp', title: 'Searching for your Google Business Profile...', sub: 'Checking Google Maps data' },
+  { id: 'stepAnalyze', title: 'Analyzing your visibility score...', sub: 'Reviewing your profile completeness' },
+  { id: 'stepRecommend', title: 'Generating personalized recommendations...', sub: 'Matching services to your gaps' },
+  { id: 'stepResultsLoad', title: 'Preparing your report...', sub: 'Almost done!' }
+];
+
+function startLoadProgress() {
+  let i = 0;
+  const title = document.getElementById('loadTitle');
+  const sub = document.getElementById('loadSub');
+
+  function markStep(idx, state) {
+    const step = document.getElementById(LOAD_STEPS[idx].id);
+    if (!step) return;
+    const icon = step.querySelector('.step-icon');
+    const text = step.querySelector('span:last-child');
+    if (state === 'active') {
+      icon.className = 'step-icon w-5 h-5 rounded-full border-2 border-primary flex-shrink-0 animate-pulse';
+      icon.innerHTML = '';
+      text.className = 'text-primary font-medium';
+    } else if (state === 'done') {
+      icon.className = 'step-icon w-5 h-5 rounded-full bg-primary flex-shrink-0 flex items-center justify-center';
+      icon.innerHTML = '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+      text.className = 'text-gray-700';
+    }
+  }
+
+  // Mark first as active
+  markStep(0, 'active');
+  title.textContent = LOAD_STEPS[0].title;
+  sub.textContent = LOAD_STEPS[0].sub;
+  let idx = 0;
+
+  loadTimer = setInterval(() => {
+    markStep(idx, 'done');
+    idx++;
+    if (idx < LOAD_STEPS.length) {
+      markStep(idx, 'active');
+      title.textContent = LOAD_STEPS[idx].title;
+      sub.textContent = LOAD_STEPS[idx].sub;
+    }
+  }, 2500);
+}
+
+function stopLoadProgress() {
+  if (loadTimer) {
+    clearInterval(loadTimer);
+    loadTimer = null;
+  }
+  // Mark all remaining as done
+  LOAD_STEPS.forEach((s, i) => {
+    const step = document.getElementById(s.id);
+    if (step) {
+      const icon = step.querySelector('.step-icon');
+      const text = step.querySelector('span:last-child');
+      icon.className = 'step-icon w-5 h-5 rounded-full bg-primary flex-shrink-0 flex items-center justify-center';
+      icon.innerHTML = '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>';
+      text.className = 'text-gray-700';
+    }
+  });
+}
+
+function animateResults() {
+  // Animate score circle
+  const scoreEl = document.getElementById('resultScore');
+  const target = parseInt(scoreEl.textContent) || 0;
+  let current = 0;
+  const anim = setInterval(() => {
+    current++;
+    scoreEl.textContent = current;
+    if (current >= target) { clearInterval(anim); }
+  }, Math.max(30, Math.floor(500 / target)));
+
+  // Reveal sections with delay
+  const sections = [
+    document.getElementById('resultGbpData'),
+    document.querySelector('#resultChecklist')?.closest('.space-y-3'),
+    document.getElementById('resultRecommendations')?.closest('.bg-yellow-50'),
+    document.getElementById('resultOfferSection')
+  ];
+  sections.forEach((el, i) => {
+    if (el) {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(10px)';
+      el.style.transition = 'all 0.4s ease';
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 300 + i * 200);
+    }
+  });
 }
 
 document.getElementById('auditForm').addEventListener('submit', async (e) => {
@@ -395,6 +512,15 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
   } catch (_) {}
 
   show('stepLoading');
+  startLoadProgress();
+
+  // Safety timeout — never get stuck on loading
+  let timedOut = false;
+  const safetyTimer = setTimeout(() => {
+    timedOut = true;
+    // Show results anyway with whatever we have
+    finishAudit(biz, loc, false, {}, []);
+  }, 15000);
 
   // Try Places API lookup
   let found = false;
@@ -443,47 +569,64 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
     }
   }
 
-  if (!found) {
-    document.getElementById('resultGbpData').classList.add('hidden');
+  if (!timedOut) {
+    clearTimeout(safetyTimer);
+    finishAudit(biz, loc, found, gbpData, missingKeys);
   }
 
-  const results = getAuditResults(found, gbpData, missingKeys);
-  document.getElementById('resultBizName').textContent = biz;
-  document.getElementById('resultBizLoc').textContent = loc;
-  document.getElementById('resultScore').textContent = results.score;
-  document.getElementById('resultScoreCircle').className = 'score-circle ' + results.scoreClass;
-  document.getElementById('resultGrade').textContent = results.grade;
-  document.getElementById('resultGrade').className = 'text-xl font-bold mt-3 ' + results.gradeClass;
-
-  // Checklist
-  document.getElementById('resultChecklist').innerHTML = results.items.map(i => {
-    const icon = i.status === 'yes' ? '✓' : i.status === 'maybe' ? '~' : '✗';
-    const cls = i.status === 'yes' ? 'check-yes' : i.status === 'maybe' ? 'check-maybe' : 'check-no';
-    return `<div class="flex items-start gap-3 text-sm py-1.5">
-      <span class="${cls} font-bold text-base flex-shrink-0 w-5">${icon}</span>
-      <span class="text-gray-700">${i.label}</span>
-    </div>`;
-  }).join('');
-
-  // Sales-oriented recommendations
-  document.getElementById('resultRecommendations').innerHTML = results.recs.map(r => {
-    let cls = 'text-yellow-700';
-    if (r.critical) cls = 'text-red-700 font-bold';
-    let html = `<li class="${cls}">${r.label}`;
-    if (r.service && SERVICE_MAP[r.service]) {
-      html += ` <a href="${SERVICE_MAP[r.service].url}" class="text-green-700 underline font-semibold whitespace-nowrap">${SERVICE_MAP[r.service].cta} &rarr;</a>`;
+  function finishAudit(bizName, bizLoc, isFound, data, keys) {
+    if (!isFound) {
+      document.getElementById('resultGbpData').classList.add('hidden');
     }
-    html += '</li>';
-    return html;
-  }).join('');
 
-  // Dynamic offer card — pick the best service to pitch
-  renderOffer(results, found);
+    const results = getAuditResults(isFound, data, keys);
+    document.getElementById('resultBizName').textContent = bizName;
+    document.getElementById('resultBizLoc').textContent = bizLoc;
+    document.getElementById('resultScore').textContent = results.score;
+    document.getElementById('resultScoreCircle').className = 'score-circle ' + results.scoreClass;
+    document.getElementById('resultGrade').textContent = results.grade;
+    document.getElementById('resultGrade').className = 'text-xl font-bold mt-3 ' + results.gradeClass;
 
-  show('stepResults');
-  btn.disabled = false;
-  btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>\n          Run My Free Audit';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Checklist
+    document.getElementById('resultChecklist').innerHTML = results.items.map(i => {
+      const icon = i.status === 'yes' ? '✓' : i.status === 'maybe' ? '~' : '✗';
+      const cls = i.status === 'yes' ? 'check-yes' : i.status === 'maybe' ? 'check-maybe' : 'check-no';
+      return `<div class="flex items-start gap-3 text-sm py-1.5 checklist-item" style="opacity:0;transform:translateY(8px);transition:all 0.3s ease">
+        <span class="${cls} font-bold text-base flex-shrink-0 w-5">${icon}</span>
+        <span class="text-gray-700">${i.label}</span>
+      </div>`;
+    }).join('');
+
+    // Animate checklist items in sequence
+    setTimeout(() => {
+      document.querySelectorAll('.checklist-item').forEach((el, i) => {
+        setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, i * 80);
+      });
+    }, 100);
+
+    // Sales-oriented recommendations
+    document.getElementById('resultRecommendations').innerHTML = results.recs.map(r => {
+      let cls = 'text-yellow-700';
+      if (r.critical) cls = 'text-red-700 font-bold';
+      let html = `<li class="${cls}">${r.label}`;
+      if (r.service && SERVICE_MAP[r.service]) {
+        html += ` <a href="${SERVICE_MAP[r.service].url}" class="text-green-700 underline font-semibold whitespace-nowrap">${SERVICE_MAP[r.service].cta} &rarr;</a>`;
+      }
+      html += '</li>';
+      return html;
+    }).join('');
+
+    // Dynamic offer card
+    renderOffer(results, isFound);
+
+    stopLoadProgress();
+    show('stepResults');
+    animateResults();
+
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>\n          Run My Free Audit';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 });
 
 function renderOffer(results, found) {
