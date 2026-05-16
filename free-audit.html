@@ -484,7 +484,7 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
 
   const btn = document.getElementById('auditSubmit');
   btn.disabled = true;
-  btn.innerHTML = '<svg class="animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Submitting...';
+  btn.innerHTML = '<svg class="animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Auditing...';
 
   const biz = document.getElementById('fieldBiz').value.trim();
   const loc = document.getElementById('fieldLoc').value.trim();
@@ -492,35 +492,33 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
   const phone = document.getElementById('fieldPhone').value.trim();
   const email = document.getElementById('fieldEmail').value.trim();
 
-  // Capture lead + Turnstile token
-  try {
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        prospectName: name,
-        phone: phone,
-        email: email,
-        businessName: biz,
-        address: loc,
-        source: 'free-audit-tool',
-        notes: `Free Audit Request for ${biz} in ${loc}`,
-        outreachCategory: 'Free Audit',
-        turnstileToken: turnstileToken
-      })
-    });
-  } catch (_) {}
-
+  // Show loading screen FIRST — before any async calls that might hang
   show('stepLoading');
   startLoadProgress();
 
+  // Capture lead in background (fire-and-forget — never block the UI)
+  const leadData = {
+    prospectName: name, phone, email, businessName: biz, address: loc,
+    source: 'free-audit-tool',
+    notes: `Free Audit Request for ${biz} in ${loc}`,
+    outreachCategory: 'Free Audit',
+    turnstileToken
+  };
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(leadData)
+  }).catch(() => {});
+
   // Safety timeout — never get stuck on loading
   let timedOut = false;
+  let finished = false;
   const safetyTimer = setTimeout(() => {
-    timedOut = true;
-    // Show results anyway with whatever we have
-    finishAudit(biz, loc, false, {}, []);
-  }, 15000);
+    if (!finished) {
+      timedOut = true;
+      finishAudit(biz, loc, false, {}, []);
+    }
+  }, 12000);
 
   // Try Places API lookup
   let found = false;
@@ -571,6 +569,7 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
 
   if (!timedOut) {
     clearTimeout(safetyTimer);
+    finished = true;
     finishAudit(biz, loc, found, gbpData, missingKeys);
   }
 
