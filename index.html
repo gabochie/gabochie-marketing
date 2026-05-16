@@ -561,6 +561,12 @@
           <span id="currencyLabelUSD" class="text-sm font-semibold text-gray-400">USD</span>
           <span id="rateInfo" class="text-xs text-gray-400 ml-1 hidden">live</span>
         </div>
+        <div class="flex items-center justify-center gap-2 mt-4">
+          <button id="contractMonthly" onclick="setContract(1)" class="contract-btn text-xs px-4 py-2 rounded-full font-semibold transition cursor-pointer bg-primary text-white">Monthly</button>
+          <button id="contract3mo" onclick="setContract(3)" class="contract-btn text-xs px-4 py-2 rounded-full font-semibold transition cursor-pointer bg-gray-200 text-gray-600 hover:bg-gray-300">3 Months <span class="text-green-600 font-bold">Save 10%</span></button>
+          <button id="contract6mo" onclick="setContract(6)" class="contract-btn text-xs px-4 py-2 rounded-full font-semibold transition cursor-pointer bg-gray-200 text-gray-600 hover:bg-gray-300">6 Months <span class="text-green-600 font-bold">Save 20%</span></button>
+        </div>
+        <p id="contractSavings" class="text-xs text-primary font-semibold mt-2 min-h-[1rem]"></p>
       </div>
       <div class="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
         <!-- Tier 1 -->
@@ -572,10 +578,10 @@
             <span class="text-sm text-gray-400"> setup</span>
           </div>
           <div class="mb-4">
-            <span class="text-3xl font-black text-primary"><span class="currency-amt" data-ghs="500">GHS 500</span></span>
-            <span class="text-sm text-gray-400">/month</span>
+            <span class="text-3xl font-black text-primary"><span class="contract-price currency-amt" data-ghs="500" data-contract-monthly="500" data-contract-3mo="450" data-contract-6mo="400">GHS 500</span></span>
+            <span class="contract-period text-sm text-gray-400">/month</span>
           </div>
-          <p class="text-xs text-gray-500 mb-4">First month: <span class="currency-amt" data-ghs="1450">GHS 1,450</span> &bull; Then <span class="currency-amt" data-ghs="500">GHS 500</span>/mo</p>
+          <p class="text-xs text-gray-500 mb-4">First month: <span class="currency-amt" data-ghs="1450">GHS 1,450</span> &bull; Then <span class="contract-price currency-amt" data-ghs="500" data-contract-monthly="500" data-contract-3mo="450" data-contract-6mo="400">GHS 500</span><span class="contract-period">/mo</span></p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -598,7 +604,7 @@
               Monthly performance monitoring
             </li>
           </ul>
-          <button onclick="openPackageModal('Starter Visibility', 'GHS 950 setup + GHS 500/mo')" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
+          <button onclick="openPackageModal('Starter Visibility', 950, 500)" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
             Start Here
           </button>
         </div>
@@ -615,10 +621,10 @@
             <span class="text-sm text-white/60"> setup</span>
           </div>
           <div class="mb-4">
-            <span class="text-3xl font-black text-white"><span class="currency-amt" data-ghs="1000">GHS 1,000</span></span>
-            <span class="text-sm text-white/60">/month</span>
+            <span class="text-3xl font-black text-white"><span class="contract-price currency-amt" data-ghs="1000" data-contract-monthly="1000" data-contract-3mo="900" data-contract-6mo="800">GHS 1,000</span></span>
+            <span class="contract-period text-sm text-white/60">/month</span>
           </div>
-          <p class="text-xs text-white/60 mb-4">First month: <span class="currency-amt" data-ghs="2500">GHS 2,500</span> &bull; Then <span class="currency-amt" data-ghs="1000">GHS 1,000</span>/mo</p>
+          <p class="text-xs text-white/60 mb-4">First month: <span class="currency-amt" data-ghs="2500">GHS 2,500</span> &bull; Then <span class="contract-price currency-amt" data-ghs="1000" data-contract-monthly="1000" data-contract-3mo="900" data-contract-6mo="800">GHS 1,000</span><span class="contract-period">/mo</span></p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-white/90">
               <svg class="w-5 h-5 text-accent flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -641,7 +647,7 @@
               Monthly performance reporting
             </li>
           </ul>
-          <button onclick="openPackageModal('Growth System', 'GHS 1,500 setup + GHS 1,000/mo')" class="block w-full text-center bg-accent text-dark-green py-3 rounded-full font-bold hover:bg-accent-light transition pulse-glow cursor-pointer">
+          <button onclick="openPackageModal('Growth System', 1500, 1000)" class="block w-full text-center bg-accent text-dark-green py-3 rounded-full font-bold hover:bg-accent-light transition pulse-glow cursor-pointer">
             Get Started
           </button>
         </div>
@@ -655,10 +661,10 @@
             <span class="text-sm text-gray-400"> setup</span>
           </div>
           <div class="mb-4">
-            <span class="text-3xl font-black text-primary"><span class="currency-amt" data-ghs="2000">GHS 2,000</span></span>
-            <span class="text-sm text-gray-400">/month</span>
+            <span class="text-3xl font-black text-primary"><span class="contract-price currency-amt" data-ghs="2000" data-contract-monthly="2000" data-contract-3mo="1800" data-contract-6mo="1600">GHS 2,000</span></span>
+            <span class="contract-period text-sm text-gray-400">/month</span>
           </div>
-          <p class="text-xs text-gray-500 mb-4">First month: <span class="currency-amt" data-ghs="4500">GHS 4,500</span> &bull; Then <span class="currency-amt" data-ghs="2000">GHS 2,000</span>/mo</p>
+          <p class="text-xs text-gray-500 mb-4">First month: <span class="currency-amt" data-ghs="4500">GHS 4,500</span> &bull; Then <span class="contract-price currency-amt" data-ghs="2000" data-contract-monthly="2000" data-contract-3mo="1800" data-contract-6mo="1600">GHS 2,000</span><span class="contract-period">/mo</span></p>
           <ul class="space-y-3 mb-8">
             <li class="flex items-center gap-2 text-sm text-gray-600">
               <svg class="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -681,7 +687,7 @@
               Dedicated account manager
             </li>
           </ul>
-          <button onclick="openPackageModal('Market Authority', 'GHS 2,500 setup + GHS 2,000/mo')" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
+          <button onclick="openPackageModal('Market Authority', 2500, 2000)" class="block w-full text-center bg-gray-100 text-body-text py-3 rounded-full font-semibold hover:bg-gray-200 transition cursor-pointer">
             Get Started
           </button>
         </div>
@@ -1114,10 +1120,16 @@
     });
 
     // PACKAGE MODAL FUNCTIONS
-    function openPackageModal(packageName, packagePrice) {
+    function openPackageModal(packageName, setupFee, monthlyFee) {
       document.getElementById('packageName').value = packageName;
       document.getElementById('selectedPackageName').textContent = packageName;
-      document.getElementById('selectedPackagePrice').textContent = packagePrice;
+      const discount = CONTRACT_DISCOUNTS[contractMonths] || 0;
+      const discountedMonthly = Math.round(monthlyFee * (1 - discount));
+      let priceLabel = 'GHS ' + Number(setupFee).toLocaleString() + ' setup + GHS ' + Number(discountedMonthly).toLocaleString() + '/mo';
+      if (contractMonths > 1) {
+        priceLabel += ' (' + contractMonths + 'mo contract, ' + Math.round(discount * 100) + '% off)';
+      }
+      document.getElementById('selectedPackagePrice').textContent = priceLabel;
       document.getElementById('packageModal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
       if (typeof gtag !== 'undefined') {
@@ -1166,7 +1178,7 @@
         address: document.getElementById('packageAddress').value,
         businessType: document.getElementById('packageBusinessType').value || '',
         website: document.getElementById('packageWebsite').value || '',
-        notes: `Package: ${packageName}\nGoals: ${document.getElementById('packageGoals').value || 'N/A'}\nStart: ${document.getElementById('packageStartDate').value}`,
+        notes: `Package: ${packageName}\nContract: ${contractMonths}mo\nGoals: ${document.getElementById('packageGoals').value || 'N/A'}\nStart: ${document.getElementById('packageStartDate').value}`,
         outreachCategory: 'Package Purchase Request',
         status: 'new',
         offerType: packageName,
@@ -1314,7 +1326,57 @@
         // Pre-fetch rate in background
         fetchRate();
       }
+      // Apply saved contract preference
+      const savedContract = localStorage.getItem('gm_contract');
+      if (savedContract) setContract(parseInt(savedContract));
     });
+
+    // ── Contract Duration (3mo / 6mo discounts) ──
+    let contractMonths = 1;
+    const CONTRACT_DISCOUNTS = { 1: 0, 3: 0.10, 6: 0.20 };
+
+    function setContract(months) {
+      contractMonths = months;
+      localStorage.setItem('gm_contract', months.toString());
+
+      // Update button styles
+      document.querySelectorAll('.contract-btn').forEach(btn => {
+        btn.className = 'contract-btn text-xs px-4 py-2 rounded-full font-semibold transition cursor-pointer bg-gray-200 text-gray-600 hover:bg-gray-300';
+      });
+      const activeBtn = months === 1 ? document.getElementById('contractMonthly')
+        : months === 3 ? document.getElementById('contract3mo')
+        : document.getElementById('contract6mo');
+      activeBtn.className = 'contract-btn text-xs px-4 py-2 rounded-full font-semibold transition cursor-pointer bg-primary text-white';
+
+      // Update prices
+      const discount = CONTRACT_DISCOUNTS[months] || 0;
+      document.querySelectorAll('.contract-price').forEach(el => {
+        const base = parseFloat(el.dataset.contractMonthly);
+        const discounted = Math.round(base * (1 - discount));
+        const key = 'contract' + months + 'mo';
+        el.dataset.ghs = el.dataset[key] || discounted;
+        el.innerHTML = currencyState === 'USD' && exchangeRate
+          ? '~$' + Number((discounted * exchangeRate).toFixed(0)).toLocaleString()
+          : 'GHS ' + Number(discounted).toLocaleString();
+      });
+
+      // Update /month labels
+      const periodText = months > 1 ? '/mo, ' + months + 'mo contract' : '/month';
+      document.querySelectorAll('.contract-period').forEach(el => {
+        el.textContent = periodText;
+      });
+
+      // Update savings message
+      const savingsEl = document.getElementById('contractSavings');
+      if (months === 1) {
+        savingsEl.textContent = '';
+      } else {
+        const pct = Math.round(discount * 100);
+        savingsEl.textContent = 'Save ' + pct + '% with a ' + months + '-month contract. Lock in your rate today.';
+      }
+    }
+
+
   </script>
   <script src="assets/js/ai-sales-agent.js"></script>
 </body>
