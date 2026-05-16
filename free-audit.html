@@ -118,10 +118,30 @@
   </div>
 
   <!-- Step 2: Loading -->
-  <div id="stepLoading" class="hidden text-center py-16">
-    <div class="animate-spin w-12 h-12 border-4 border-[#1A7B3A] border-t-transparent rounded-full mx-auto mb-4"></div>
-    <p class="text-gray-600 text-lg font-medium">Auditing your Google visibility...</p>
-    <p class="text-gray-400 text-sm mt-1">Checking your Business Profile data</p>
+  <div id="stepLoading" class="hidden text-center py-12">
+    <div class="max-w-md mx-auto">
+      <div class="animate-spin w-12 h-12 border-4 border-[#1A7B3A] border-t-transparent rounded-full mx-auto mb-6"></div>
+      <p class="text-gray-700 text-lg font-semibold mb-1" id="loadTitle">Auditing your Google visibility...</p>
+      <p class="text-gray-400 text-sm mb-6" id="loadSub">Please wait while we check your profile</p>
+      <div class="space-y-3 text-left" id="loadSteps">
+        <div class="flex items-center gap-3 text-sm" id="stepCheckGbp">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Searching for your Google Business Profile...</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm" id="stepAnalyze">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Analyzing your visibility score...</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm" id="stepRecommend">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Generating personalized recommendations...</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm" id="stepResultsLoad">
+          <span class="step-icon w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"></span>
+          <span class="text-gray-500">Preparing your report...</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Step 3: Results -->
