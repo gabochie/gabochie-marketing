@@ -162,19 +162,23 @@
       </div>
     </div>
 
+    <!-- Recommended Offer -->
+    <div id="resultOfferSection" class="hidden mb-6"></div>
+
     <!-- CTA -->
     <div class="bg-brand-dark text-white rounded-2xl p-6 sm:p-8 text-center">
-      <h3 class="text-xl font-bold mb-2">Want us to fix these issues for you?</h3>
-      <p class="text-white/80 text-sm mb-4">Our team will fully optimize your Google Business Profile. If you don't see results, you don't pay.</p>
+      <h3 class="text-xl font-bold mb-2">Ready to fix these issues — and start getting more customers?</h3>
+      <p class="text-white/80 text-sm mb-4">Our team of GBP specialists will handle everything. If you don't see more calls, visits, and sales within 60 days, we keep working until you do.</p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="https://wa.me/233506384917" target="_blank" rel="noopener" class="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition inline-flex items-center justify-center gap-2">
+        <a href="https://wa.me/233506384917?text=I%20just%20got%20my%20free%20audit%20and%20want%20to%20get%20started" target="_blank" rel="noopener" class="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition inline-flex items-center justify-center gap-2 text-sm">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Chat on WhatsApp
+          Start on WhatsApp
         </a>
-        <a href="index.html#pricing" class="bg-white text-brand-primary px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition inline-flex items-center justify-center gap-2">
-          View Packages
+        <a href="index.html#pricing" class="bg-white text-brand-primary px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition inline-flex items-center justify-center gap-2 text-sm">
+          View All Packages
         </a>
       </div>
+      <p class="text-white/50 text-xs mt-3">Or call <a href="tel:+233506384917" class="text-accent underline">050 638 4917</a> | Mobile money payments accepted (MoMo: 059 985 7126)</p>
     </div>
 
     <div class="text-center mt-6">
@@ -185,12 +189,81 @@
 
 <script>
 window._pageStart = Date.now();
+
 // ── Config ──
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv60aDninIoZRPZtq6yNkMlNq2I3aWrPJT5uMqFNgxgDwdUpRe7kCDoNtcfRvgrVLD/exec';
-const GOOGLE_PLACES_KEY = 'AIzaSyBkBLbFQ5DuBV6gWpTNSi-KfVrIjG0vPzE'; // Set your Google Cloud Places API key here for real GBP data
+const GOOGLE_PLACES_KEY = 'AIzaSyBkBLbFQ5DuBV6gWpTNSi-KfVrIjG0vPzE';
+const TURNSTILE_SITEKEY = '1x00000000000000000000AA';
 
 const WA_NUMBER = '233506384917';
 const MOBILE_MONEY = '059 985 7126';
+
+// ── Service-to-finding mapping (each gap sells a specific service) ──
+const SERVICE_MAP = {
+  not_found: {
+    name: 'Starter Visibility Package',
+    tagline: 'Get your business on Google Maps — fast',
+    desc: "Your business isn't on Google Maps yet. Every day you're invisible, competitors are capturing customers who should be walking through your door.",
+    price: 'GHS 950 setup + GHS 500/mo',
+    features: ['GBP creation & verification in 48h', 'Complete profile optimization', 'Phone, address & category setup', 'WhatsApp & call integration'],
+    url: 'index.html#pricing',
+    cta: 'Claim Your Business Now'
+  },
+  photos: {
+    name: 'Weekly Photo Management',
+    tagline: 'Active profiles rank higher',
+    desc: 'Businesses with 5+ photos get 42% more direction requests. We post fresh photos weekly to keep your profile active.',
+    price: 'Included in Growth System — GHS 1,000/mo',
+    features: ['Weekly photo uploads', 'Professional-style images', 'Before/after & product shots', '360° virtual tour setup'],
+    url: 'index.html#pricing',
+    cta: 'Start Getting More Views'
+  },
+  reviews: {
+    name: 'Review Generation System',
+    tagline: 'More reviews = more customers',
+    desc: 'Each 1-star increase can boost revenue by 5-9%. We build a systematic review generation engine for your business.',
+    price: 'GHS 500/mo (standalone) or included in Growth',
+    features: ['Automated review request via WhatsApp', 'QR code cards for walk-ins', 'Review response management', 'Monthly review growth target 5-10'],
+    url: 'services/review-management.html',
+    cta: 'Get More Reviews Now'
+  },
+  responses: {
+    name: 'Review Response Management',
+    tagline: 'Show customers you care',
+    desc: '68% of consumers leave reviews only if they see businesses responding. We craft professional responses to every review.',
+    price: 'Included in Growth System — GHS 1,000/mo',
+    features: ['Professional response templates', '24h response time guarantee', 'Negative review handling', 'Monthly response report'],
+    url: 'index.html#pricing',
+    cta: 'Start Responding Professionally'
+  },
+  posts: {
+    name: 'Weekly Google Posts',
+    tagline: 'Stay top-of-mind with fresh updates',
+    desc: 'Google Posts boost engagement and signal Google your profile is active. We create and schedule weekly posts.',
+    price: 'Included in Growth System — GHS 1,000/mo',
+    features: ['Weekly post creation', 'Offers, events & updates', 'Photo + video posts', 'Performance tracking'],
+    url: 'index.html#pricing',
+    cta: 'Activate Your Profile'
+  },
+  website: {
+    name: 'Website Optimization & Building',
+    tagline: 'Turn visitors into customers',
+    desc: 'A slow or missing website costs you customers. We optimize your existing site or build you a fast, mobile-optimized one.',
+    price: 'From GHS 500 setup + GHS 200/mo',
+    features: ['Speed optimization', 'Mobile responsiveness', 'SEO-friendly structure', 'WhatsApp chat integration'],
+    url: 'services/wordpress-website-building.html',
+    cta: 'Fix Your Website'
+  },
+  general: {
+    name: 'Full GBP Management — Market Authority',
+    tagline: 'Dominate your market',
+    desc: 'Everything you need to outrank competitors and dominate local search. Full-service GBP management with a dedicated account manager.',
+    price: 'GHS 2,500 setup + GHS 2,000/mo',
+    features: ['Everything in Growth System', 'Competitor monitoring & analysis', 'Monthly strategy calls', 'Dedicated account manager', 'Priority support'],
+    url: 'index.html#pricing',
+    cta: 'Go All-In'
+  }
+};
 
 // ── Checklist items ──
 const CHECKLIST = [
@@ -206,14 +279,12 @@ const CHECKLIST = [
   { key: 'website', label: 'Website link is correct', weight: 0.5 },
 ];
 
-function getAuditResults(found, data) {
+function getAuditResults(found, data, missingKeys) {
   const items = CHECKLIST.map(c => {
     let status = 'no';
     if (!found) {
-      // No GBP found — everything is missing
       status = 'no';
     } else {
-      // Simple heuristic scoring based on what Google returned
       switch (c.key) {
         case 'name': status = data.name ? 'yes' : 'no'; break;
         case 'address': status = data.formatted_address ? 'yes' : 'no'; break;
@@ -242,21 +313,34 @@ function getAuditResults(found, data) {
   const gradeClass = finalScore >= 8 ? 'text-green-600' : finalScore >= 5 ? 'text-yellow-600' : 'text-red-600';
   const scoreClass = finalScore >= 7 ? 'score-high' : finalScore >= 4 ? 'score-mid' : 'score-low';
 
-  // Recommendations
+  // Sales-oriented recommendations — each missing item sells a specific service
   const recs = [];
-  if (!found) {
-    recs.push('Your business was not found on Google Maps. We can create and verify your profile within 48 hours.');
-    recs.push('Once verified, add complete business details, photos, and start collecting reviews.');
-  } else {
-    const missing = items.filter(i => i.status === 'no');
-    const partial = items.filter(i => i.status === 'maybe');
-    missing.forEach(i => recs.push(i.label.replace('is', 'Add/update your') + '.'));
-    partial.forEach(i => recs.push('Check that ' + i.label.toLowerCase() + '.'));
-    if (recs.length === 0) recs.push('Your profile looks great! Focus on collecting more reviews and posting regular updates.');
-  }
-  recs.push('Want us to handle all of this for you? Chat with us on WhatsApp to get started.');
+  const missingItems = items.filter(i => i.status === 'no' || i.status === 'maybe');
+  const missing = items.filter(i => i.status === 'no');
 
-  return { score: finalScore, grade, gradeClass, scoreClass, items, recs };
+  if (!found) {
+    recs.push({ label: 'Your business was NOT found on Google Maps. That means every potential customer searching for your service is seeing your competitors instead.', critical: true });
+    recs.push({ label: 'We can create and verify your Google Business Profile within 48 hours. Once live, you start showing up in searches immediately.', service: 'not_found' });
+    recs.push({ label: 'After setup, our Starter package includes ongoing optimization: photos, posts, review management, and monthly monitoring.', service: 'not_found' });
+  } else if (missing.length > 4) {
+    recs.push({ label: "You're missing " + missing.length + " critical visibility factors. Every gap costs you customers.", critical: true });
+    recs.push({ label: 'Our Growth System (GHS 1,500 setup + GHS 1,000/mo) covers ALL of these gaps in one package.', service: 'general' });
+    missingItems.forEach(i => {
+      if (SERVICE_MAP[i.key]) recs.push({ label: i.label.replace('is', 'Fix your') + '.', service: i.key });
+    });
+  } else if (missing.length >= 1) {
+    recs.push({ label: 'You have ' + missing.length + ' specific gaps to fix. Each one is costing you visibility and customers.', critical: true });
+    missingItems.forEach(i => {
+      if (SERVICE_MAP[i.key]) recs.push({ label: i.label.replace('is', 'Fix your') + '.', service: i.key });
+    });
+    recs.push({ label: 'Bundle everything with our Growth System and save vs individual services.', service: 'general' });
+  } else {
+    recs.push({ label: 'Your profile looks good! To take it to the next level:', service: 'general' });
+    recs.push({ label: 'Consistent review generation (+GHS 500/mo standalone or included in Growth)', service: 'reviews' });
+    recs.push({ label: 'Weekly Google Posts to stay active and rank higher', service: 'posts' });
+  }
+
+  return { score: finalScore, grade, gradeClass, scoreClass, items, recs, missingKeys };
 }
 
 function show(elementId) {
@@ -272,9 +356,19 @@ function resetAudit() {
 
 document.getElementById('auditForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+
   // Anti-spam: honeypot + time check
   const hp = e.target.querySelector('[name="hp_website"]');
   if (hp?.value || Date.now() - window._pageStart < 2000) return;
+
+  // Turnstile check
+  const turnstileToken = document.querySelector('.cf-turnstile iframe')
+    ? turnstile.getResponse() : '';
+  if (!turnstileToken) {
+    // Turnstile not rendered yet or no token — still proceed but flag it
+    console.warn('Turnstile token missing');
+  }
+
   const btn = document.getElementById('auditSubmit');
   btn.disabled = true;
   btn.innerHTML = '<svg class="animate-spin w-5 h-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Submitting...';
@@ -285,7 +379,7 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
   const phone = document.getElementById('fieldPhone').value.trim();
   const email = document.getElementById('fieldEmail').value.trim();
 
-  // Capture lead first
+  // Capture lead + Turnstile token
   try {
     await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
@@ -298,7 +392,8 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
         address: loc,
         source: 'free-audit-tool',
         notes: `Free Audit Request for ${biz} in ${loc}`,
-        outreachCategory: 'Free Audit'
+        outreachCategory: 'Free Audit',
+        turnstileToken: turnstileToken
       })
     });
   } catch (_) {}
@@ -308,6 +403,7 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
   // Try Places API lookup
   let found = false;
   let gbpData = {};
+  const missingKeys = [];
 
   if (GOOGLE_PLACES_KEY) {
     try {
@@ -326,10 +422,28 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
           document.getElementById('gbpReviews').textContent = gbpData.user_ratings_total || '0';
           document.getElementById('gbpCategory').textContent = (gbpData.types || []).slice(0, 3).join(', ') || 'N/A';
           document.getElementById('gbpStatus').innerHTML = gbpData.business_status === 'OPERATIONAL' ? '<span class="text-green-600">Active</span>' : (gbpData.business_status || 'Unknown');
+
+          // Collect missing keys
+          CHECKLIST.forEach(c => {
+            let status = 'no';
+            switch (c.key) {
+              case 'name': status = gbpData.name ? 'yes' : 'no'; break;
+              case 'address': status = gbpData.formatted_address ? 'yes' : 'no'; break;
+              case 'phone': status = gbpData.formatted_phone_number ? 'yes' : 'no'; break;
+              case 'category': status = gbpData.types && gbpData.types.length > 0 ? 'yes' : 'no'; break;
+              case 'hours': status = gbpData.opening_hours ? 'yes' : 'no'; break;
+              case 'photos': status = gbpData.photos && gbpData.photos.length >= 3 ? 'yes' : 'maybe'; break;
+              case 'reviews': status = gbpData.user_ratings_total && gbpData.user_ratings_total > 0 ? 'yes' : 'no'; break;
+              case 'responses': status = 'maybe'; break;
+              case 'posts': status = 'maybe'; break;
+              case 'website': status = gbpData.website ? 'yes' : 'no'; break;
+            }
+            if (status === 'no' || status === 'maybe') missingKeys.push(c.key);
+          });
         }
       }
     } catch (e) {
-      console.warn('Places API error:', e);
+      console.warn('Places API error — using default audit');
     }
   }
 
@@ -337,7 +451,7 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
     document.getElementById('resultGbpData').classList.add('hidden');
   }
 
-  const results = getAuditResults(found, gbpData);
+  const results = getAuditResults(found, gbpData, missingKeys);
   document.getElementById('resultBizName').textContent = biz;
   document.getElementById('resultBizLoc').textContent = loc;
   document.getElementById('resultScore').textContent = results.score;
@@ -355,14 +469,77 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
     </div>`;
   }).join('');
 
-  // Recommendations
-  document.getElementById('resultRecommendations').innerHTML = results.recs.map(r => `<li>${r}</li>`).join('');
+  // Sales-oriented recommendations
+  document.getElementById('resultRecommendations').innerHTML = results.recs.map(r => {
+    let cls = 'text-yellow-700';
+    if (r.critical) cls = 'text-red-700 font-bold';
+    let html = `<li class="${cls}">${r.label}`;
+    if (r.service && SERVICE_MAP[r.service]) {
+      html += ` <a href="${SERVICE_MAP[r.service].url}" class="text-green-700 underline font-semibold whitespace-nowrap">${SERVICE_MAP[r.service].cta} &rarr;</a>`;
+    }
+    html += '</li>';
+    return html;
+  }).join('');
+
+  // Dynamic offer card — pick the best service to pitch
+  renderOffer(results, found);
 
   show('stepResults');
   btn.disabled = false;
   btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>\n          Run My Free Audit';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+function renderOffer(results, found) {
+  const section = document.getElementById('resultOfferSection');
+  if (!section) return;
+
+  // Determine the best offer based on findings
+  let offerKey = 'general';
+  const missingServices = results.recs.filter(r => r.service).map(r => r.service);
+
+  if (!found) {
+    offerKey = 'not_found';
+  } else if (missingServices.includes('reviews') && !missingServices.includes('photos') && !missingServices.includes('posts')) {
+    offerKey = 'reviews';
+  } else if (missingServices.includes('photos') || missingServices.includes('posts')) {
+    offerKey = missingServices.includes('reviews') ? 'general' : 'posts';
+  } else if (missingServices.includes('website')) {
+    offerKey = 'website';
+  }
+
+  // Pick the highest-value service to pitch
+  const priority = ['not_found', 'general', 'reviews', 'posts', 'photos', 'website'];
+  for (const p of priority) {
+    if (missingServices.includes(p)) { offerKey = p; break; }
+  }
+
+  const svc = SERVICE_MAP[offerKey];
+  if (!svc) return;
+
+  section.innerHTML = `
+    <div class="bg-gradient-to-br from-green-50 to-white rounded-2xl p-6 sm:p-8 border-2 border-primary shadow-lg">
+      <div class="flex items-start justify-between mb-3 flex-wrap gap-2">
+        <div>
+          <span class="text-xs font-bold text-primary uppercase tracking-wider">Recommended For You</span>
+          <h3 class="text-xl font-bold text-gray-900 mt-1">${svc.name}</h3>
+          <p class="text-sm text-primary font-semibold">${svc.tagline}</p>
+        </div>
+        <span class="bg-primary text-white text-sm font-bold px-4 py-2 rounded-full whitespace-nowrap">${svc.price}</span>
+      </div>
+      <p class="text-gray-600 text-sm mb-4">${svc.desc}</p>
+      <ul class="grid sm:grid-cols-2 gap-2 mb-5">
+        ${svc.features.map(f => `<li class="flex items-center gap-2 text-sm text-gray-700"><svg class="w-4 h-4 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>${f}</li>`).join('')}
+      </ul>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="${svc.url}" class="bg-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-dark-green transition text-center text-sm">${svc.cta} &rarr;</a>
+        <a href="https://wa.me/${WA_NUMBER}?text=I%20just%20got%20my%20free%20audit%20and%20I%27m%20interested%20in%20the%20${encodeURIComponent(svc.name)}" target="_blank" rel="noopener" class="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition text-center text-sm inline-flex items-center justify-center gap-2">
+          Ask on WhatsApp
+        </a>
+      </div>
+    </div>`;
+  section.classList.remove('hidden');
+}
 </script>
 
   <!-- FOOTER -->
