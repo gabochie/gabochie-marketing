@@ -361,13 +361,9 @@ document.getElementById('auditForm').addEventListener('submit', async (e) => {
   const hp = e.target.querySelector('[name="hp_website"]');
   if (hp?.value || Date.now() - window._pageStart < 2000) return;
 
-  // Turnstile check
-  const turnstileToken = document.querySelector('.cf-turnstile iframe')
-    ? turnstile.getResponse() : '';
-  if (!turnstileToken) {
-    // Turnstile not rendered yet or no token — still proceed but flag it
-    console.warn('Turnstile token missing');
-  }
+  // Turnstile check (safe — script may not have loaded)
+  let turnstileToken = '';
+  try { if (typeof turnstile !== 'undefined') turnstileToken = turnstile.getResponse() || ''; } catch (_) {}
 
   const btn = document.getElementById('auditSubmit');
   btn.disabled = true;
