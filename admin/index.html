@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-pin.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co wss://gcbsffvryqguesofgvjh.supabase.co https://api.paystack.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none' https://js.paystack.co; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co wss://gcbsffvryqguesofgvjh.supabase.co https://api.paystack.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none' https://js.paystack.co; object-src 'none'; base-uri 'self';">
   <title>Gabochie Marketing — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -920,7 +920,7 @@
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec';
   const SUPABASE_URL = 'https://gcbsffvryqguesofgvjh.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_aZzUKB8qmxbjcxlEB3F0NQ_sBA_itWW';
-  const PAYSTACK_PUBLIC_KEY = 'pk_live_placeholder'; // Replace with your Paystack live public key
+  const PAYSTACK_PUBLIC_KEY = 'pk_test_7246579d3b5c565c392874d4c1068366eb11f0b2';
   const PAYSTACK_EDGE_FN = SUPABASE_URL + '/functions/v1/paystack-verify';
 
   // ═══ STATE ═══
@@ -1964,12 +1964,11 @@
         await loadInvoices();
       } else {
         showToast('Verification failed: ' + (result.message || 'Unknown error'), 'error');
+        logActivity('Payment verification failed', 'Invoice #' + invoiceId + ' — ' + (result.message || ''));
       }
     } catch (e) {
-      showToast('Payment verification error: ' + e.message, 'error');
-      // Fallback: try marking as paid anyway if Paystack says success
-      const success = await sbUpdate('invoices', invoiceId, { status: 'paid', paid_at: new Date().toISOString(), payment_ref: reference });
-      if (success) { showToast('Payment recorded locally', 'success'); await loadInvoices(); }
+      showToast('Payment verification error — no changes made. Try again or record manually.', 'error');
+      logActivity('Payment verification network error', 'Invoice #' + invoiceId);
     }
   }
 
@@ -1977,7 +1976,7 @@
     const client = clients.find(c => c.id === clientId);
     const email = (client && client.email) || 'client@gabochie.com';
     const baseUrl = window.location.origin;
-    const link = baseUrl + '/pay.html?invoice=' + encodeURIComponent(invoiceId) + '&amount=' + amount + '&email=' + encodeURIComponent(email) + '&client=' + encodeURIComponent((client && client.name) || '');
+    const link = baseUrl + '/pay.html?invoice=' + encodeURIComponent(invoiceId) + '&amount=' + encodeURIComponent(String(amount)) + '&email=' + encodeURIComponent(email) + '&client=' + encodeURIComponent((client && client.name) || '');
     navigator.clipboard.writeText(link).then(() => showToast('Payment link copied! Share via WhatsApp', 'success')).catch(() => {
       prompt('Copy this payment link:', link);
     });
