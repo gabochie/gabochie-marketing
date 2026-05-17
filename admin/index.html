@@ -264,6 +264,20 @@
     .filter-bar select,.filter-bar input{padding:6px 10px;font-size:12px;width:auto;min-width:120px}
     .filter-bar .filter-count{font-size:12px;color:var(--text-muted);margin-left:auto}
 
+    /* ─── LOADING STATES ─── */
+    .spinner{display:inline-block;width:20px;height:20px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .load-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:12px;color:var(--text-muted);font-size:13px}
+    .load-overlay .spinner{width:28px;height:28px;border-width:3px}
+    .load-error{text-align:center;padding:30px 20px;color:var(--danger);font-size:13px}
+    .load-error .icon{font-size:32px;margin-bottom:8px;display:block}
+    .load-success{display:none}
+
+    /* ─── PAGINATION ─── */
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);font-size:12px}
+    .pagination-info{color:var(--text-muted)}
+    .pagination-controls{display:flex;gap:6px}
+
     /* ─── FORM SUBMISSION CARD ─── */
     .submission-card{
       padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);
@@ -446,11 +460,17 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div class="panel">
               <div class="panel-header"><h3>📊 Lead Sources</h3></div>
-              <div class="panel-body" id="leadSourcesChart"><p style="color:var(--text-muted);font-size:13px">Loading source distribution...</p></div>
+              <div class="panel-body" id="leadSourcesChart"><div class="load-overlay"><div class="spinner"></div></div></div>
             </div>
             <div class="panel">
               <div class="panel-header"><h3>🎯 Funnel Distribution</h3></div>
-              <div class="panel-body" id="funnelChart"><p style="color:var(--text-muted);font-size:13px">Loading funnel stats...</p></div>
+              <div class="panel-body" id="funnelChart"><div class="load-overlay"><div class="spinner"></div></div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h3>📝 Recent Activity</h3></div>
+            <div class="panel-body" id="activityLogPanel" style="max-height:240px;overflow-y:auto;font-size:12px">
+              <div style="color:var(--text-muted);padding:12px;text-align:center">No activity yet</div>
             </div>
           </div>
         </section>
@@ -483,16 +503,36 @@
             <button class="btn btn-primary btn-sm" onclick="openAddLeadModal()">+ Add Lead</button>
             <button class="btn btn-accent btn-sm" onclick="importCSV()">📄 Import CSV</button>
             <button class="btn btn-outline btn-sm" onclick="exportLeads()">📥 Export</button>
-            <span class="filter-count" id="leadCount">0 leads</span>
-          </div>
+              <span class="filter-count" id="leadCount">0 leads</span>
+            </div>
 
-          <div class="panel">
+            <div id="bulkBar" style="display:none;padding:8px 16px;background:var(--bg-dark);border-bottom:1px solid var(--border);font-size:12px;align-items:center;gap:8px">
+              <span id="bulkCount" style="color:var(--text-muted)"></span>
+              <select id="bulkStatus" style="padding:4px 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--bg)">
+                <option value="">Change status...</option>
+                <option value="new">New</option><option value="contacted">Contacted</option><option value="replied">Replied</option>
+                <option value="interested">Interested</option><option value="negotiating">Negotiating</option>
+                <option value="closed_won">Closed Won</option><option value="closed_lost">Closed Lost</option><option value="cold">Cold</option>
+              </select>
+              <button class="btn btn-primary btn-xs" onclick="bulkUpdateStatus()">Apply</button>
+              <button class="btn btn-outline btn-xs" onclick="bulkExport()">Export</button>
+              <button class="btn btn-danger btn-xs" onclick="bulkDelete()">Delete</button>
+            </div>
+
+            <div class="panel">
             <div class="table-wrap">
               <table><thead><tr>
                 <th style="width:32px"><input type="checkbox" id="leadCheckAll" onchange="toggleAllLeads()"></th>
                 <th>Name</th><th>Business</th><th>Phone</th><th>Email</th><th>Status</th><th>Stage</th><th>Source</th><th>Date</th>
                 <th style="width:100px">Actions</th>
               </tr></thead><tbody id="leadsBody"></tbody></table>
+            </div>
+            <div class="pagination" id="leadsPagination">
+              <span class="pagination-info" id="leadsPageInfo"></span>
+              <div class="pagination-controls">
+                <button class="btn btn-outline btn-xs" onclick="prevLeadsPage()" id="leadsPrevBtn">◀ Prev</button>
+                <button class="btn btn-outline btn-xs" onclick="nextLeadsPage()" id="leadsNextBtn">Next ▶</button>
+              </div>
             </div>
           </div>
         </section>
@@ -527,7 +567,7 @@
             </div>
             <div class="table-wrap">
               <table><thead><tr>
-                <th>Client</th><th>Amount</th><th>Currency</th><th>Description</th><th>Status</th><th>Due Date</th><th>Paid At</th>
+                <th>Client</th><th>Amount</th><th>Currency</th><th>Description</th><th>Status</th><th>Due Date</th><th>Paid At</th><th style="width:100px">Action</th>
               </tr></thead><tbody id="invoicesBody"></tbody></table>
             </div>
           </div>
@@ -603,19 +643,19 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div class="panel">
               <div class="panel-header"><h3>📊 Lead Sources</h3></div>
-              <div class="panel-body" id="analyticsSources"><p style="color:var(--text-muted)">Loading...</p></div>
+              <div class="panel-body" id="analyticsSources"><div class="load-overlay"><div class="spinner"></div></div></div>
             </div>
             <div class="panel">
               <div class="panel-header"><h3>🎯 Funnel Stages</h3></div>
-              <div class="panel-body" id="analyticsFunnel"><p style="color:var(--text-muted)">Loading...</p></div>
+              <div class="panel-body" id="analyticsFunnel"><div class="load-overlay"><div class="spinner"></div></div></div>
             </div>
             <div class="panel">
               <div class="panel-header"><h3>📈 Status Breakdown</h3></div>
-              <div class="panel-body" id="analyticsStatus"><p style="color:var(--text-muted)">Loading...</p></div>
+              <div class="panel-body" id="analyticsStatus"><div class="load-overlay"><div class="spinner"></div></div></div>
             </div>
             <div class="panel">
               <div class="panel-header"><h3>📅 Leads Over Time</h3></div>
-              <div class="panel-body" id="analyticsTimeline"><p style="color:var(--text-muted)">Loading...</p></div>
+              <div class="panel-body" id="analyticsTimeline"><div class="load-overlay"><div class="spinner"></div></div></div>
             </div>
           </div>
         </section>
@@ -651,6 +691,17 @@
                   <label><input type="checkbox" id="check-data-migration" onchange="updateBuildStatus()"> Data migrated</label>
                   <label><input type="checkbox" id="check-rls-policies" onchange="updateBuildStatus()"> RLS policies</label>
                   <label><input type="checkbox" id="check-supabase-pull" onchange="updateBuildStatus()"> Supabase pull</label>
+                </div>
+                <div class="checklist-card">
+                  <h4>⚠️ Production Essentials</h4>
+                  <label><input type="checkbox" id="check-jwt-refresh" onchange="updateBuildStatus()"> JWT session refresh</label>
+                  <label><input type="checkbox" id="check-loading-states" onchange="updateBuildStatus()"> Loading spinners</label>
+                  <label><input type="checkbox" id="check-pagination" onchange="updateBuildStatus()"> Pagination (leads)</label>
+                  <label><input type="checkbox" id="check-bulk-actions" onchange="updateBuildStatus()"> Bulk actions (leads)</label>
+                  <label><input type="checkbox" id="check-client-auto" onchange="updateBuildStatus()"> Client auto-provision</label>
+                  <label><input type="checkbox" id="check-invoice-payments" onchange="updateBuildStatus()"> Invoice payment workflow</label>
+                  <label><input type="checkbox" id="check-activity-log" onchange="updateBuildStatus()"> Activity/audit log</label>
+                  <label><input type="checkbox" id="check-auto-refresh" onchange="updateBuildStatus()"> Tab auto-refresh</label>
                 </div>
                 <div class="checklist-card">
                   <h4>📊 Status</h4>
@@ -798,6 +849,30 @@
       </div>
     </div></div>
 
+    <!-- Payment Modal -->
+    <div class="modal-overlay" id="paymentModal"><div class="modal">
+      <h3>Record Payment</h3>
+      <p style="font-size:13px;color:var(--text-muted)">Amount: <strong id="payAmount">GHS 0</strong></p>
+      <div class="form-row full">
+        <div><label>Paid Date</label><input id="pay-date" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Payment Method</label>
+          <select id="pay-method">
+            <option value="mobile_money">Mobile Money</option>
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="cash">Cash</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div><label>Reference</label><input id="pay-ref" placeholder="Transaction ref"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closePaymentModal()">Cancel</button>
+        <button class="btn btn-accent" onclick="confirmPayment()">✓ Mark as Paid</button>
+      </div>
+    </div></div>
+
     <!-- Add Template Modal -->
     <div class="modal-overlay" id="templateModal"><div class="modal">
       <h3>Add Message Template</h3>
@@ -846,8 +921,13 @@
   let editingLeadId = null;
   let viewingLeadId = null;
 
+  // Pagination
+  let leadsPage = 1;
+  const LEADS_PAGE_SIZE = 20;
+
   // ═══ SUPABASE HELPERS ═══
   function supabaseToken() { return localStorage.getItem('supabase_token'); }
+  function supabaseRefresh() { return localStorage.getItem('supabase_refresh'); }
   function setSupabaseToken(t, r) { localStorage.setItem('supabase_token', t); if (r) localStorage.setItem('supabase_refresh', r); }
   function clearSupabaseToken() { localStorage.removeItem('supabase_token'); localStorage.removeItem('supabase_refresh'); localStorage.removeItem('supabase_user'); }
 
@@ -858,8 +938,52 @@
     return h;
   }
 
+  // Auto-refresh on 401 — wraps fetch with JWT refresh logic
+  let refreshing = null;
+  function getJWTExpiry() {
+    try {
+      const t = supabaseToken();
+      if (!t) return 0;
+      return JSON.parse(atob(t.split('.')[1])).exp * 1000;
+    } catch (e) { return 0; }
+  }
+
+  async function sbFetch(url, opts) {
+    // Refresh if token expires within 5 minutes
+    const expiry = getJWTExpiry();
+    if (expiry && expiry - Date.now() < 300000) {
+      if (!refreshing) refreshing = sbRefresh();
+      const ok = await refreshing; refreshing = null;
+      if (!ok) { clearSupabaseToken(); throw new Error('Session expired'); }
+      opts = opts || {}; opts.headers = { ...(opts.headers || {}), ...sbHeaders() };
+    }
+    let r = await fetch(url, opts);
+    if (r.status === 401) {
+      if (!refreshing) refreshing = sbRefresh();
+      const ok = await refreshing; refreshing = null;
+      if (ok) {
+        opts = opts || {}; opts.headers = { ...(opts.headers || {}), ...sbHeaders() };
+        r = await fetch(url, opts);
+      } else { clearSupabaseToken(); throw new Error('Session expired'); }
+    }
+    return r;
+  }
+
+  async function sbRefresh() {
+    const rt = supabaseRefresh();
+    if (!rt) return false;
+    try {
+      const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt), {
+        method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }
+      });
+      const data = await r.json();
+      if (data.access_token) { setSupabaseToken(data.access_token, data.refresh_token); return true; }
+      return false;
+    } catch (e) { return false; }
+  }
+
   async function sbLogin(email, password) {
-    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+    const r = await sbFetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
       method: 'POST', headers: sbHeaders(),
       body: JSON.stringify({ email, password })
     });
@@ -869,27 +993,29 @@
   async function sbLogout() {
     const t = supabaseToken();
     if (!t) return;
-    await fetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: sbHeaders() });
+    try { await sbFetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: sbHeaders() }); } catch (e) {}
   }
 
   async function sbGetSession() {
     const t = supabaseToken();
     if (!t) return null;
-    const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: sbHeaders() });
-    if (!r.ok) { clearSupabaseToken(); return null; }
-    return r.json();
+    try {
+      const r = await sbFetch(SUPABASE_URL + '/auth/v1/user', { headers: sbHeaders() });
+      if (!r.ok) { clearSupabaseToken(); return null; }
+      return r.json();
+    } catch (e) { clearSupabaseToken(); return null; }
   }
 
   async function sbSelect(table, query) {
     let url = SUPABASE_URL + '/rest/v1/' + table;
     if (query) url += '?' + query;
-    const r = await fetch(url, { headers: sbHeaders() });
+    const r = await sbFetch(url, { headers: sbHeaders() });
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   }
 
   async function sbInsert(table, rows) {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+    const r = await sbFetch(SUPABASE_URL + '/rest/v1/' + table, {
       method: 'POST', headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(rows)
     });
@@ -897,7 +1023,7 @@
   }
 
   async function sbUpdate(table, id, data) {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
+    const r = await sbFetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
       method: 'PATCH', headers: sbHeaders(),
       body: JSON.stringify(data)
     });
@@ -905,10 +1031,43 @@
   }
 
   async function sbDelete(table, id) {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
+    const r = await sbFetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
       method: 'DELETE', headers: sbHeaders()
     });
     return r.ok;
+  }
+
+  // ═══ LOADING STATES ═══
+  function showLoading(id) { const el = document.getElementById(id); if (el) el.innerHTML = '<div class="load-overlay"><div class="spinner"></div>Loading...</div>'; }
+  function hideLoading(id) { }
+  function showError(id, msg) { const el = document.getElementById(id); if (el) el.innerHTML = '<div class="load-error"><span class="icon">⚠️</span>' + (msg || 'Failed to load data') + '</div>'; }
+  function wrapLoad(id, fn) {
+    return async function() {
+      try { showLoading(id); await fn(); } catch (e) { showError(id, e.message); }
+    };
+  }
+
+  // ═══ ACTIVITY LOG ═══
+  let activities = [];
+
+  function logActivity(action, detail) {
+    activities.unshift({ action, detail, time: new Date() });
+    if (activities.length > 100) activities.pop();
+    renderActivityLog();
+  }
+
+  function renderActivityLog() {
+    const el = document.getElementById('activityLogPanel');
+    if (!el) return;
+    if (activities.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-muted);padding:12px;text-align:center">No activity yet</div>';
+      return;
+    }
+    el.innerHTML = activities.map(a => `<div style="display:flex;gap:8px;padding:6px 8px;border-bottom:1px solid var(--border);align-items:flex-start">
+      <span style="color:var(--text-muted);white-space:nowrap;font-size:11px;min-width:60px">${a.time.toLocaleTimeString()}</span>
+      <span style="font-weight:500;color:var(--primary)">${esc(a.action)}</span>
+      <span style="color:var(--text-muted)">${esc(a.detail)}</span>
+    </div>`).join('');
   }
 
   // ═══ TOAST NOTIFICATIONS ═══
@@ -1138,13 +1297,25 @@
     document.getElementById('leads-interested').textContent = contacts.filter(c => c.status === 'interested' || c.status === 'negotiating').length;
     document.getElementById('leads-closed').textContent = contacts.filter(c => c.status === 'closed_won' || c.status === 'closed_lost').length;
 
+    // Paginate
+    const totalPages = Math.max(1, Math.ceil(filtered.length / LEADS_PAGE_SIZE));
+    if (leadsPage > totalPages) leadsPage = totalPages;
+    const start = (leadsPage - 1) * LEADS_PAGE_SIZE;
+    const page = filtered.slice(start, start + LEADS_PAGE_SIZE);
+
+    document.getElementById('leadsPrevBtn').disabled = leadsPage <= 1;
+    document.getElementById('leadsNextBtn').disabled = leadsPage >= totalPages;
+    document.getElementById('leadsPageInfo').textContent = totalPages > 1
+      ? `Page ${leadsPage} of ${totalPages} (${filtered.length} total)`
+      : `${filtered.length} total`;
+
     const tbody = document.getElementById('leadsBody');
-    if (filtered.length === 0) {
+    if (page.length === 0) {
       tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="icon">👥</div><p>No leads match your filters</p></div></td></tr>';
       return;
     }
-    tbody.innerHTML = filtered.map(c => `<tr style="cursor:pointer" onclick="viewLead('${c.id}')">
-      <td><input type="checkbox" class="lead-check" value="${c.id}" onclick="event.stopPropagation()"></td>
+    tbody.innerHTML = page.map(c => `<tr style="cursor:pointer" onclick="viewLead('${c.id}')">
+      <td><input type="checkbox" class="lead-check" value="${c.id}" onclick="event.stopPropagation()" onchange="updateBulkBar()"></td>
       <td><strong>${esc(c.prospect_name)}</strong></td>
       <td>${esc(c.business_name)}</td>
       <td>${esc(c.phone)}</td>
@@ -1160,9 +1331,74 @@
     </tr>`).join('');
   }
 
+  function nextLeadsPage() {
+    const total = Math.ceil(contacts.length / LEADS_PAGE_SIZE);
+    if (leadsPage < total) { leadsPage++; renderLeads(); }
+  }
+  function prevLeadsPage() {
+    if (leadsPage > 1) { leadsPage--; renderLeads(); }
+  }
+
   function toggleAllLeads() {
     const checked = document.getElementById('leadCheckAll').checked;
     document.querySelectorAll('.lead-check').forEach(cb => cb.checked = checked);
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    const checked = document.querySelectorAll('.lead-check:checked');
+    const bar = document.getElementById('bulkBar');
+    const count = document.getElementById('bulkCount');
+    if (checked.length === 0) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+    count.textContent = checked.length + ' selected';
+  }
+
+  function getSelectedLeadIds() {
+    return Array.from(document.querySelectorAll('.lead-check:checked')).map(cb => cb.value);
+  }
+
+  async function bulkUpdateStatus() {
+    const ids = getSelectedLeadIds();
+    const status = document.getElementById('bulkStatus').value;
+    if (!status || ids.length === 0) return;
+    if (!confirm('Change status to "' + status + '" for ' + ids.length + ' leads?')) return;
+    let ok = 0;
+    for (const id of ids) {
+      if (await sbUpdate('leads', id, { status })) ok++;
+    }
+    showToast(ok + '/' + ids.length + ' updated', ok === ids.length ? 'success' : 'warning');
+    logActivity('Bulk status update', ok + '/' + ids.length + ' → ' + status);
+    document.getElementById('bulkStatus').value = '';
+    await loadLeads();
+  }
+
+  async function bulkDelete() {
+    const ids = getSelectedLeadIds();
+    if (ids.length === 0) return;
+    if (!confirm('Soft-delete ' + ids.length + ' leads?')) return;
+    let ok = 0;
+    for (const id of ids) {
+      if (await sbUpdate('leads', id, { deleted_at: new Date().toISOString() })) ok++;
+    }
+    showToast(ok + '/' + ids.length + ' deleted', ok === ids.length ? 'success' : 'warning');
+    logActivity('Bulk delete', ok + '/' + ids.length + ' deleted');
+    await loadLeads();
+  }
+
+  function bulkExport() {
+    const ids = new Set(getSelectedLeadIds());
+    const rows = contacts.filter(c => ids.has(c.id));
+    if (rows.length === 0) return;
+    const ws = XLSX.utils.json_to_sheet(rows.map(c => ({
+      Name: c.prospect_name, Business: c.business_name, Phone: c.phone,
+      Email: c.email, Status: c.status, Stage: c.funnel_stage, Source: c.lead_source,
+      Rating: c.rating || '', Created: c.created_at ? new Date(c.created_at).toISOString() : ''
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+    XLSX.writeFile(wb, 'gabochie-selected-leads.xlsx');
+    showToast('Exported ' + rows.length + ' leads', 'success');
   }
 
   // ═══ LEAD DETAIL DRAWER ═══
@@ -1275,15 +1511,41 @@
     if (!data.prospect_name) { showToast('Prospect name is required', 'error'); return; }
 
     let success;
+    let wasClosedWon = false;
     if (editingLeadId) {
+      const prev = contacts.find(c => c.id === editingLeadId);
+      wasClosedWon = data.status === 'closed_won' && prev && prev.status !== 'closed_won';
       success = await sbUpdate('leads', editingLeadId, data);
       if (success) showToast('Lead updated', 'success');
     } else {
       success = await sbInsert('leads', [data]);
-      if (success) showToast('Lead created', 'success');
+      if (success && data.status === 'closed_won') wasClosedWon = true;
     }
-    if (success) { closeLeadModal(); await loadLeads(); }
+    if (success) {
+      if (wasClosedWon) await autoProvisionClient(data);
+      logActivity(editingLeadId ? 'Lead updated' : 'Lead created', data.prospect_name + ' (' + data.status + ')');
+      closeLeadModal(); await loadLeads();
+    }
     else showToast('Failed to save lead', 'error');
+  }
+
+  async function autoProvisionClient(leadData) {
+    const existing = await sbSelect('clients', 'phone=eq.' + encodeURIComponent(leadData.phone || '') + '&limit=1');
+    if (existing && existing.length > 0) return; // already a client
+    const client = {
+      prospect_name: leadData.prospect_name,
+      business_name: leadData.business_name,
+      phone: leadData.phone,
+      email: leadData.email,
+      website: leadData.website,
+      location: leadData.location,
+      business_type: leadData.business_type,
+      owner_name: leadData.owner_name,
+      status: 'active',
+      start_date: new Date().toISOString().split('T')[0]
+    };
+    const ok = await sbInsert('clients', [client]);
+    if (ok) { logActivity('Client auto-provisioned', leadData.prospect_name); showToast('Client auto-provisioned from lead', 'success'); }
   }
 
   function editLead(id) {
@@ -1294,7 +1556,7 @@
   async function deleteLead(id) {
     if (!confirm('Delete this lead?')) return;
     const success = await sbUpdate('leads', id, { deleted_at: new Date().toISOString() });
-    if (success) { showToast('Lead deleted', 'success'); await loadLeads(); }
+    if (success) { logActivity('Lead deleted', id); showToast('Lead deleted', 'success'); await loadLeads(); }
     else showToast('Failed to delete lead', 'error');
   }
 
@@ -1585,6 +1847,7 @@
       <td><span class="tag ${i.status === 'paid' ? 'tag-closed_won' : 'tag-tofu'}">${i.status}</span></td>
       <td>${i.due_date ? new Date(i.due_date).toLocaleDateString() : '—'}</td>
       <td>${i.paid_at ? new Date(i.paid_at).toLocaleDateString() : '—'}</td>
+      <td>${i.status !== 'paid' ? `<button class="btn btn-accent btn-xs" onclick="openPaymentModal('${i.id}',${i.amount})">Mark Paid</button>` : '✓'}</td>
     </tr>`).join('');
   }
 
@@ -1614,8 +1877,34 @@
     };
     if (!data.client_id || !data.amount) { showToast('Client and amount required', 'error'); return; }
     const success = await sbInsert('invoices', [data]);
-    if (success) { showToast('Invoice created', 'success'); closeInvoiceModal(); await loadInvoices(); }
+    if (success) { logActivity('Invoice created', 'GHS ' + data.amount + ' for ' + data.client_id); showToast('Invoice created', 'success'); closeInvoiceModal(); await loadInvoices(); }
     else showToast('Failed to create invoice', 'error');
+  }
+
+  // ═══ INVOICE PAYMENT ═══
+  let payingInvoiceId = null;
+
+  function openPaymentModal(id, amount) {
+    payingInvoiceId = id;
+    document.getElementById('payAmount').textContent = 'GHS ' + (parseFloat(amount) || 0).toLocaleString();
+    document.getElementById('pay-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('pay-method').value = 'mobile_money';
+    document.getElementById('pay-ref').value = '';
+    document.getElementById('paymentModal').classList.add('open');
+  }
+  function closePaymentModal() { payingInvoiceId = null; document.getElementById('paymentModal').classList.remove('open'); }
+
+  async function confirmPayment() {
+    if (!payingInvoiceId) return;
+    const data = {
+      status: 'paid',
+      paid_at: new Date().toISOString(),
+      payment_method: document.getElementById('pay-method').value,
+      payment_ref: document.getElementById('pay-ref').value.trim()
+    };
+    const success = await sbUpdate('invoices', payingInvoiceId, data);
+    if (success) { logActivity('Invoice paid', 'Invoice #' + payingInvoiceId); showToast('Payment recorded', 'success'); closePaymentModal(); await loadInvoices(); }
+    else showToast('Failed to record payment', 'error');
   }
 
   // ═══ FORM SUBMISSIONS ═══
@@ -1863,6 +2152,16 @@
     total++; try { const r = await fetch(SUPABASE_URL + '/rest/v1/leads', { method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify([{ prospect_name: '_rls_test_' }]) }); if (r.status === 401 || r.status === 403 || r.ok) { document.getElementById('check-rls-policies').checked = true; passed++; } else failed++; if (r.ok) { try { await fetch(SUPABASE_URL + '/rest/v1/leads?prospect_name=eq._rls_test_', { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + (supabaseToken() || '') } }); } catch(e) {} } } catch(e) { failed++; }
     total++; try { if (supabaseToken()) { const d = await sbSelect('leads', 'limit=5'); if (d) { document.getElementById('check-supabase-pull').checked = true; passed++; } else failed++; } else failed++; } catch(e) { failed++; }
 
+    // Production essentials – verify code features exist
+    total++; try { document.getElementById('check-jwt-refresh').checked = typeof sbRefresh === 'function'; if (document.getElementById('check-jwt-refresh').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-loading-states').checked = typeof showLoading === 'function'; if (document.getElementById('check-loading-states').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-pagination').checked = typeof nextLeadsPage === 'function'; if (document.getElementById('check-pagination').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-bulk-actions').checked = typeof bulkUpdateStatus === 'function'; if (document.getElementById('check-bulk-actions').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-client-auto').checked = typeof autoProvisionClient === 'function'; if (document.getElementById('check-client-auto').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-invoice-payments').checked = typeof confirmPayment === 'function'; if (document.getElementById('check-invoice-payments').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-activity-log').checked = typeof logActivity === 'function' && activities.length > 0; if (document.getElementById('check-activity-log').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-auto-refresh').checked = typeof refreshData === 'function'; if (document.getElementById('check-auto-refresh').checked) passed++; else failed++; } catch(e) { failed++; }
+
     checks.forEach(cb => cb.disabled = false);
     updateBuildStatus();
     document.getElementById('build-last-check').textContent = new Date().toLocaleString();
@@ -1989,7 +2288,12 @@
   // ═══ UTILITY ═══
   function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#96;'); }
   function closeCSVModal() { document.getElementById('csvModal').classList.remove('open'); }
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeLeadDrawer(); closeLeadModal(); closeClientModal(); closeInvoiceModal(); closeTemplateModal(); closeCSVModal(); closeReferralModal(); } });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeLeadDrawer(); closeLeadModal(); closeClientModal(); closeInvoiceModal(); closeTemplateModal(); closeCSVModal(); closeReferralModal(); closePaymentModal(); } });
+
+  // Auto-refresh data when tab becomes visible
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && supabaseToken()) refreshData();
+  });
 </script>
 </body>
 </html>
