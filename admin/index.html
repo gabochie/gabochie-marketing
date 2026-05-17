@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-pin.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
   <title>Gabochie Marketing - Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     :root {
       --primary: #0F5C28;
@@ -861,11 +862,15 @@
   <script>
     // Configuration
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec';
+    const SUPABASE_URL = 'https://gcbsffvryqguesofgvjh.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_aZzUKB8qmxbjcxlEB3F0NQ_sBA_itWW';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     // Data storage
     let contacts = [];
     let selectedContacts = new Set();
     let currentTab = 'contacts';
+    let supabaseSession = null;
 
     // Session management
     function getToken() { return localStorage.getItem('admin_token'); }
@@ -873,10 +878,20 @@
     function clearToken() { localStorage.removeItem('admin_token'); }
 
     // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       console.log('Admin dashboard loaded');
-      // Check for existing session
-      if (getToken()) {
+      // Check for existing Supabase session
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        supabaseSession = session;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appMain').style.display = 'block';
+        document.getElementById('loginUser').value = session.user.email;
+        pullFromSheets().then(success => {
+          if (!success) loadDemoData();
+        });
+      } else if (getToken()) {
+        // Legacy Apps Script token - still valid
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appMain').style.display = 'block';
         pullFromSheets().then(success => {
@@ -887,50 +902,65 @@
       initializeAutoSync();
     });
 
-    // Login function — authenticates via backend
+    // Login function — authenticates via Supabase Auth (with Apps Script fallback)
     async function handleLogin() {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
       const error = document.getElementById('loginError');
       const btn = document.getElementById('loginBtn');
-      const bypassContainer = document.getElementById('bypassContainer');
 
-      if (bypassContainer) bypassContainer.style.display = 'none';
       error.style.display = 'none';
       btn.disabled = true;
       btn.textContent = 'Signing in...';
 
       try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'login',
-            username: user,
-            password: pass,
-            _origin: window.location.origin
-          })
+        // Try Supabase Auth first
+        const { data, error: authError } = await supabaseClient.auth.signInWithPassword({
+          email: user,
+          password: pass
         });
 
-        const result = await response.json();
-
-        if (result.success && result.token) {
-          setToken(result.token);
+        if (data?.session) {
+          supabaseSession = data.session;
           document.getElementById('loginScreen').style.display = 'none';
           document.getElementById('appMain').style.display = 'block';
           pullFromSheets().then(success => {
             if (!success) loadDemoData();
           });
-        } else if (result.code === 'NOT_CONFIGURED') {
-          error.textContent = 'Admin not configured. Run setupAdmin() in the Apps Script editor first.';
-          error.style.display = 'block';
         } else {
-          error.textContent = 'Invalid credentials. Please check username and password.';
-          error.style.display = 'block';
+          // Fallback to legacy Apps Script auth
+          console.log('Supabase auth failed, trying Apps Script fallback...');
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'login',
+              username: user,
+              password: pass,
+              _origin: window.location.origin
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.success && result.token) {
+            setToken(result.token);
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appMain').style.display = 'block';
+            pullFromSheets().then(success => {
+              if (!success) loadDemoData();
+            });
+          } else if (result.code === 'NOT_CONFIGURED') {
+            error.textContent = 'Admin not configured. Run setupAdmin() in the Apps Script editor first.';
+            error.style.display = 'block';
+          } else {
+            error.textContent = 'Invalid credentials. Please check username and password.';
+            error.style.display = 'block';
+          }
         }
       } catch (fetchError) {
         console.error('Login error:', fetchError);
-        error.textContent = 'Cannot reach backend. Check that the Google Apps Script is deployed.';
+        error.textContent = 'Cannot reach backend. Check connection.';
         error.style.display = 'block';
       }
 
