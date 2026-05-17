@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-pin.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co wss://gcbsffvryqguesofgvjh.supabase.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://js.paystack.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co wss://gcbsffvryqguesofgvjh.supabase.co https://api.paystack.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none' https://js.paystack.co; object-src 'none'; base-uri 'self';">
   <title>Gabochie Marketing — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
@@ -919,6 +920,8 @@
   const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec';
   const SUPABASE_URL = 'https://gcbsffvryqguesofgvjh.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_aZzUKB8qmxbjcxlEB3F0NQ_sBA_itWW';
+  const PAYSTACK_PUBLIC_KEY = 'pk_live_placeholder'; // Replace with your Paystack live public key
+  const PAYSTACK_EDGE_FN = SUPABASE_URL + '/functions/v1/paystack-verify';
 
   // ═══ STATE ═══
   let contacts = [];
@@ -1858,7 +1861,11 @@
       <td><span class="tag ${i.status === 'paid' ? 'tag-closed_won' : 'tag-tofu'}">${i.status}</span></td>
       <td>${i.due_date ? new Date(i.due_date).toLocaleDateString() : '—'}</td>
       <td>${i.paid_at ? new Date(i.paid_at).toLocaleDateString() : '—'}</td>
-      <td>${i.status !== 'paid' ? `<button class="btn btn-accent btn-xs" onclick="openPaymentModal('${i.id}',${i.amount})">Mark Paid</button>` : '✓'}</td>
+      <td>${i.status !== 'paid' ? `<div style="display:flex;gap:4px">
+        <button class="btn btn-accent btn-xs" onclick="openPaymentModal('${i.id}',${i.amount})">💰 Mark Paid</button>
+        <button class="btn btn-primary btn-xs" onclick="payWithPaystack('${i.id}', ${i.amount}, '${esc(i.client_id)}')">💳 Pay Now</button>
+        <button class="btn btn-outline btn-xs" onclick="copyPaymentLink('${i.id}', ${i.amount}, '${esc(i.client_id)}')">🔗 Share</button>
+      </div>` : '✓'}</td>
     </tr>`).join('');
   }
 
@@ -1916,6 +1923,64 @@
     const success = await sbUpdate('invoices', payingInvoiceId, data);
     if (success) { logActivity('Invoice paid', 'Invoice #' + payingInvoiceId); showToast('Payment recorded', 'success'); closePaymentModal(); await loadInvoices(); }
     else showToast('Failed to record payment', 'error');
+  }
+
+  // ═══ PAYSTACK ONLINE PAYMENT ═══
+  function payWithPaystack(invoiceId, amount, clientId) {
+    const client = clients.find(c => c.id === clientId);
+    const email = (client && client.email) || 'client@gabochie.com';
+    const name = (client && client.name) || 'Client';
+
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: email,
+      amount: Math.round(amount * 100),
+      currency: 'GHS',
+      ref: 'inv-' + invoiceId + '-' + Date.now(),
+      channels: ['card', 'mobile_money', 'bank'],
+      metadata: { invoice_id: invoiceId, client_name: name },
+      callback: function(response) {
+        verifyPaystackPayment(response.reference, invoiceId);
+      },
+      onClose: function() {
+        showToast('Payment cancelled', 'info');
+      }
+    });
+    handler.openIframe();
+  }
+
+  async function verifyPaystackPayment(reference, invoiceId) {
+    showToast('Verifying payment...', 'info');
+    try {
+      const r = await fetch(PAYSTACK_EDGE_FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', reference, invoice_id: invoiceId })
+      });
+      const result = await r.json();
+      if (result.success) {
+        showToast('Payment verified! GHS ' + result.amount, 'success');
+        logActivity('Online payment received', 'Invoice #' + invoiceId + ' GHS ' + result.amount);
+        await loadInvoices();
+      } else {
+        showToast('Verification failed: ' + (result.message || 'Unknown error'), 'error');
+      }
+    } catch (e) {
+      showToast('Payment verification error: ' + e.message, 'error');
+      // Fallback: try marking as paid anyway if Paystack says success
+      const success = await sbUpdate('invoices', invoiceId, { status: 'paid', paid_at: new Date().toISOString(), payment_ref: reference });
+      if (success) { showToast('Payment recorded locally', 'success'); await loadInvoices(); }
+    }
+  }
+
+  function copyPaymentLink(invoiceId, amount, clientId) {
+    const client = clients.find(c => c.id === clientId);
+    const email = (client && client.email) || 'client@gabochie.com';
+    const baseUrl = window.location.origin;
+    const link = baseUrl + '/pay.html?invoice=' + encodeURIComponent(invoiceId) + '&amount=' + amount + '&email=' + encodeURIComponent(email) + '&client=' + encodeURIComponent((client && client.name) || '');
+    navigator.clipboard.writeText(link).then(() => showToast('Payment link copied! Share via WhatsApp', 'success')).catch(() => {
+      prompt('Copy this payment link:', link);
+    });
   }
 
   // ═══ FORM SUBMISSIONS ═══

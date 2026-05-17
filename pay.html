@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.paystack.co; style-src 'self' 'unsafe-inline'; connect-src 'self' https://gcbsffvryqguesofgvjh.supabase.co; img-src 'self' data: https:; frame-src https://js.paystack.co; object-src 'none'; base-uri 'self';">
+<title>Pay Invoice — Gabochie Marketing</title>
+<link rel="icon" type="image/svg+xml" href="/assets/images/favicon-pin.svg" />
+<style>
+  :root{--primary:#1A7B3A;--primary-dark:#0F5C28;--accent:#7ED354;--bg:#f0f4f0;--card:#fff;--text:#2D2D2D;--text-muted:#6b7280;--border:#d1d5db;--radius:8px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.08);padding:40px;max-width:420px;width:100%;text-align:center}
+  .logo{width:48px;height:48px;background:var(--primary);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .logo svg{width:24px;height:24px;fill:#fff}
+  h1{font-size:1.2rem;margin-bottom:4px}
+  .sub{color:var(--text-muted);font-size:0.85rem;margin-bottom:24px}
+  .invoice-detail{background:var(--bg);border-radius:8px;padding:16px;margin-bottom:24px;text-align:left}
+  .invoice-detail .row{display:flex;justify-content:space-between;padding:6px 0;font-size:0.9rem}
+  .invoice-detail .row.total{border-top:2px solid var(--border);margin-top:6px;padding-top:10px;font-weight:700;font-size:1.1rem;color:var(--primary)}
+  .pay-btn{display:block;width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:1rem;font-weight:600;cursor:pointer;transition:background .15s}
+  .pay-btn:hover{background:var(--primary-dark)}
+  .pay-btn:disabled{opacity:.6;cursor:not-allowed}
+  .methods{font-size:0.8rem;color:var(--text-muted);margin-top:12px;display:flex;justify-content:center;gap:12px}
+  .methods span{background:var(--bg);padding:4px 10px;border-radius:20px}
+  .status{display:none;padding:16px;border-radius:var(--radius);margin-bottom:16px;font-size:0.9rem}
+  .status.success{display:block;background:#d1fae5;color:#065f46}
+  .status.error{display:block;background:#fef2f2;color:#991b1b}
+  .back{display:inline-block;margin-top:16px;color:var(--primary);text-decoration:none;font-size:0.85rem}
+  .powered{font-size:0.75rem;color:var(--text-muted);margin-top:20px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+  <h1>Pay Invoice</h1>
+  <p class="sub" id="clientName">Gabochie Marketing</p>
+  <div class="invoice-detail">
+    <div class="row"><span>Invoice</span><strong id="invoiceRef">—</strong></div>
+    <div class="row"><span>Client</span><span id="clientEmail">—</span></div>
+    <div class="row total"><span>Amount Due</span><span id="amountDue">GHS 0</span></div>
+  </div>
+  <div class="status" id="statusMsg"></div>
+  <button class="pay-btn" id="payBtn" onclick="handlePay()">Pay with Mobile Money or Card</button>
+  <div class="methods">
+    <span>📱 MTN MoMo</span>
+    <span>📱 Vodafone Cash</span>
+    <span>💳 Card</span>
+  </div>
+  <a href="https://marketing.gabochie.com" class="back">&larr; Back to Gabochie Marketing</a>
+  <div class="powered">Powered by Paystack</div>
+</div>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+  const PAYSTACK_PUBLIC_KEY = 'pk_live_placeholder'; // Replace with your Paystack live public key
+  const SUPABASE_URL = 'https://gcbsffvryqguesofgvjh.supabase.co';
+  const PAYSTACK_EDGE_FN = SUPABASE_URL + '/functions/v1/paystack-verify';
+
+  const params = new URLSearchParams(window.location.search);
+  const invoiceId = params.get('invoice');
+  const amount = parseFloat(params.get('amount')) || 0;
+  const email = params.get('email') || '';
+  const client = params.get('client') || 'Client';
+
+  document.getElementById('clientName').textContent = client;
+  document.getElementById('invoiceRef').textContent = invoiceId ? '#' + invoiceId : '—';
+  document.getElementById('clientEmail').textContent = email;
+  document.getElementById('amountDue').textContent = 'GHS ' + amount.toLocaleString();
+
+  function showStatus(msg, type) {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+  }
+
+  function handlePay() {
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true; btn.textContent = 'Processing...';
+
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: email,
+      amount: Math.round(amount * 100),
+      currency: 'GHS',
+      ref: 'inv-' + invoiceId + '-' + Date.now(),
+      channels: ['card', 'mobile_money', 'bank'],
+      metadata: { invoice_id: invoiceId, client_name: client, source: 'client_pay_page' },
+      callback: function(response) {
+        showStatus('Verifying payment...', 'success');
+        fetch(PAYSTACK_EDGE_FN, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify', reference: response.reference, invoice_id: invoiceId })
+        }).then(r => r.json()).then(result => {
+          if (result.success) {
+            showStatus('✅ Payment successful! GHS ' + result.amount + ' paid via ' + (result.channel || 'Paystack'), 'success');
+            btn.textContent = '✓ Paid';
+          } else {
+            showStatus('⚠️ Payment received but verification pending. We\'ll confirm shortly.', 'success');
+            btn.textContent = '✓ Paid';
+          }
+        }).catch(() => {
+          showStatus('✅ Payment received! We\'ll confirm manually.', 'success');
+          btn.textContent = '✓ Paid';
+        });
+      },
+      onClose: function() {
+        btn.disabled = false; btn.textContent = 'Pay with Mobile Money or Card';
+        showStatus('', '');
+      }
+    });
+    handler.openIframe();
+  }
+</script>
+</body>
+</html>
