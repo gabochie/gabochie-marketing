@@ -481,7 +481,8 @@
             </select>
             <input type="text" id="leadSearch" placeholder="Search by name, business, phone..." oninput="renderLeads()" style="min-width:200px">
             <button class="btn btn-primary btn-sm" onclick="openAddLeadModal()">+ Add Lead</button>
-            <button class="btn btn-accent btn-sm" onclick="exportLeads()">📥 Export</button>
+            <button class="btn btn-accent btn-sm" onclick="importCSV()">📄 Import CSV</button>
+            <button class="btn btn-outline btn-sm" onclick="exportLeads()">📥 Export</button>
             <span class="filter-count" id="leadCount">0 leads</span>
           </div>
 
@@ -1311,6 +1312,48 @@
     XLSX.utils.book_append_sheet(wb, ws, 'Leads');
     XLSX.writeFile(wb, 'gabochie-leads-' + new Date().toISOString().split('T')[0] + '.xlsx');
     showToast('Leads exported', 'success');
+  }
+
+  // ═══ CSV IMPORT ═══
+  function importCSV() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv';
+    input.onchange = async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+      if (lines.length < 2) { showToast('CSV must have a header row and at least one data row', 'error'); return; }
+      const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+      const nameIdx = headers.findIndex(h => /name|contact/.test(h));
+      const bizIdx = headers.findIndex(h => /business|company|biz/.test(h));
+      const phoneIdx = headers.findIndex(h => /phone|tel|mobile/.test(h));
+      const emailIdx = headers.findIndex(h => /email|e-mail/.test(h));
+      if (nameIdx === -1) { showToast('CSV must have a "Name" column', 'error'); return; }
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const vals = lines[i].split(',').map(v => v.replace(/^"|"$/g, '').trim());
+        if (!vals[nameIdx]) continue;
+        rows.push({
+          prospect_name: vals[nameIdx] || '',
+          business_name: vals[bizIdx] || '',
+          phone: vals[phoneIdx] || '',
+          email: vals[emailIdx] || '',
+          lead_source: 'csv_import',
+          status: 'new',
+          funnel_stage: 'tofu'
+        });
+      }
+      if (rows.length === 0) { showToast('No valid rows found in CSV', 'error'); return; }
+      let imported = 0;
+      for (const row of rows) {
+        try { if (await sbInsert('leads', [row])) imported++; } catch(e) {}
+      }
+      showToast(`Imported ${imported}/${rows.length} leads from CSV`, imported > 0 ? 'success' : 'error');
+      if (imported > 0) await loadLeads();
+    };
+    input.click();
   }
 
   // ═══ CLIENTS ═══
