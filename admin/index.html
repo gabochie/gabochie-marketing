@@ -1323,7 +1323,7 @@
 
     // Test Backend (placeholder)
     function testBackend() {
-      alert('Backend test feature - This would test connection to Google Apps Script');
+      alert('Backend test feature - This would test connection to Supabase and Google Apps Script');
       console.log('Test backend feature clicked');
     }
 
@@ -1538,14 +1538,15 @@
         checklist: {
           localServer: document.getElementById('check-local-server').checked,
           adminDashboard: document.getElementById('check-admin-dashboard').checked,
-          csvFile: document.getElementById('check-csv-file').checked,
+          localSync: document.getElementById('check-local-sync').checked,
           liveWebsite: document.getElementById('check-live-website').checked,
           liveAdmin: document.getElementById('check-live-admin').checked,
-          googleSheets: document.getElementById('check-google-sheets').checked,
+          supabaseApi: document.getElementById('check-supabase-api').checked,
+          supabaseAuth: document.getElementById('check-supabase-auth').checked,
           socialLinks: document.getElementById('check-social-links').checked,
-          testingSystem: document.getElementById('check-testing-system').checked,
-          reporting: document.getElementById('check-reporting').checked,
-          autoSync: document.getElementById('check-auto-sync').checked
+          dataMigration: document.getElementById('check-data-migration').checked,
+          rlsPolicies: document.getElementById('check-rls-policies').checked,
+          supabasePull: document.getElementById('check-supabase-pull').checked
         },
         stats: {
           total: document.getElementById('build-total').textContent,
