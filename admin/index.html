@@ -1314,46 +1314,206 @@
     showToast('Leads exported', 'success');
   }
 
-  // ═══ CSV IMPORT ═══
+  // ═══ CSV PROCESSOR — clean, structure, preview & import ═══
+  let csvState = { rows: [], headers: [], mapping: {}, validRows: [], phoneCleaned: 0, emailDropped: 0, duplicates: 0 };
+
   function importCSV() {
     const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.csv';
+    input.type = 'file'; input.accept = '.csv';
     input.onchange = async function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+      const file = e.target.files[0]; if (!file) return;
       const text = await file.text();
       const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-      if (lines.length < 2) { showToast('CSV must have a header row and at least one data row', 'error'); return; }
-      const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
-      const nameIdx = headers.findIndex(h => /name|contact/.test(h));
-      const bizIdx = headers.findIndex(h => /business|company|biz/.test(h));
-      const phoneIdx = headers.findIndex(h => /phone|tel|mobile/.test(h));
-      const emailIdx = headers.findIndex(h => /email|e-mail/.test(h));
-      if (nameIdx === -1) { showToast('CSV must have a "Name" column', 'error'); return; }
-      const rows = [];
+      if (lines.length < 2) { showToast('CSV must have a header + data rows', 'error'); return; }
+      const rawHeaders = parseCSVLine(lines[0]);
+      csvState.headers = rawHeaders.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, '_'));
+      csvState.rows = [];
       for (let i = 1; i < lines.length; i++) {
-        const vals = lines[i].split(',').map(v => v.replace(/^"|"$/g, '').trim());
-        if (!vals[nameIdx]) continue;
-        rows.push({
-          prospect_name: vals[nameIdx] || '',
-          business_name: vals[bizIdx] || '',
-          phone: vals[phoneIdx] || '',
-          email: vals[emailIdx] || '',
+        const vals = parseCSVLine(lines[i]);
+        if (vals.length > 0 && vals.some(v => v.trim())) csvState.rows.push(vals);
+      }
+      buildCSVPreview();
+      document.getElementById('csvModal').classList.add('open');
+    };
+    input.click();
+  }
+
+  function parseCSVLine(line) {
+    const result = []; let current = ''; let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQuotes = !inQuotes; }
+      else if (c === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+      else { current += c; }
+    }
+    result.push(current.trim());
+    return result;
+  }
+
+  function guessColumn(name) {
+    const n = name.toLowerCase();
+    if (/prospect|contact|full.?name|client.?name|customer.?name/.test(n)) return 'prospect_name';
+    if (/business|company|biz|organization|firm/.test(n)) return 'business_name';
+    if (/phone|telephone|tel|mobile|cell|whatsapp|contact/.test(n) && !/email/.test(n)) return 'phone';
+    if (/email|e.?mail/.test(n)) return 'email';
+    if (/website|url|web|site|domain/.test(n)) return 'website';
+    if (/location|address|city|town|area|region/.test(n)) return 'location';
+    if (/type|category|industry|sector/.test(n)) return 'business_type';
+    if (/owner|manager|director|proprietor/.test(n) && !/business/.test(n)) return 'owner_name';
+    if (/note|comment|remark|description/.test(n)) return 'notes';
+    if (/rating|score|rank/.test(n)) return 'rating';
+    if (/source|origin|channel/.test(n)) return 'lead_source';
+    if (/status|stage|pipeline/.test(n)) return 'status';
+    return '';
+  }
+
+  function buildCSVPreview() {
+    const fieldLabels = { prospect_name:'Prospect Name*', business_name:'Business', phone:'Phone', email:'Email', website:'Website', location:'Location', business_type:'Business Type', owner_name:'Owner', notes:'Notes', rating:'Rating', lead_source:'Source', status:'Status' };
+    const cols = csvState.headers.map((h, i) => {
+      const guess = guessColumn(h);
+      return `<select id="csvMap_${i}" style="font-size:11px;padding:2px 4px;margin:2px">
+        <option value="">— skip —</option>
+        ${Object.entries(fieldLabels).map(([k, v]) => `<option value="${k}" ${guess === k ? 'selected' : ''}>${v}</option>`).join('')}
+      </select>`;
+    });
+    document.getElementById('csvStatus').innerHTML =
+      `<strong>${csvState.rows.length}</strong> rows × <strong>${csvState.headers.length}</strong> columns in <strong>${file ? file.name : 'CSV'}</strong>`;
+    document.getElementById('csvMapping').innerHTML =
+      '<div style="font-size:12px;font-weight:600;margin-bottom:4px">Column Mapping:</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:4px">' + csvState.headers.map((h, i) =>
+        `<span style="font-size:11px"><strong>${esc(h)}</strong> → ${cols[i]}</span>`
+      ).join('') + '</div>' +
+      '<div style="font-size:11px;color:var(--text-muted);margin-top:4px">Edit mappings above, then confirm below</div>';
+
+    const previewRows = csvState.rows.slice(0, 5);
+    document.getElementById('csvPreviewHead').innerHTML = '<tr>' + csvState.headers.map(h => `<th>${esc(h)}</th>`).join('') + '</tr>';
+    document.getElementById('csvPreviewBody').innerHTML = previewRows.map(r =>
+      '<tr>' + r.map(v => `<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v)}</td>`).join('') + '</tr>'
+    ).join('');
+    document.getElementById('csvImportBtn').textContent = 'Review mapping & import';
+    document.getElementById('csvImportBtn').onclick = analyzeAndShowImport;
+  }
+
+  const file = { name: '' };
+  let fileRef = null;
+  function importCSV() {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = '.csv';
+    input.onchange = async function(e) {
+      const f = e.target.files[0]; if (!f) return;
+      fileRef = f; file.name = f.name;
+      parseCSVPreview(f);
+    };
+    input.click();
+  }
+
+  async function parseCSVPreview(f) {
+    const text = await f.text();
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    if (lines.length < 2) { showToast('CSV must have a header + data rows', 'error'); return; }
+    const rawHeaders = parseCSVLine(lines[0]);
+    csvState.headers = rawHeaders.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, '_'));
+    csvState.rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const vals = parseCSVLine(lines[i]);
+      if (vals.length > 0 && vals.some(v => v.trim())) csvState.rows.push(vals);
+    }
+    buildCSVPreview();
+    document.getElementById('csvModal').classList.add('open');
+  }
+
+  function analyzeAndShowImport() {
+    const map = {};
+    csvState.headers.forEach((h, i) => {
+      const sel = document.getElementById('csvMap_' + i);
+      if (sel && sel.value) map[sel.value] = i;
+    });
+    csvState.mapping = map;
+    csvState.phoneCleaned = 0; csvState.emailDropped = 0; csvState.duplicates = 0;
+    const valid = [];
+
+    for (const vals of csvState.rows) {
+      let name = vals[map.prospect_name] || '';
+      if (!name.trim()) continue;
+      let phone = map.phone !== undefined ? vals[map.phone] || '' : '';
+      let email = map.email !== undefined ? vals[map.email] || '' : '';
+
+      // Clean phone: strip non-digits, add +233 for Ghana
+      const digits = phone.replace(/[^0-9]/g, '');
+      if (digits.length >= 9) {
+        if (digits.startsWith('233')) phone = '+' + digits;
+        else if (digits.startsWith('0')) phone = '+233' + digits.substring(1);
+        else phone = '+233' + digits;
+        if (phone.length >= 12) csvState.phoneCleaned++;
+      } else if (phone) {
+        phone = ''; // too short, drop
+      }
+
+      // Validate email
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { email = ''; csvState.emailDropped++; }
+
+      // Check duplicate by phone against existing contacts
+      let isDup = false;
+      if (phone) {
+        const existing = contacts.find(c => c.phone && c.phone.replace(/[^0-9]/g, '') === phone.replace(/[^0-9]/g, ''));
+        if (existing) { csvState.duplicates++; isDup = true; }
+      }
+
+      if (!isDup) {
+        valid.push({
+          prospect_name: name.trim(),
+          business_name: map.business_name !== undefined ? (vals[map.business_name] || '').trim() : '',
+          phone,
+          email,
+          website: map.website !== undefined ? (vals[map.website] || '').trim() : '',
+          location: map.location !== undefined ? (vals[map.location] || '').trim() : '',
+          business_type: map.business_type !== undefined ? (vals[map.business_type] || '').trim() : '',
+          owner_name: map.owner_name !== undefined ? (vals[map.owner_name] || '').trim() : '',
+          notes: map.notes !== undefined ? (vals[map.notes] || '').trim() : '',
+          rating: map.rating !== undefined ? parseInt(vals[map.rating]) || null : null,
           lead_source: 'csv_import',
           status: 'new',
           funnel_stage: 'tofu'
         });
       }
-      if (rows.length === 0) { showToast('No valid rows found in CSV', 'error'); return; }
-      let imported = 0;
-      for (const row of rows) {
-        try { if (await sbInsert('leads', [row])) imported++; } catch(e) {}
-      }
-      showToast(`Imported ${imported}/${rows.length} leads from CSV`, imported > 0 ? 'success' : 'error');
-      if (imported > 0) await loadLeads();
-    };
-    input.click();
+    }
+    csvState.validRows = valid;
+
+    // Update UI
+    const total = csvState.rows.length;
+    const skipped = total - csvState.validRows.length;
+    document.getElementById('csvStatus').innerHTML =
+      `<strong>${total}</strong> rows · ` +
+      `<span style="color:var(--success)">${csvState.validRows.length} ready</span>` +
+      (skipped > 0 ? ` · <span style="color:var(--warning)">${skipped} skipped</span>` : '') +
+      (csvState.duplicates > 0 ? ` · <span style="color:var(--info)">${csvState.duplicates} duplicates</span>` : '') +
+      (csvState.phoneCleaned > 0 ? ` · <span style="color:var(--accent)">${csvState.phoneCleaned} phones formatted</span>` : '') +
+      (csvState.emailDropped > 0 ? ` · <span style="color:var(--danger)">${csvState.emailDropped} bad emails</span>` : '');
+    document.getElementById('csvDuplicates').innerHTML = csvState.duplicates > 0
+      ? `<span style="color:var(--info)">🔁 ${csvState.duplicates} duplicates skipped (matched by phone in existing leads)</span>` : '';
+    document.getElementById('csvCleaning').innerHTML =
+      (csvState.phoneCleaned > 0 ? `<span style="color:var(--accent)">📱 ${csvState.phoneCleaned} phone numbers formatted to Ghana (+233) format</span><br>` : '') +
+      (csvState.emailDropped > 0 ? `<span style="color:var(--danger)">✉️ ${csvState.emailDropped} invalid emails dropped</span>` : '');
+    document.getElementById('csvImportBtn').textContent = `📥 Import ${csvState.validRows.length} leads`;
+    document.getElementById('csvImportBtn').onclick = csvState.validRows.length > 0 ? executeCSVImport : null;
+  }
+
+  async function executeCSVImport() {
+    const rows = csvState.validRows;
+    if (rows.length === 0) { showToast('No rows to import', 'error'); return; }
+    const btn = document.getElementById('csvImportBtn');
+    btn.disabled = true; btn.textContent = 'Importing 0/' + rows.length + '...';
+    let imported = 0;
+    for (let i = 0; i < rows.length; i++) {
+      try {
+        const ok = await sbInsert('leads', [rows[i]]);
+        if (ok) imported++;
+        if (i % 10 === 0 || i === rows.length - 1) btn.textContent = `Importing ${i + 1}/${rows.length}...`;
+      } catch (e) {}
+    }
+    closeCSVModal();
+    showToast(`Imported ${imported}/${rows.length} leads (cleaned + deduplicated)`, imported > 0 ? 'success' : 'error');
+    if (imported > 0) await loadLeads();
   }
 
   // ═══ CLIENTS ═══
