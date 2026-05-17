@@ -920,21 +920,27 @@
   }
 
   // ═══ DATA LOADING ═══
+  let loadResults = { ok: 0, fail: 0, total: 7 };
+
   async function refreshData() {
     setSyncStatus('syncing');
-    await Promise.all([loadLeads(), loadClients(), loadInvoices(), loadSubmissions(), loadReferrals(), loadTemplates(), loadMessages()]);
+    loadResults = { ok: 0, fail: 0, total: 7 };
+    const results = await Promise.allSettled([loadLeads(), loadClients(), loadInvoices(), loadSubmissions(), loadReferrals(), loadTemplates(), loadMessages()]);
+    results.forEach(r => { if (r.status === 'fulfilled') loadResults.ok++; else loadResults.fail++; });
     updateDashboardStats();
-    setSyncStatus('ok');
-    showToast('Data refreshed', 'success');
+    if (loadResults.ok === 0) setSyncStatus('error');
+    else if (loadResults.fail > 0) setSyncStatus('partial');
+    else setSyncStatus('ok');
+    showToast(`Data: ${loadResults.ok}/${loadResults.total} sources loaded`, loadResults.ok > 0 ? 'success' : 'error');
   }
 
   function setSyncStatus(state) {
     const el = document.getElementById('syncStatus');
     if (!el) return;
-    const dot = el.querySelector('.dot');
-    if (state === 'ok') { dot.className = 'dot'; el.innerHTML = '<span class="dot"></span> Synced'; }
-    else if (state === 'syncing') { dot.className = 'dot syncing'; el.innerHTML = '<span class="dot syncing"></span> Syncing...'; }
-    else { dot.className = 'dot error'; el.innerHTML = '<span class="dot error"></span> Error'; }
+    if (state === 'ok') { el.innerHTML = '<span class="dot"></span> Synced'; }
+    else if (state === 'partial') { el.innerHTML = '<span class="dot"></span> Partial (' + loadResults.ok + '/' + loadResults.total + ')'; }
+    else if (state === 'syncing') { el.innerHTML = '<span class="dot syncing"></span> Syncing...'; }
+    else { el.innerHTML = '<span class="dot error"></span> Error'; }
   }
 
   // ─── LEADS ───
