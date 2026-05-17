@@ -676,6 +676,7 @@
             <button class="panel-btn primary" onclick="openAddContactModal()">+ Add Contact</button>
             <button class="panel-btn accent" onclick="syncColdLeads()">🔄 Sync Cold Leads</button>
             <button class="panel-btn secondary" onclick="testBackend()">🧪 Test Backend</button>
+            <button class="panel-btn danger" onclick="handleLogout()">🚪 Logout</button>
           </div>
         </header>
 
@@ -1140,17 +1141,43 @@
       document.getElementById('newContactBusiness').value = '';
     }
 
-    // Pull from Google Sheets
+    // Pull from Supabase (with Google Sheets fallback)
     async function pullFromSheets() {
       try {
+        // Try Supabase first
+        console.log('📥 Pulling data from Supabase...');
+        const { data: supabaseData, error: supabaseError } = await supabaseClient
+          .from('leads')
+          .select('*')
+          .is('deleted_at', null)
+          .order('created_at', { ascending: false });
+
+        if (!supabaseError && supabaseData && supabaseData.length > 0) {
+          console.log(`✅ Pulled ${supabaseData.length} contacts from Supabase`);
+          contacts = supabaseData.map(contact => ({
+            id: contact.id,
+            name: contact.prospect_name || '',
+            email: contact.email || '',
+            phone: contact.phone || '',
+            business: contact.business_name || '',
+            stage: (contact.funnel_stage || 'tofu').toUpperCase(),
+            status: (contact.status || 'new').charAt(0).toUpperCase() + (contact.status || 'new').slice(1),
+            score: contact.rating ? contact.rating * 20 : 50,
+            source: contact.lead_source || 'Supabase',
+            date: contact.created_at ? new Date(contact.created_at).toISOString().split('T')[0] : ''
+          }));
+          updateStats();
+          renderContacts();
+          return true;
+        }
+
+        // Fallback to Google Sheets
         console.log('📥 Pulling data from Google Sheets...');
         const token = getToken();
         
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'syncGoogleSheets',
             token: token || '',
@@ -1187,16 +1214,37 @@
       }
     }
 
-    // Push to Google Sheets
+    // Push to Supabase (with Google Sheets fallback)
     async function pushToSheets(contactData) {
       try {
+        // Try Supabase first
+        const { error: supabaseError } = await supabaseClient
+          .from('leads')
+          .insert({
+            prospect_name: contactData.name || '',
+            business_name: contactData.businessName || '',
+            phone: contactData.phone || '',
+            email: contactData.email || '',
+            website: contactData.website || '',
+            business_type: contactData.subcategory || '',
+            location: contactData.location || '',
+            lead_source: (contactData.leadSource || 'other').toLowerCase().replace(/ /g, '_'),
+            status: (contactData.status || 'new').toLowerCase(),
+            notes: contactData.notes || ''
+          });
+
+        if (!supabaseError) {
+          console.log(`✅ Pushed contact to Supabase: ${contactData.name}`);
+          return true;
+        }
+
+        // Fallback to Google Sheets
+        console.log('Supabase push failed, trying Sheets fallback...');
         const token = getToken();
         
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...contactData,
             token: token || '',
@@ -1555,6 +1603,18 @@
         autoSyncBtn.onclick = toggleAutoSync;
         headerActions.appendChild(autoSyncBtn);
       }
+    }
+
+    // Logout — sign out of Supabase and clear legacy tokens
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      clearToken();
+      supabaseSession = null;
+      contacts = [];
+      document.getElementById('appMain').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
     }
   </script>
 </body>
