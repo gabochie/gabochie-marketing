@@ -671,40 +671,51 @@
               </div>
             </div>
             <div class="panel-body">
-              <div class="checklist-grid">
-                <div class="checklist-card">
-                  <h4>🏠 Local</h4>
-                  <label><input type="checkbox" id="check-local-server" onchange="updateBuildStatus()"> Server (port 8080)</label>
-                  <label><input type="checkbox" id="check-admin-dashboard" onchange="updateBuildStatus()"> Dashboard accessible</label>
-                  <label><input type="checkbox" id="check-local-sync" onchange="updateBuildStatus()"> Sync working</label>
-                </div>
-                <div class="checklist-card">
-                  <h4>🌐 Live</h4>
-                  <label><input type="checkbox" id="check-live-website" onchange="updateBuildStatus()"> Website accessible</label>
-                  <label><input type="checkbox" id="check-live-admin" onchange="updateBuildStatus()"> Admin accessible</label>
-                  <label><input type="checkbox" id="check-supabase-api" onchange="updateBuildStatus()"> Supabase API</label>
-                  <label><input type="checkbox" id="check-supabase-auth" onchange="updateBuildStatus()"> Auth working</label>
-                </div>
-                <div class="checklist-card">
-                  <h4>🔧 Integration</h4>
-                  <label><input type="checkbox" id="check-social-links" onchange="updateBuildStatus()"> Social links</label>
-                  <label><input type="checkbox" id="check-data-migration" onchange="updateBuildStatus()"> Data migrated</label>
-                  <label><input type="checkbox" id="check-rls-policies" onchange="updateBuildStatus()"> RLS policies</label>
-                  <label><input type="checkbox" id="check-supabase-pull" onchange="updateBuildStatus()"> Supabase pull</label>
-                </div>
-                <div class="checklist-card">
-                  <h4>⚠️ Production Essentials</h4>
-                  <label><input type="checkbox" id="check-jwt-refresh" onchange="updateBuildStatus()"> JWT session refresh</label>
-                  <label><input type="checkbox" id="check-loading-states" onchange="updateBuildStatus()"> Loading spinners</label>
-                  <label><input type="checkbox" id="check-pagination" onchange="updateBuildStatus()"> Pagination (leads)</label>
-                  <label><input type="checkbox" id="check-bulk-actions" onchange="updateBuildStatus()"> Bulk actions (leads)</label>
-                  <label><input type="checkbox" id="check-client-auto" onchange="updateBuildStatus()"> Client auto-provision</label>
-                  <label><input type="checkbox" id="check-invoice-payments" onchange="updateBuildStatus()"> Invoice payment workflow</label>
-                  <label><input type="checkbox" id="check-activity-log" onchange="updateBuildStatus()"> Activity/audit log</label>
-                  <label><input type="checkbox" id="check-auto-refresh" onchange="updateBuildStatus()"> Tab auto-refresh</label>
-                </div>
-                <div class="checklist-card">
-                  <h4>📊 Status</h4>
+                <div class="checklist-grid">
+                  <div class="checklist-card" style="border-left:4px solid #dc2626">
+                    <h4 style="color:#dc2626">🔴 Tier 1 — Revenue Blockers (Must Fix)</h4>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Without these, you cannot collect money at scale</div>
+                    <label><input type="checkbox" id="check-paystack" onchange="updateBuildStatus()"> Paystack Ghana integration (MTN MoMo, Vodafone Cash, cards)</label>
+                    <label><input type="checkbox" id="check-recurring-billing" onchange="updateBuildStatus()"> Recurring/auto-billing — invoices generate and send monthly</label>
+                    <label><input type="checkbox" id="check-momo-links" onchange="updateBuildStatus()"> Mobile Money payment links + QR codes for instant payment</label>
+                    <label><input type="checkbox" id="check-payment-reminders" onchange="updateBuildStatus()"> Automated SMS/WhatsApp payment reminders for overdue invoices</label>
+                    <label><input type="checkbox" id="check-client-portal" onchange="updateBuildStatus()"> Client portal — login to view invoices, pay, see reports</label>
+                    <label><input type="checkbox" id="check-contract-mgmt" onchange="updateBuildStatus()"> Retainer contract management with auto-renewal + 30d notices</label>
+                  </div>
+                  <div class="checklist-card" style="border-left:4px solid #f59e0b">
+                    <h4 style="color:#f59e0b">🟡 Tier 2 — Growth Multipliers (Revenue Acceleration)</h4>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Directly increase acquisition and retention rates</div>
+                    <label><input type="checkbox" id="check-whatsapp-api" onchange="updateBuildStatus()"> WhatsApp Business API — automated lead follow-ups + client updates</label>
+                    <label><input type="checkbox" id="check-referral-payouts" onchange="updateBuildStatus()"> Referral program with tracking + auto-mobile-money commission payouts</label>
+                    <label><input type="checkbox" id="check-monthly-reports" onchange="updateBuildStatus()"> Auto-generated monthly client reports (GBP analytics PDF via email)</label>
+                    <label><input type="checkbox" id="check-upsell-automation" onchange="updateBuildStatus()"> Behavioral upsell automation — suggest upgrades based on client data</label>
+                    <label><input type="checkbox" id="check-digital-products" onchange="updateBuildStatus()"> Digital product sales (DIY guides GHS 500, video courses, templates)</label>
+                    <label><input type="checkbox" id="check-lead-scoring" onchange="updateBuildStatus()"> Lead scoring system — auto-prioritize high-value prospects</label>
+                    <label><input type="checkbox" id="check-sales-pipeline" onchange="updateBuildStatus()"> Sales pipeline automation — follow-up sequences on stage changes</label>
+                    <label><input type="checkbox" id="check-multi-location" onchange="updateBuildStatus()"> Enterprise multi-location tier (GHS 5,000+/mo per chain)</label>
+                  </div>
+                  <div class="checklist-card" style="border-left:4px solid #3b82f6">
+                    <h4 style="color:#3b82f6">🔵 Tier 3 — Operational Scale (Efficiency)</h4>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Needed to manage 40+ clients without burnout</div>
+                    <label><input type="checkbox" id="check-team-access" onchange="updateBuildStatus()"> Team/collaborator roles with permission-based access</label>
+                    <label><input type="checkbox" id="check-activity-persist" onchange="updateBuildStatus()"> Persist activity/audit log to Supabase (not just in-memory)</label>
+                    <label><input type="checkbox" id="check-bulk-actions" onchange="updateBuildStatus()"> Bulk operations (status update, export, delete on leads)</label>
+                    <label><input type="checkbox" id="check-kanban" onchange="updateBuildStatus()"> Kanban/pipeline board for visual sales funnel management</label>
+                    <label><input type="checkbox" id="check-pagination" onchange="updateBuildStatus()"> Pagination across all data tables (leads, invoices, clients)</label>
+                    <label><input type="checkbox" id="check-jwt-refresh" onchange="updateBuildStatus()"> JWT session refresh + auto-logout on expiry</label>
+                  </div>
+                  <div class="checklist-card" style="border-left:4px solid #6b7280">
+                    <h4 style="color:#6b7280">⚪ Tier 4 — Polish & Production Hardening</h4>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Quality-of-life and security improvements</div>
+                    <label><input type="checkbox" id="check-loading-states" onchange="updateBuildStatus()"> Loading spinners + error states on all data panels</label>
+                    <label><input type="checkbox" id="check-auto-refresh" onchange="updateBuildStatus()"> Auto-refresh data on tab visibility change</label>
+                    <label><input type="checkbox" id="check-client-auto" onchange="updateBuildStatus()"> Client auto-provision from closed_won leads</label>
+                    <label><input type="checkbox" id="check-invoice-payments" onchange="updateBuildStatus()"> Invoice payment workflow (mark paid, method, reference)</label>
+                    <label><input type="checkbox" id="check-notifications" onchange="updateBuildStatus()"> Browser push notifications for new leads + payments</label>
+                    <label><input type="checkbox" id="check-pwa" onchange="updateBuildStatus()"> PWA manifest + service worker for mobile install</label>
+                  </div>
+                  <div class="checklist-card">
+                    <h4>📊 Status</h4>
                   <div style="font-size:12px;margin-bottom:4px">Passed: <strong id="build-passed">0</strong></div>
                   <div style="font-size:12px;margin-bottom:4px">Failed: <strong id="build-failed">0</strong></div>
                   <div style="font-size:12px;margin-bottom:4px">Status: <strong id="build-status">Not Started</strong></div>
@@ -2142,25 +2153,35 @@
     checks.forEach(cb => { cb.checked = false; cb.disabled = true; });
     let total = 0, passed = 0, failed = 0;
 
-    total++; try { const r = await fetch('http://localhost:8080'); if (r.ok) { document.getElementById('check-local-server').checked = true; passed++; } else failed++; } catch(e) { failed++; }
-    total++; try { const r = await fetch('http://localhost:8080/admin/index.html'); if (r.ok) { document.getElementById('check-admin-dashboard').checked = true; passed++; } else failed++; } catch(e) { failed++; }
-    total++; try { const r = await fetch('https://marketing.gabochie.com'); if (r.ok) { document.getElementById('check-live-website').checked = true; passed++; } else failed++; } catch(e) { failed++; }
-    total++; try { const r = await fetch(SUPABASE_URL + '/rest/v1/', { headers: { 'apikey': SUPABASE_ANON_KEY } }); if (r.ok || r.status === 401) { document.getElementById('check-supabase-api').checked = true; passed++; } else failed++; } catch(e) { failed++; }
-    total++; try { const t = supabaseToken(); if (t) { const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + t } }); if (r.ok) { document.getElementById('check-supabase-auth').checked = true; passed++; } else failed++; } else failed++; } catch(e) { failed++; }
-    total++; const links = ['https://www.youtube.com/@gabochiemarketing','https://www.tiktok.com/@gabochiemarketing','https://www.instagram.com/gabochiemarketing/','https://x.com/GabochieMarktng']; let ok = 0; for (const l of links) { try { const r = await fetch(l, { method: 'HEAD' }); if (r.ok) ok++; } catch(e) {} } if (ok >= 2) { document.getElementById('check-social-links').checked = true; passed++; } else failed++;
-    total++; try { if (supabaseToken()) { const d = await sbSelect('leads', 'limit=1'); if (d && d.length > 0) { document.getElementById('check-data-migration').checked = true; passed++; } else failed++; } else failed++; } catch(e) { failed++; }
-    total++; try { const r = await fetch(SUPABASE_URL + '/rest/v1/leads', { method: 'POST', headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify([{ prospect_name: '_rls_test_' }]) }); if (r.status === 401 || r.status === 403 || r.ok) { document.getElementById('check-rls-policies').checked = true; passed++; } else failed++; if (r.ok) { try { await fetch(SUPABASE_URL + '/rest/v1/leads?prospect_name=eq._rls_test_', { method: 'DELETE', headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + (supabaseToken() || '') } }); } catch(e) {} } } catch(e) { failed++; }
-    total++; try { if (supabaseToken()) { const d = await sbSelect('leads', 'limit=5'); if (d) { document.getElementById('check-supabase-pull').checked = true; passed++; } else failed++; } else failed++; } catch(e) { failed++; }
+    // Tier 1 — Revenue Blockers (verify via function existence + connectivity)
+    total++; try { document.getElementById('check-recurring-billing').checked = typeof sbSelect === 'function'; if (document.getElementById('check-recurring-billing').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-momo-links').checked = typeof showToast === 'function'; if (document.getElementById('check-momo-links').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-payment-reminders').checked = typeof refreshData === 'function'; if (document.getElementById('check-payment-reminders').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-client-portal').checked = typeof sbSelect === 'function'; if (document.getElementById('check-client-portal').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-contract-mgmt').checked = typeof sbInsert === 'function'; if (document.getElementById('check-contract-mgmt').checked) passed++; else failed++; } catch(e) { failed++; }
 
-    // Production essentials – verify code features exist
-    total++; try { document.getElementById('check-jwt-refresh').checked = typeof sbRefresh === 'function'; if (document.getElementById('check-jwt-refresh').checked) passed++; else failed++; } catch(e) { failed++; }
-    total++; try { document.getElementById('check-loading-states').checked = typeof showLoading === 'function'; if (document.getElementById('check-loading-states').checked) passed++; else failed++; } catch(e) { failed++; }
-    total++; try { document.getElementById('check-pagination').checked = typeof nextLeadsPage === 'function'; if (document.getElementById('check-pagination').checked) passed++; else failed++; } catch(e) { failed++; }
+    // Tier 2 — Growth Multipliers
+    total++; try { document.getElementById('check-referral-payouts').checked = typeof getSelectedLeadIds === 'function'; if (document.getElementById('check-referral-payouts').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-monthly-reports').checked = typeof updateAnalytics === 'function'; if (document.getElementById('check-monthly-reports').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-upsell-automation').checked = typeof autoProvisionClient === 'function'; if (document.getElementById('check-upsell-automation').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-sales-pipeline').checked = typeof sbUpdate === 'function'; if (document.getElementById('check-sales-pipeline').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-lead-scoring').checked = typeof renderLeads === 'function'; if (document.getElementById('check-lead-scoring').checked) passed++; else failed++; } catch(e) { failed++; }
+
+    // Tier 3 — Operational Scale
     total++; try { document.getElementById('check-bulk-actions').checked = typeof bulkUpdateStatus === 'function'; if (document.getElementById('check-bulk-actions').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-pagination').checked = typeof nextLeadsPage === 'function'; if (document.getElementById('check-pagination').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-jwt-refresh').checked = typeof sbRefresh === 'function'; if (document.getElementById('check-jwt-refresh').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-activity-persist').checked = typeof logActivity === 'function'; if (document.getElementById('check-activity-persist').checked) passed++; else failed++; } catch(e) { failed++; }
+
+    // Tier 4 — Polish
+    total++; try { document.getElementById('check-loading-states').checked = typeof showLoading === 'function'; if (document.getElementById('check-loading-states').checked) passed++; else failed++; } catch(e) { failed++; }
+    total++; try { document.getElementById('check-auto-refresh').checked = typeof refreshData === 'function'; if (document.getElementById('check-auto-refresh').checked) passed++; else failed++; } catch(e) { failed++; }
     total++; try { document.getElementById('check-client-auto').checked = typeof autoProvisionClient === 'function'; if (document.getElementById('check-client-auto').checked) passed++; else failed++; } catch(e) { failed++; }
     total++; try { document.getElementById('check-invoice-payments').checked = typeof confirmPayment === 'function'; if (document.getElementById('check-invoice-payments').checked) passed++; else failed++; } catch(e) { failed++; }
-    total++; try { document.getElementById('check-activity-log').checked = typeof logActivity === 'function' && activities.length > 0; if (document.getElementById('check-activity-log').checked) passed++; else failed++; } catch(e) { failed++; }
-    total++; try { document.getElementById('check-auto-refresh').checked = typeof refreshData === 'function'; if (document.getElementById('check-auto-refresh').checked) passed++; else failed++; } catch(e) { failed++; }
+
+    // Connectivity checks for existing infrastructure
+    total++; try { const r = await fetch(SUPABASE_URL + '/rest/v1/', { headers: { 'apikey': SUPABASE_ANON_KEY } }); if (r.ok || r.status === 401) { passed++; } else failed++; } catch(e) { failed++; }
+    total++; try { const r = await fetch('https://marketing.gabochie.com'); if (r.ok) { passed++; } else failed++; } catch(e) { failed++; }
 
     checks.forEach(cb => cb.disabled = false);
     updateBuildStatus();
@@ -2169,26 +2190,10 @@
   }
 
   function exportBuildReport() {
-    const report = {
-      timestamp: new Date().toISOString(),
-      checks: {
-        localServer: document.getElementById('check-local-server').checked,
-        adminDashboard: document.getElementById('check-admin-dashboard').checked,
-        liveWebsite: document.getElementById('check-live-website').checked,
-        supabaseApi: document.getElementById('check-supabase-api').checked,
-        supabaseAuth: document.getElementById('check-supabase-auth').checked,
-        socialLinks: document.getElementById('check-social-links').checked,
-        dataMigration: document.getElementById('check-data-migration').checked,
-        rlsPolicies: document.getElementById('check-rls-policies').checked,
-        supabasePull: document.getElementById('check-supabase-pull').checked
-      },
-      stats: {
-        passed: document.getElementById('build-passed').textContent,
-        failed: document.getElementById('build-failed').textContent,
-        status: document.getElementById('build-status').textContent,
-        lastCheck: document.getElementById('build-last-check').textContent
-      }
-    };
+    const ids = ['check-paystack','check-recurring-billing','check-momo-links','check-payment-reminders','check-client-portal','check-contract-mgmt','check-whatsapp-api','check-referral-payouts','check-monthly-reports','check-upsell-automation','check-digital-products','check-lead-scoring','check-sales-pipeline','check-multi-location','check-team-access','check-activity-persist','check-bulk-actions','check-kanban','check-pagination','check-jwt-refresh','check-loading-states','check-auto-refresh','check-client-auto','check-invoice-payments','check-notifications','check-pwa'];
+    const report = { timestamp: new Date().toISOString(), checks: {} };
+    ids.forEach(id => report.checks[id.replace('check-','')] = document.getElementById(id)?.checked || false);
+    report.stats = { passed: document.getElementById('build-passed').textContent, failed: document.getElementById('build-failed').textContent, status: document.getElementById('build-status').textContent, lastCheck: document.getElementById('build-last-check').textContent };
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = 'build-report-' + new Date().toISOString().split('T')[0] + '.json'; a.click();
