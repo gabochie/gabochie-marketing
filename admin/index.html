@@ -1357,7 +1357,7 @@
       </select>`;
     });
     document.getElementById('csvStatus').innerHTML =
-      `<strong>${csvState.rows.length}</strong> rows × <strong>${csvState.headers.length}</strong> columns in <strong>${file ? file.name : 'CSV'}</strong>`;
+      `<strong>${csvState.rows.length}</strong> rows × <strong>${csvState.headers.length}</strong> columns in <strong>${csvFileRef ? csvFileRef.name : 'CSV'}</strong>`;
     document.getElementById('csvMapping').innerHTML =
       '<div style="font-size:12px;font-weight:600;margin-bottom:4px">Column Mapping:</div>' +
       '<div style="display:flex;flex-wrap:wrap;gap:4px">' + csvState.headers.map((h, i) =>
