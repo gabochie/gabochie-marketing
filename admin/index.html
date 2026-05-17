@@ -1316,27 +1316,7 @@
 
   // ═══ CSV PROCESSOR — clean, structure, preview & import ═══
   let csvState = { rows: [], headers: [], mapping: {}, validRows: [], phoneCleaned: 0, emailDropped: 0, duplicates: 0 };
-
-  function importCSV() {
-    const input = document.createElement('input');
-    input.type = 'file'; input.accept = '.csv';
-    input.onchange = async function(e) {
-      const file = e.target.files[0]; if (!file) return;
-      const text = await file.text();
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-      if (lines.length < 2) { showToast('CSV must have a header + data rows', 'error'); return; }
-      const rawHeaders = parseCSVLine(lines[0]);
-      csvState.headers = rawHeaders.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, '_'));
-      csvState.rows = [];
-      for (let i = 1; i < lines.length; i++) {
-        const vals = parseCSVLine(lines[i]);
-        if (vals.length > 0 && vals.some(v => v.trim())) csvState.rows.push(vals);
-      }
-      buildCSVPreview();
-      document.getElementById('csvModal').classList.add('open');
-    };
-    input.click();
-  }
+  let csvFileRef = null;
 
   function parseCSVLine(line) {
     const result = []; let current = ''; let inQuotes = false;
@@ -1394,14 +1374,12 @@
     document.getElementById('csvImportBtn').onclick = analyzeAndShowImport;
   }
 
-  const file = { name: '' };
-  let fileRef = null;
   function importCSV() {
     const input = document.createElement('input');
     input.type = 'file'; input.accept = '.csv';
     input.onchange = async function(e) {
       const f = e.target.files[0]; if (!f) return;
-      fileRef = f; file.name = f.name;
+      csvFileRef = f;
       parseCSVPreview(f);
     };
     input.click();
