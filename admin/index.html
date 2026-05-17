@@ -1799,7 +1799,8 @@
   });
 
   // ═══ UTILITY ═══
-  function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/`/g,'&#96;'); }
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeLeadDrawer(); closeLeadModal(); closeClientModal(); closeInvoiceModal(); closeTemplateModal(); closeReferralModal(); } });
 </script>
 </body>
 </html>
