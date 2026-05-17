@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-pin.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://script.google.com https://gcbsffvryqguesofgvjh.supabase.co wss://gcbsffvryqguesofgvjh.supabase.co; img-src 'self' data: https:; form-action 'self'; frame-src 'none'; object-src 'none'; base-uri 'self';">
   <title>Gabochie Marketing - Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     :root {
       --primary: #0F5C28;
@@ -651,8 +650,8 @@
           </div>
           
           <div style="margin-bottom: 16px;">
-            <label>Username</label>
-            <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+            <label>Email / Username</label>
+            <input type="email" id="loginUser" placeholder="gabochiemarketing@gmail.com" autocomplete="email">
           </div>
           
           <div style="margin-bottom: 24px;">
@@ -861,19 +860,68 @@
   </div>
 
   <script>
-    // Configuration
+    // ── Configuration ──
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby43AfuiiL77YSn6VyJ2xlNPRDFKV9qiduq-XCg8RyLYuE3TnvMWtp22c-UOKEkSvw-/exec';
     const SUPABASE_URL = 'https://gcbsffvryqguesofgvjh.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_aZzUKB8qmxbjcxlEB3F0NQ_sBA_itWW';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // Data storage
+
+    // ── Supabase REST helpers (no CDN/JS library needed) ──
+    function supabaseToken() { return localStorage.getItem('supabase_token'); }
+    function setSupabaseToken(t, r) { localStorage.setItem('supabase_token', t); if (r) localStorage.setItem('supabase_refresh', r); }
+    function clearSupabaseToken() { localStorage.removeItem('supabase_token'); localStorage.removeItem('supabase_refresh'); localStorage.removeItem('supabase_user'); }
+
+    function sbHeaders() {
+      const h = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+      const t = supabaseToken();
+      if (t) h['Authorization'] = 'Bearer ' + t;
+      return h;
+    }
+
+    async function sbLogin(email, password) {
+      const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+        method: 'POST', headers: sbHeaders(),
+        body: JSON.stringify({ email, password })
+      });
+      return r.json();
+    }
+
+    async function sbLogout() {
+      const t = supabaseToken();
+      if (!t) return;
+      await fetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: sbHeaders() });
+    }
+
+    async function sbGetSession() {
+      const t = supabaseToken();
+      if (!t) return null;
+      const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: sbHeaders() });
+      if (!r.ok) { clearSupabaseToken(); return null; }
+      return r.json();
+    }
+
+    async function sbSelect(table, query) {
+      let url = SUPABASE_URL + '/rest/v1/' + table;
+      if (query) url += '?' + query;
+      const r = await fetch(url, { headers: sbHeaders() });
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+
+    async function sbInsert(table, rows) {
+      const r = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+        method: 'POST', headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
+        body: JSON.stringify(rows)
+      });
+      return r.ok;
+    }
+
+    // ── Data storage ──
     let contacts = [];
     let selectedContacts = new Set();
     let currentTab = 'contacts';
-    let supabaseSession = null;
+    let appsScriptToken = null;
 
-    // Session management
+    // Legacy Apps Script session helpers
     function getToken() { return localStorage.getItem('admin_token'); }
     function setToken(t) { localStorage.setItem('admin_token', t); }
     function clearToken() { localStorage.removeItem('admin_token'); }
@@ -881,29 +929,22 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', async function() {
       console.log('Admin dashboard loaded');
-      // Check for existing Supabase session
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        supabaseSession = session;
+      const user = await sbGetSession();
+      if (user) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appMain').style.display = 'block';
-        document.getElementById('loginUser').value = session.user.email;
-        pullFromSheets().then(success => {
-          if (!success) loadDemoData();
-        });
+        document.getElementById('loginUser').value = user.email;
+        pullFromSheets().then(success => { if (!success) loadDemoData(); });
       } else if (getToken()) {
-        // Legacy Apps Script token - still valid
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('appMain').style.display = 'block';
-        pullFromSheets().then(success => {
-          if (!success) loadDemoData();
-        });
+        pullFromSheets().then(success => { if (!success) loadDemoData(); });
       }
       updateStats();
       initializeAutoSync();
     });
 
-    // Login function — authenticates via Supabase Auth (with Apps Script fallback)
+    // Login — Supabase Auth first, Apps Script fallback
     async function handleLogin() {
       const user = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
@@ -915,53 +956,35 @@
       btn.textContent = 'Signing in...';
 
       try {
-        // Try Supabase Auth first
-        const { data, error: authError } = await supabaseClient.auth.signInWithPassword({
-          email: user,
-          password: pass
-        });
-
-        if (data?.session) {
-          supabaseSession = data.session;
+        const auth = await sbLogin(user, pass);
+        if (auth.access_token) {
+          setSupabaseToken(auth.access_token, auth.refresh_token);
           document.getElementById('loginScreen').style.display = 'none';
           document.getElementById('appMain').style.display = 'block';
-          pullFromSheets().then(success => {
-            if (!success) loadDemoData();
-          });
+          pullFromSheets().then(success => { if (!success) loadDemoData(); });
         } else {
-          // Fallback to legacy Apps Script auth
-          console.log('Supabase auth failed, trying Apps Script fallback...');
-          const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'login',
-              username: user,
-              password: pass,
-              _origin: window.location.origin
-            })
+          // Fallback to Apps Script
+          console.log('Supabase auth failed, trying Apps Script...');
+          const res = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'login', username: user, password: pass, _origin: window.location.origin })
           });
-
-          const result = await response.json();
-
+          const result = await res.json();
           if (result.success && result.token) {
             setToken(result.token);
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appMain').style.display = 'block';
-            pullFromSheets().then(success => {
-              if (!success) loadDemoData();
-            });
-          } else if (result.code === 'NOT_CONFIGURED') {
-            error.textContent = 'Admin not configured. Run setupAdmin() in the Apps Script editor first.';
-            error.style.display = 'block';
+            pullFromSheets().then(success => { if (!success) loadDemoData(); });
           } else {
-            error.textContent = 'Invalid credentials. Please check username and password.';
+            error.textContent = result.code === 'NOT_CONFIGURED'
+              ? 'Admin not configured. Run setupAdmin() in the Apps Script editor first.'
+              : 'Invalid credentials. Please check username and password.';
             error.style.display = 'block';
           }
         }
       } catch (fetchError) {
         console.error('Login error:', fetchError);
-        error.textContent = 'Cannot reach backend. Check connection.';
+        error.textContent = 'Connection error. Check console for details.';
         error.style.display = 'block';
       }
 
@@ -1141,86 +1164,60 @@
       document.getElementById('newContactBusiness').value = '';
     }
 
-    // Pull from Supabase (with Google Sheets fallback)
+    // Pull from Supabase REST API (with Google Sheets fallback)
     async function pullFromSheets() {
       try {
-        // Try Supabase first
-        console.log('📥 Pulling data from Supabase...');
-        const { data: supabaseData, error: supabaseError } = await supabaseClient
-          .from('leads')
-          .select('*')
-          .is('deleted_at', null)
-          .order('created_at', { ascending: false });
-
-        if (!supabaseError && supabaseData && supabaseData.length > 0) {
-          console.log(`✅ Pulled ${supabaseData.length} contacts from Supabase`);
-          contacts = supabaseData.map(contact => ({
-            id: contact.id,
-            name: contact.prospect_name || '',
-            email: contact.email || '',
-            phone: contact.phone || '',
-            business: contact.business_name || '',
-            stage: (contact.funnel_stage || 'tofu').toUpperCase(),
-            status: (contact.status || 'new').charAt(0).toUpperCase() + (contact.status || 'new').slice(1),
-            score: contact.rating ? contact.rating * 20 : 50,
-            source: contact.lead_source || 'Supabase',
-            date: contact.created_at ? new Date(contact.created_at).toISOString().split('T')[0] : ''
-          }));
-          updateStats();
-          renderContacts();
-          return true;
+        if (supabaseToken()) {
+          console.log('📥 Pulling data from Supabase...');
+          const supabaseData = await sbSelect('leads', 'deleted_at=is.null&order=created_at.desc');
+          if (supabaseData && supabaseData.length > 0) {
+            contacts = supabaseData.map(c => ({
+              id: c.id,
+              name: c.prospect_name || '',
+              email: c.email || '',
+              phone: c.phone || '',
+              business: c.business_name || '',
+              stage: (c.funnel_stage || 'tofu').toUpperCase(),
+              status: (c.status || 'new').charAt(0).toUpperCase() + (c.status || 'new').slice(1),
+              score: c.rating ? c.rating * 20 : 50,
+              source: c.lead_source || 'Supabase',
+              date: c.created_at ? new Date(c.created_at).toISOString().split('T')[0] : ''
+            }));
+            updateStats(); renderContacts();
+            console.log(`✅ ${contacts.length} contacts from Supabase`);
+            return true;
+          }
         }
 
-        // Fallback to Google Sheets
         console.log('📥 Pulling data from Google Sheets...');
-        const token = getToken();
-        
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'syncGoogleSheets',
-            token: token || '',
-            _origin: window.location.origin
-          })
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'syncGoogleSheets', token: getToken() || '', _origin: window.location.origin })
         });
-        
-        const result = await response.json();
-        
+        const result = await res.json();
         if (result && result.success && Array.isArray(result.data)) {
-          console.log(`✅ Pulled ${result.data.length} contacts from Google Sheets`);
-          contacts = result.data.map(contact => ({
-            id: contact.id || contact._row || Date.now().toString(),
-            name: contact.name || contact['Name'] || '',
-            email: contact.email || contact['Email'] || '',
-            phone: contact.phone || contact['Phone'] || '',
-            business: contact.businessName || contact['Business Name'] || '',
-            stage: contact.stage || contact['Stage'] || 'TOFU',
-            status: contact.status || contact['Status'] || 'New',
-            score: contact.score || 50,
-            source: contact.leadSource || contact['Lead Source'] || 'Google Sheets',
-            date: contact.date || contact['Date'] || new Date().toISOString().split('T')[0]
+          contacts = result.data.map(c => ({
+            id: c.id || c._row || Date.now().toString(), name: c.name || c['Name'] || '',
+            email: c.email || c['Email'] || '', phone: c.phone || c['Phone'] || '',
+            business: c.businessName || c['Business Name'] || '',
+            stage: c.stage || c['Stage'] || 'TOFU',
+            status: c.status || c['Status'] || 'New', score: c.score || 50,
+            source: c.leadSource || c['Lead Source'] || 'Google Sheets',
+            date: c.date || c['Date'] || new Date().toISOString().split('T')[0]
           }));
-          updateStats();
-          renderContacts();
+          updateStats(); renderContacts();
+          console.log(`✅ ${contacts.length} contacts from Google Sheets`);
           return true;
-        } else {
-          console.log('❌ Failed to pull from Google Sheets:', result);
-          return false;
         }
-      } catch (error) {
-        console.error('❌ Pull error:', error);
         return false;
-      }
+      } catch (e) { console.error('❌ Pull error:', e); return false; }
     }
 
-    // Push to Supabase (with Google Sheets fallback)
+    // Push to Supabase REST API (with Google Sheets fallback)
     async function pushToSheets(contactData) {
       try {
-        // Try Supabase first
-        const { error: supabaseError } = await supabaseClient
-          .from('leads')
-          .insert({
+        if (supabaseToken()) {
+          const ok = await sbInsert('leads', [{
             prospect_name: contactData.name || '',
             business_name: contactData.businessName || '',
             phone: contactData.phone || '',
@@ -1231,40 +1228,19 @@
             lead_source: (contactData.leadSource || 'other').toLowerCase().replace(/ /g, '_'),
             status: (contactData.status || 'new').toLowerCase(),
             notes: contactData.notes || ''
-          });
-
-        if (!supabaseError) {
-          console.log(`✅ Pushed contact to Supabase: ${contactData.name}`);
-          return true;
+          }]);
+          if (ok) { console.log('✅ Pushed to Supabase'); return true; }
         }
 
-        // Fallback to Google Sheets
-        console.log('Supabase push failed, trying Sheets fallback...');
-        const token = getToken();
-        
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...contactData,
-            token: token || '',
-            _origin: window.location.origin
-          })
+        console.log('Supabase push failed, trying Sheets...');
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...contactData, token: getToken() || '', _origin: window.location.origin })
         });
-        
-        const result = await response.json();
-        
-        if (result && result.success) {
-          console.log(`✅ Pushed contact to Google Sheets: ${contactData.name}`);
-          return true;
-        } else {
-          console.log(`❌ Failed to push to Google Sheets: ${contactData.name}`, result);
-          return false;
-        }
-      } catch (error) {
-        console.error(`❌ Push error for: ${contactData.name}`, error);
+        const r = await res.json();
+        if (r && r.success) { console.log('✅ Pushed to Sheets'); return true; }
         return false;
-      }
+      } catch (e) { console.error('❌ Push error:', e); return false; }
     }
 
     // Bidirectional Sync - Pull from CSV, Push to Sheets, then Pull back to refresh
@@ -1605,11 +1581,11 @@
       }
     }
 
-    // Logout — sign out of Supabase and clear legacy tokens
+    // Logout — sign out of Supabase and clear all tokens
     async function handleLogout() {
-      await supabaseClient.auth.signOut();
+      await sbLogout();
+      clearSupabaseToken();
       clearToken();
-      supabaseSession = null;
       contacts = [];
       document.getElementById('appMain').style.display = 'none';
       document.getElementById('loginScreen').style.display = 'flex';
