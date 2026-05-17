@@ -1239,23 +1239,37 @@
       } catch (e) { console.error('❌ Push error:', e); return false; }
     }
 
-    // Bidirectional Sync - Pull from CSV, Push to Sheets, then Pull back to refresh
+    // Bidirectional Sync - Pull from CSV, Push to Supabase/Sheets, then Pull back to refresh
     async function syncColdLeads() {
       try {
         console.log('🔄 Starting bidirectional sync...');
-        showAlert('info', 'Bidirectional sync in progress...', 'Pulling from CSV, pushing to Sheets, then refreshing...');
+        showAlert('info', 'Bidirectional sync in progress...', 'Please select a CSV file to import...');
         
-        // Step 1: Pull existing data from Google Sheets
+        // Step 0: Let user select a CSV file
+        const csvText = await new Promise((resolve, reject) => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.csv';
+          input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) { reject(new Error('No file selected')); return; }
+            const reader = new FileReader();
+            reader.onload = (ev) => resolve(ev.target.result);
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsText(file);
+          };
+          input.click();
+        });
+        
+        // Step 1: Pull existing data from Supabase (fallback to Google Sheets)
         const pullSuccess = await pullFromSheets();
         if (!pullSuccess) {
-          showAlert('error', 'Sync failed', 'Could not pull existing data from Google Sheets');
+          showAlert('error', 'Sync failed', 'Could not pull existing data from database');
           return;
         }
         
-        // Step 2: Read and process CSV file
-        console.log('📄 Reading CSV file...');
-        const response = await fetch('C:/Users/user/Desktop/01_unified_database.csv');
-        const csvText = await response.text();
+        // Step 2: Process CSV file
+        console.log('📄 Processing CSV file...');
         const lines = csvText.split('\n');
         
         let syncedCount = 0;
@@ -1311,8 +1325,8 @@
         await pullFromSheets();
         
         showAlert('success', 
-          `Bidirectional sync completed! ${syncedCount} processed, ${sheetSyncCount} synced to Google Sheets.`,
-          `Successfully processed ${syncedCount} cold leads from CSV and synchronized with Google Sheets database.`
+          `Bidirectional sync completed! ${syncedCount} processed, ${sheetSyncCount} synced to database.`,
+          `Successfully processed ${syncedCount} cold leads from CSV and synchronized with Supabase database.`
         );
         
       } catch (error) {
